@@ -10,6 +10,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Query
 
 object NetworkRepository
 {
@@ -47,11 +48,11 @@ object NetworkRepository
        retrofit.create(OPENUVAPI::class.java)
     }
 
-    fun getRealTimeUV(): LiveData<UVData>
+    fun getRealTimeUV(latitude: Double = 51.50636369327448, longitude: Double = -0.15934363365078322, altitude: Double = 0.0): LiveData<UVData>
     {
         val uvDataLive = MutableLiveData<UVData>()
 
-        openUVAPI.getRealTimeUV().enqueue(object: Callback<UVData>
+        openUVAPI.getRealTimeUV(latitude, longitude, altitude).enqueue(object: Callback<UVData>
         {
             override fun onResponse(call: Call<UVData>, response: Response<UVData>)
             {
