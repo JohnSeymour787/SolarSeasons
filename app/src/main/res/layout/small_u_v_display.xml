@@ -1,0 +1,26 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/uv_low"
+    android:padding="@dimen/widget_margin"
+    android:theme="@style/ThemeOverlay.SolarSeasons.AppWidgetContainer">
+
+    <TextView
+        android:id="@+id/uvValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/appwidget_text"
+        tools:text="UV:\n4"
+        android:text="@string/appwidget_text"
+        android:textAlignment="center"
+        android:fontFamily="@font/quicksand_medium"
+        android:textColor="@color/primary_text"
+        android:autoSizeMaxTextSize="24sp"
+        android:autoSizeMinTextSize="12sp"
+        android:textStyle="bold|italic" />
+</RelativeLayout>
