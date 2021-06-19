@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import com.johnseymour.solarseasons.api.NetworkRepository
 import kotlinx.android.synthetic.main.activity_main.*
 import android.Manifest
+import android.app.AlarmManager
 import android.content.Intent
 import android.location.Location
 import android.os.Looper
@@ -18,6 +19,12 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.*
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.*
 
 
@@ -61,19 +68,20 @@ class MainActivity : AppCompatActivity()
                     { location: Location? ->
                         location?.let()
                         {
-                            val formatter = SimpleDateFormat("HH:mm:ss")
-                            NetworkRepository.getRealTimeUV(it.latitude, it.longitude, it.altitude)
+                            NetworkRepository.OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude)
                                 .observe(this@MainActivity)
                                 { lUVData ->
                                     viewModel.uvData = lUVData
-                                    testDisplay.text = "UV Rating: ${lUVData.uv}"
+                                    uvValue.text = resources.getString(R.string.widget_uv_value, lUVData.uv)
+                                    maxUV.text = resources.getString(R.string.max_uv, lUVData.uvMax)
+
+                                    val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+
+                                    uvMaxTime.text = resources.getString(R.string.max_uv_time, formatter.format(lUVData.uvMaxTime))
+                                    sunset.text = resources.getString(R.string.sunset_time, formatter.format(lUVData.sunInfo.sunset))
+                                    sunrise.text = resources.getString(R.string.sunrise_time, formatter.format(lUVData.sunInfo.sunrise))
+                                    solarNoon.text = resources.getString(R.string.solar_noon_time, formatter.format(lUVData.sunInfo.solarNoon))
                                 }
-                            //   formatter.timeZone = TimeZone.getDefault()
-                            Log.d("location","Using older data")
-                            Log.d("location", "Coords (lat, long): ${it.latitude} ${it.longitude} Altitude: ${it.altitude}")
-                            Log.d("location","Accuracy: ${it.accuracy} Time: ${formatter.format(Date(it.time))}")
-                            Log.d("location", "Elapsed time: ${formatter.format(Date(it.elapsedRealtimeNanos))}")
-                            Log.d("location","Provider: ${it.provider}")
                         } ?: run { locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper()) }
                     }
                 }
@@ -92,23 +100,16 @@ class MainActivity : AppCompatActivity()
             override fun onLocationResult(locationResult: LocationResult?)
             {
                 locationResult ?: return
-
                 super.onLocationResult(locationResult)
-                val formatter = SimpleDateFormat("HH:mm:ss")
-                formatter.timeZone = TimeZone.getDefault()
+
                 locationResult.lastLocation.let()
                 {
-                    Log.d("location","Requested new data")
-                    Log.d("location","Coords (lat, long): ${it.latitude} ${it.longitude} Altitude: ${it.altitude}")
-                    Log.d("location","Accuracy: ${it.accuracy} Time: ${formatter.format(Date(it.time))}")
-                    Log.d("location", "Provider: ${it.provider}")
-
-                    NetworkRepository.getRealTimeUV(it.latitude, it.longitude, it.altitude)
+  /*                  NetworkRepository.getRealTimeUV(it.latitude, it.longitude, it.altitude)
                         .observe(this@MainActivity)
                         { lUVData ->
                             viewModel.uvData = lUVData
                             testDisplay.text = "UV Rating: ${lUVData.uv}"
-                        }
+                        }*/
                 }
 
                 locationClient.removeLocationUpdates(this)
@@ -161,7 +162,6 @@ class MainActivity : AppCompatActivity()
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }
-
         //If on Android 12 or more, show a button to take the user to the Android settings page of this app
         // to disable auto-revoking of permissions if the app isn't used for a long time period.
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R)
@@ -179,6 +179,13 @@ class MainActivity : AppCompatActivity()
         else
         {
             disablePermissionReset.visibility = View.GONE
+        }
+
+        testButton.setOnClickListener()
+        {
+//  val intent = Intent(UVData.UV_DATA_CHANGED).apply { putExtra(UVData.UV_DATA_KEY, UVData(10F, 29F)) }
+       //     val intent = Intent(applicationContext, SmallUVDisplay::class.java).apply { putExtra(UVData.UV_DATA_KEY, null) }
+            baseContext.sendBroadcast(intent)
         }
     }
 }

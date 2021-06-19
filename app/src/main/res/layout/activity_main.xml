@@ -7,8 +7,13 @@
     android:background="@color/green"
     tools:context=".MainActivity">
 
+    <Button
+        android:id="@+id/testButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
     <TextView
-        android:id="@+id/testDisplay"
+        android:id="@+id/uvValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="蛋糕"
@@ -19,36 +24,56 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/coords"
+        android:id="@+id/maxUV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        tools:text="Coords"
-        app:layout_constraintBottom_toTopOf="@id/accuracy"
+        tools:text="Max UV"
+        app:layout_constraintBottom_toTopOf="@id/uvMaxTime"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/testDisplay" />
+        app:layout_constraintTop_toBottomOf="@id/uvValue" />
 
     <TextView
-        android:id="@+id/accuracy"
+        android:id="@+id/uvMaxTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        tools:text="Accuracy"
-        app:layout_constraintBottom_toTopOf="@id/provider"
+        tools:text="UV Max Time"
+        app:layout_constraintBottom_toTopOf="@id/sunset"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/coords" />
+        app:layout_constraintTop_toBottomOf="@id/maxUV" />
 
     <TextView
-        android:id="@+id/provider"
+        android:id="@+id/sunset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        tools:text="Provider"
+        tools:text="Sunset"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/accuracy" />
+        app:layout_constraintTop_toBottomOf="@id/uvMaxTime" />
+
+    <TextView
+        android:id="@+id/sunrise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        tools:text="Sunrise"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sunset" />
+
+    <TextView
+        android:id="@+id/solarNoon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        tools:text="Solar Noon"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sunrise" />
 
     <Button
         android:id="@+id/disablePermissionReset"

@@ -12,9 +12,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SolarSeasons">
+        <service
+            android:name=".UVDataService"
+            android:enabled="true"
+            android:exported="true" />
+
         <receiver android:name=".SmallUVDisplay">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="com.johnseymour.solarseasons.UVDATA_CHANGED"/>
             </intent-filter>
 
             <meta-data
