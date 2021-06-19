@@ -4,38 +4,40 @@ import com.google.gson.JsonDeserializer
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.johnseymour.solarseasons.SunInfo
 import com.johnseymour.solarseasons.UVData
 import java.lang.reflect.Type
-import java.time.Instant
 import java.time.ZoneId
 
 object UVDataDeserialiser: JsonDeserializer<UVData>
 {
-    override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): UVData
+    override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): UVData?
     {
+        context ?: return null
+
         json?.asJsonObject?.getAsJsonObject("result")?.let()
         {
             val uv = it.getAsJsonPrimitive("uv")?.asFloat ?: 0F
             val uvMax = it.getAsJsonPrimitive("uv_max")?.asFloat ?: 0F
             val ozone = it.getAsJsonPrimitive("ozone")?.asFloat ?: 0F
 
-            val uvTimeString = it.getAsJsonPrimitive("uv_time")?.asString ?: ""
-            val uvMaxTimeString = it.getAsJsonPrimitive("uv_max_time")?.asString ?: ""
-            val ozoneTimeString = it.getAsJsonPrimitive("ozone_time")?.asString ?: ""
-
-            val uvTime = Instant.parse(uvTimeString).atZone(ZoneId.systemDefault())
-            val uvMaxTime = Instant.parse(uvMaxTimeString).atZone(ZoneId.systemDefault())
-            val ozoneTime = Instant.parse(ozoneTimeString).atZone(ZoneId.systemDefault())
+            //Using system zone here rather than a global constant because app includes a widget and user can change timezone
+            val systemZone = ZoneId.systemDefault()
+            val uvTime = (it.getAsJsonPrimitive("uv_time")?.asString ?: "").toZonedDateTime(systemZone)
+            val uvMaxTime = (it.getAsJsonPrimitive("uv_max_time")?.asString ?: "").toZonedDateTime(systemZone)
+            val ozoneTime = (it.getAsJsonPrimitive("ozone_time")?.asString ?: "").toZonedDateTime(systemZone)
 
             val safeExposure = it.getAsJsonObject("safe_exposure_time")?.let()
             { safeExposureObject ->
                 getSafeExposureTimes(safeExposureObject)
             }
 
-            return UVData(uv, uvTime, uvMax, uvMaxTime, ozone, ozoneTime, safeExposure)
+            val sunInfo = context.deserialize<SunInfo>(it.getAsJsonObject("sun_info"), SunInfo::class.java)
+
+            return UVData(uv, uvTime, uvMax, uvMaxTime, ozone, ozoneTime, safeExposure, sunInfo)
         }
 
-        return UVData(40F)
+        return null
     }
 
     /**

@@ -7,11 +7,12 @@ import java.time.ZonedDateTime
 @Parcelize
 data class UVData(val uv: Float,
                   val uvTime: ZonedDateTime? = null,
-                  val uvMax: Float? = null,
+                  val uvMax: Float,
                   val uvMaxTime: ZonedDateTime? = null,
-                  val ozone: Float? = null,
+                  val ozone: Float,
                   val ozoneTime: ZonedDateTime? = null,
-                  val safeExposure: Map<String, Int>? = null): Parcelable
+                  val safeExposure: Map<String, Int>? = null,
+                  val sunInfo: SunInfo): Parcelable
 {
     val colorInt: Int
     get() =

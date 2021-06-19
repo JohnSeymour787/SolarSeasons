@@ -3,6 +3,7 @@ package com.johnseymour.solarseasons.api
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
+import com.johnseymour.solarseasons.SunInfo
 import com.johnseymour.solarseasons.UVData
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -20,6 +21,7 @@ object NetworkRepository
     {
         val gsonBuilder = GsonBuilder().run()
         {
+            registerTypeAdapter(SunInfo::class.java, SunInfoDeserialiser)
             registerTypeAdapter(UVData::class.java, UVDataDeserialiser)
             create()
         }
