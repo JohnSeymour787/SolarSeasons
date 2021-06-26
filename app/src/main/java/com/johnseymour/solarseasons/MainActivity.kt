@@ -7,22 +7,15 @@ import androidx.core.content.ContextCompat
 import com.johnseymour.solarseasons.api.NetworkRepository
 import kotlinx.android.synthetic.main.activity_main.*
 import android.Manifest
-import android.app.AlarmManager
 import android.content.Intent
 import android.location.Location
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.*
-import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
@@ -68,12 +61,15 @@ class MainActivity : AppCompatActivity()
                     { location: Location? ->
                         location?.let()
                         {
-                            NetworkRepository.OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude)
+  //                        NetworkRepository.OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude)
+                            NetworkRepository.OLDgetRealTimeUV()
                                 .observe(this@MainActivity)
                                 { lUVData ->
                                     viewModel.uvData = lUVData
                                     uvValue.text = resources.getString(R.string.widget_uv_value, lUVData.uv)
                                     maxUV.text = resources.getString(R.string.max_uv, lUVData.uvMax)
+
+                                    sunProgress.progress = lUVData.sunProgressPercent
 
                                     val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
 
