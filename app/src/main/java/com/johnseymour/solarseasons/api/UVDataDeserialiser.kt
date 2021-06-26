@@ -23,9 +23,9 @@ object UVDataDeserialiser: JsonDeserializer<UVData>
 
             //Using system zone here rather than a global constant because app includes a widget and user can change timezone
             val systemZone = ZoneId.systemDefault()
-            val uvTime = (it.getAsJsonPrimitive("uv_time")?.asString ?: "").toZonedDateTime(systemZone)
-            val uvMaxTime = (it.getAsJsonPrimitive("uv_max_time")?.asString ?: "").toZonedDateTime(systemZone)
-            val ozoneTime = (it.getAsJsonPrimitive("ozone_time")?.asString ?: "").toZonedDateTime(systemZone)
+            val uvTime = it.get("uv_time")?.toZonedDateTime(systemZone)
+            val uvMaxTime = it.get("uv_max_time")?.toZonedDateTime(systemZone)
+            val ozoneTime = it.get("ozone_time")?.toZonedDateTime(systemZone)
 
             val safeExposure = it.getAsJsonObject("safe_exposure_time")?.let()
             { safeExposureObject ->

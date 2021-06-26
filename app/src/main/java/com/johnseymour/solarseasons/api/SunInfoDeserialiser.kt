@@ -3,6 +3,7 @@ package com.johnseymour.solarseasons.api
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
 import com.johnseymour.solarseasons.SunInfo
 import java.lang.reflect.Type
 import java.time.Instant
@@ -36,20 +37,20 @@ object SunInfoDeserialiser: JsonDeserializer<SunInfo>
 
         json?.asJsonObject?.getAsJsonObject("sun_times")?.let()
         {
-            solarNoon = (it.getAsJsonPrimitive("solarNoon").asString ?: "").toZonedDateTime(systemZone)
-            nadir = (it.getAsJsonPrimitive("nadir").asString ?: "").toZonedDateTime(systemZone)
-            sunrise = (it.getAsJsonPrimitive("sunrise").asString ?: "").toZonedDateTime(systemZone)
-            sunset = (it.getAsJsonPrimitive("sunset").asString ?: "").toZonedDateTime(systemZone)
-            sunriseEnd = (it.getAsJsonPrimitive("sunriseEnd").asString ?: "").toZonedDateTime(systemZone)
-            sunsetStart = (it.getAsJsonPrimitive("sunsetStart").asString ?: "").toZonedDateTime(systemZone)
-            dawn = (it.getAsJsonPrimitive("dawn").asString ?: "").toZonedDateTime(systemZone)
-            dusk = (it.getAsJsonPrimitive("dusk").asString ?: "").toZonedDateTime(systemZone)
-            nauticalDawn = (it.getAsJsonPrimitive("nauticalDawn").asString ?: "").toZonedDateTime(systemZone)
-            nauticalDusk = (it.getAsJsonPrimitive("nauticalDusk").asString ?: "").toZonedDateTime(systemZone)
-            nightEnd = (it.getAsJsonPrimitive("nightEnd").asString ?: "").toZonedDateTime(systemZone)
-            night = (it.getAsJsonPrimitive("night").asString ?: "").toZonedDateTime(systemZone)
-            goldenHourEnd = (it.getAsJsonPrimitive("goldenHourEnd").asString ?: "").toZonedDateTime(systemZone)
-            goldenHour = (it.getAsJsonPrimitive("goldenHour").asString ?: "").toZonedDateTime(systemZone)
+            solarNoon = it.get("solarNoon")?.toZonedDateTime(systemZone)
+            nadir = it.get("nadir")?.toZonedDateTime(systemZone)
+            sunrise = it.get("sunrise")?.toZonedDateTime(systemZone)
+            sunset = it.get("sunset")?.toZonedDateTime(systemZone)
+            sunriseEnd = it.get("sunriseEnd")?.toZonedDateTime(systemZone)
+            sunsetStart = it.get("sunsetStart")?.toZonedDateTime(systemZone)
+            dawn = it.get("dawn")?.toZonedDateTime(systemZone)
+            dusk = it.get("dusk")?.toZonedDateTime(systemZone)
+            nauticalDawn = it.get("nauticalDawn")?.toZonedDateTime(systemZone)
+            nauticalDusk = it.get("nauticalDusk")?.toZonedDateTime(systemZone)
+            nightEnd = it.get("nightEnd")?.toZonedDateTime(systemZone)
+            night = it.get("night")?.toZonedDateTime(systemZone)
+            goldenHourEnd = it.get("goldenHourEnd")?.toZonedDateTime(systemZone)
+            goldenHour = it.get("goldenHour")?.toZonedDateTime(systemZone)
         }
 
         json?.asJsonObject?.getAsJsonObject("sun_position")?.let()
@@ -63,14 +64,27 @@ object SunInfoDeserialiser: JsonDeserializer<SunInfo>
 }
 
 //Also used in UVDataDeserialiser
-fun String.toZonedDateTime(zoneID: ZoneId): ZonedDateTime?
+/**
+ * If this JsonElement is a String representing a date, this method will convert it to a ZonedDateTime.
+ * @param zoneID - ZoneID of the ZonedDateTime to convert to
+ * @return - If this element is a string and can be parsed, returns a ZonedDateTime instance using the passed zoneID parameter.
+ *           Otherwise, returns null
+ */
+fun JsonElement.toZonedDateTime(zoneID: ZoneId): ZonedDateTime?
 {
-    return try
-    {
-        Instant.parse(this).atZone(zoneID)
-    }
-    catch (e: DateTimeParseException)
+    return if (this.isJsonNull)
     {
         null
+    }
+    else
+    {
+        try
+        {
+            Instant.parse((this.asString ?: "")).atZone(zoneID)
+        }
+        catch (e: DateTimeParseException)
+        {
+            null
+        }
     }
 }
