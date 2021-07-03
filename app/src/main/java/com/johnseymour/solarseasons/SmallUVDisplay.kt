@@ -67,7 +67,8 @@ class SmallUVDisplay : AppWidgetProvider()
 
              WeakReference(RemoteViews(context.packageName, R.layout.small_u_v_display)).get()?.let()
             {
-                it.setTextViewText(R.id.uvValue, uv.toString())
+                val widgetText = context.getString(R.string.widget_uv_value, uv)
+                it.setTextViewText(R.id.uvValue, widgetText)
                 it.setInt(R.id.layout, "setBackgroundColor", context.resources.getColor(uvData.colorInt, context.theme))
 
                 val appWidgetManager = AppWidgetManager.getInstance(context)
@@ -92,7 +93,7 @@ class SmallUVDisplay : AppWidgetProvider()
             val data = 2
             intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
             {
-                //updateUVData(context, it)
+                updateUVData(context, it)
                 uvData = it
 
                 val uvDataRequest = OneTimeWorkRequestBuilder<UVDataWorker>().addTag("sadwadsaw").setInitialDelay(10, TimeUnit.SECONDS).build()

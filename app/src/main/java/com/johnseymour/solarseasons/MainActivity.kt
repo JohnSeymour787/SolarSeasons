@@ -15,13 +15,14 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.gms.location.*
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
 
 
-class MainActivity : AppCompatActivity()
+class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener
 {
     private val viewModel by lazy()
     {
@@ -61,8 +62,8 @@ class MainActivity : AppCompatActivity()
                     { location: Location? ->
                         location?.let()
                         {
-  //                        NetworkRepository.OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude)
-                            NetworkRepository.OLDgetRealTimeUV()
+                          NetworkRepository.OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude)
+  //                          NetworkRepository.OLDgetRealTimeUV()
                                 .observe(this@MainActivity)
                                 { lUVData ->
                                     viewModel.uvData = lUVData
@@ -71,12 +72,22 @@ class MainActivity : AppCompatActivity()
 
                                     sunProgress.progress = lUVData.sunProgressPercent
 
+                                    //TODO() V Put into constants class
                                     val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
 
                                     uvMaxTime.text = resources.getString(R.string.max_uv_time, formatter.format(lUVData.uvMaxTime))
                                     sunset.text = resources.getString(R.string.sunset_time, formatter.format(lUVData.sunInfo.sunset))
                                     sunrise.text = resources.getString(R.string.sunrise_time, formatter.format(lUVData.sunInfo.sunrise))
                                     solarNoon.text = resources.getString(R.string.solar_noon_time, formatter.format(lUVData.sunInfo.solarNoon))
+
+                                    if (swipeRefresh.isRefreshing)
+                                    {
+                                        swipeRefresh.isRefreshing = false
+                                    }
+
+                                    //Update all widgets as well TODO() Update to do proper broadcast (if this isn't right) and possibly change the Widget.onReceive to cancel the current worker schedule for auto update and start another?
+                                    val intent = Intent(applicationContext, SmallUVDisplay::class.java).apply { action = UVData.UV_DATA_CHANGED; putExtra(UVData.UV_DATA_KEY, lUVData) }
+                                    baseContext.sendBroadcast(intent)
                                 }
                         } ?: run { locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper()) }
                     }
@@ -117,6 +128,7 @@ class MainActivity : AppCompatActivity()
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
 
         locationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -183,5 +195,12 @@ class MainActivity : AppCompatActivity()
        //     val intent = Intent(applicationContext, SmallUVDisplay::class.java).apply { putExtra(UVData.UV_DATA_KEY, null) }
             baseContext.sendBroadcast(intent)
         }
+
+        swipeRefresh.setOnRefreshListener(this)
+    }
+
+    override fun onRefresh()
+    {
+        startLocationService()
     }
 }
