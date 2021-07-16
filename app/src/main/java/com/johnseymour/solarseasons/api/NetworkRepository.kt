@@ -8,6 +8,9 @@ import com.google.gson.GsonBuilder
 import com.johnseymour.solarseasons.SunInfo
 import com.johnseymour.solarseasons.UVData
 import kotlinx.coroutines.*
+import nl.komponents.kovenant.Deferred
+import nl.komponents.kovenant.deferred
+import nl.komponents.kovenant.Promise
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -70,7 +73,7 @@ object NetworkRepository
 
         test++
 
-        return null
+     //   return null
 
         val response: Response<UVData> = openUVAPI.getRealTimeUV(latitude, longitude, altitude).execute()
 
@@ -131,5 +134,30 @@ object NetworkRepository
         })
 
         return uvDataLive
+    }
+
+    fun Semi_OLDgetRealTimeUV(latitude: Double = 51.50636369327448, longitude: Double = -0.15934363365078322, altitude: Double = 0.0): Promise<UVData, String>
+    {
+        val result = deferred<UVData, String>()
+
+        openUVAPI.getRealTimeUV(latitude, longitude, altitude).enqueue(object: Callback<UVData>
+        {
+            override fun onResponse(call: Call<UVData>, response: Response<UVData>)
+            {
+                response.body()?.let()
+                {
+                    result.resolve(it)
+                }
+            }
+
+            override fun onFailure(call: Call<UVData>, t: Throwable)
+            {
+                val cake = 2
+                TODO("Not yet implemented")
+                result.reject("")
+            }
+        })
+
+        return result.promise
     }
 }

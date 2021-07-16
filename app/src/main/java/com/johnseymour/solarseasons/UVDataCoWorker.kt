@@ -10,17 +10,18 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.work.CoroutineWorker
-import androidx.work.WorkerParameters
+import androidx.work.*
 import com.google.android.gms.location.*
 import com.johnseymour.solarseasons.api.NetworkRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import nl.komponents.kovenant.Deferred
+import nl.komponents.kovenant.Promise
+import nl.komponents.kovenant.deferred
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
-class UVDataWorker(context: Context, workerParameters: WorkerParameters): CoroutineWorker(context, workerParameters), Observer<UVData>
+class UVDataCoWorker(context: Context, workerParameters: WorkerParameters): CoroutineWorker(context, workerParameters), Observer<UVData>
 {
     private val locationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
@@ -38,8 +39,9 @@ class UVDataWorker(context: Context, workerParameters: WorkerParameters): Corout
 
     private var uvLiveData: LiveData<UVData>? = null
 
-    private fun startLocationService()
+    private fun startLocationService(): Promise<UVData, String>
     {
+        val promise = deferred<UVData, String>()
         //TODO(
         // /*
         //    When getting old location data, check that it is within 15 minutes
@@ -69,11 +71,11 @@ class UVDataWorker(context: Context, workerParameters: WorkerParameters): Corout
                             }*/
 
                             val data = runBlocking(Dispatchers.Default) { NetworkRepository.getRealTimeUV(it.latitude, it.longitude, it.altitude) }
-
                             data?.let()
                             {
-                                val intent = Intent(applicationContext, SmallUVDisplay::class.java).apply { action = UVData.UV_DATA_CHANGED; putExtra(UVData.UV_DATA_KEY, it) }
-                                applicationContext.sendBroadcast(intent)
+                                promise.resolve(it)
+                                //val intent = Intent(applicationContext, SmallUVDisplay::class.java).apply { action = UVData.UV_DATA_CHANGED; putExtra(UVData.UV_DATA_KEY, it) }
+                               // applicationContext.sendBroadcast(intent)
                             }
                             //uvLiveData?.observeForever(this)
 
@@ -113,6 +115,8 @@ class UVDataWorker(context: Context, workerParameters: WorkerParameters): Corout
                 }
             }
         }
+
+        return promise.promise
     }
 
     private val locationCallback: LocationCallback =
@@ -173,8 +177,11 @@ class UVDataWorker(context: Context, workerParameters: WorkerParameters): Corout
         }*/
 
        // withContext(Dispatchers.Default) { startLocationService() }
-        startLocationService()
-        return Result.success()
+
+
+        val data = coroutineScope { startLocationService().get() }
+        val cae = 2
+        return Result.success(workDataOf(UVData.UV_DATA_KEY to deferred<UVData, String>().promise))
     }
 
     override fun onChanged(data: UVData?)
@@ -191,4 +198,122 @@ class UVDataWorker(context: Context, workerParameters: WorkerParameters): Corout
             applicationContext.sendBroadcast(intent)
         }
     }
+}
+
+
+
+
+
+
+
+
+
+
+
+class UVDataWorker(applicationContext: Context, workerParameters: WorkerParameters): Worker(applicationContext, workerParameters)
+{
+    companion object
+    {
+        private const val WORK_NAME = "UV_DATA_WORK"
+        var uvDataDeferred: Deferred<UVData, String>? = null
+
+        fun initiateWorker(context: Context, delayedStart: Boolean = false): LiveData<List<WorkInfo>>
+        {
+            val constraints = Constraints.Builder().setRequiresBatteryNotLow(true).build()
+            val uvDataRequest = OneTimeWorkRequestBuilder<UVDataWorker>().setConstraints(constraints).run()
+            {
+                if (delayedStart)
+                {
+                    setInitialDelay(10, TimeUnit.SECONDS)
+                }
+                build()
+            }
+
+            val workManager = WorkManager.getInstance(context)
+            workManager.enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.KEEP, uvDataRequest)
+
+            return workManager.getWorkInfosForUniqueWorkLiveData(WORK_NAME)
+        }
+    }
+
+    override fun doWork(): Result
+    {
+        startLocationService()
+
+        return Result.success()
+    }
+
+    private val locationClient: FusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(applicationContext)
+
+    private val locationRequest by lazy()
+    {
+        LocationRequest.create().apply()
+        {
+            interval = 10//TimeUnit.MINUTES.toMillis(30)
+//                    fastestInterval = TimeUnit.MINUTES.toMillis(15)
+            priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+            numUpdates = 1
+        }
+    }
+
+
+    private fun startLocationService()
+    {
+        //TODO(
+        // /*
+        //    When getting old location data, check that it is within 15 minutes
+        // */
+
+        uvDataDeferred = deferred()
+
+        if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
+            //locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+
+            //Check that the location is reasonably recent according to the locationRequest parameters
+            locationClient.locationAvailability.addOnSuccessListener()
+            {
+                if (it.isLocationAvailable)
+                {
+                    locationClient.lastLocation.addOnSuccessListener()
+                    { location: Location? ->
+                        location?.let()
+                        {
+
+                            NetworkRepository.Semi_OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude).success()
+                            { data ->
+                                uvDataDeferred?.resolve(data)
+                            }
+                        } ?: run { locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper()) }
+                    }
+                }
+                else
+                {
+                    locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+                }
+            }
+        }
+    }
+
+    private val locationCallback: LocationCallback =
+        object : LocationCallback()
+        {
+            override fun onLocationResult(locationResult: LocationResult?)
+            {
+                locationResult ?: return
+                super.onLocationResult(locationResult)
+
+                locationResult.lastLocation.let()
+                {
+                    val data = NetworkRepository.getRealTimeUV(it.latitude, it.longitude, it.altitude)
+                    data?.let()
+                    {
+                        uvDataDeferred?.resolve(data)
+                    }
+                }
+
+                locationClient.removeLocationUpdates(this)
+            }
+        }
 }
