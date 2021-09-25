@@ -19,7 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginHorizontal="@dimen/widget_horizontal_margin"
         android:layout_marginTop="@dimen/widget_vertical_margin"
         android:textAlignment="center"
         android:textSize="@dimen/widget_text_small"
