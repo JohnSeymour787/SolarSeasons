@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">SolarSeasons</string>
-    <string name="appwidget_text">UV value</string>
+    <string name="appwidget_uv_text_description">UV value</string>
+    <string name="appwidget_uv_text_default">0.0</string>
     <string name="add_widget">Add widget</string>
     <string name="widget_uv_value">%1$.1f</string>
     <string name="max_uv_time">Max UV Time: %1$s</string>
