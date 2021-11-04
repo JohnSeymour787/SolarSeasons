@@ -18,6 +18,7 @@ import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise
 import nl.komponents.kovenant.deferred
 import java.text.SimpleDateFormat
+import java.time.ZonedDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -215,22 +216,51 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
     companion object
     {
         private const val WORK_NAME = "UV_DATA_WORK"
-        var uvDataDeferred: Deferred<UVData, String>? = null
 
-        fun initiateWorker(context: Context, delayedStart: Boolean = false): LiveData<List<WorkInfo>>
+        private val workConstraints = Constraints.Builder().setRequiresBatteryNotLow(true).build()
+        private var uvDataRequest: OneTimeWorkRequest? = null
+        private var previousSetting = false // Previous setting of initialDelay for the work or not
+
+        private var uvDataDeferred: Deferred<UVData, String>? = null
+        val uvDataPromise: Promise<UVData, String>?
+            get()
+            {
+                return uvDataDeferred?.promise
+            }
+
+
+        private fun createWorkRequest(delayedStart: Boolean): OneTimeWorkRequest
         {
-            val constraints = Constraints.Builder().setRequiresBatteryNotLow(true).build()
-            val uvDataRequest = OneTimeWorkRequestBuilder<UVDataWorker>().setConstraints(constraints).run()
+            return OneTimeWorkRequestBuilder<UVDataWorker>().setConstraints(workConstraints).run()
             {
                 if (delayedStart)
                 {
-                    setInitialDelay(10, TimeUnit.SECONDS)
+                    setInitialDelay(1, TimeUnit.MINUTES)
                 }
                 build()
             }
+        }
 
+        fun initiateWorker(context: Context, delayedStart: Boolean = false): LiveData<List<WorkInfo>>
+        {
             val workManager = WorkManager.getInstance(context)
-            workManager.enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.KEEP, uvDataRequest)
+            workManager.cancelUniqueWork(WORK_NAME)
+
+            // First time creating, to avoid making the same thing
+            if (uvDataRequest == null)
+            {
+                uvDataRequest = createWorkRequest(delayedStart)
+            }
+            // However, if the setting is different from last time, need to make a new request and update the remembered setting
+            else if (delayedStart != previousSetting)
+            {
+                uvDataRequest = createWorkRequest(delayedStart)
+
+                previousSetting = delayedStart
+            }
+
+            // Start a unique work, but if one is already going, then keep that one (shouldn't need to occur because removed the work before)
+            uvDataRequest?.let {workManager.enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.KEEP, it) }
 
             return workManager.getWorkInfosForUniqueWorkLiveData(WORK_NAME)
         }
@@ -240,11 +270,40 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
     {
         startLocationService()
 
+        //#Section ------------
+      //  uvDataDeferred = deferred()
+
+        val test = UVData(uv=0.0399F, uvTime= ZonedDateTime.parse("2021-09-25T00:00:30.826+10:00[Australia/Sydney]"),
+            uvMax=3.0005F, uvMaxTime= ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"),
+            ozone=332.5F, ozoneTime= ZonedDateTime.parse("2021-09-25T16:04:07.137+10:00[Australia/Sydney]"),
+            safeExposure= mapOf("st1" to 4180, "st2" to 5016, "st3" to 6688, "st4" to 8360, "st5" to 13376, "st6" to 25079),
+                sunInfo=SunInfo(solarNoon= ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"), nadir=ZonedDateTime.parse("2021-09-25T09:53:36.274+10:00[Australia/Sydney]"),
+                    sunrise=ZonedDateTime.parse("2021-09-25T15:52:48.317+10:00[Australia/Sydney]"),
+                    sunset=ZonedDateTime.parse("2021-09-26T03:54:24.230+10:00[Australia/Sydney]"),
+                    sunriseEnd=ZonedDateTime.parse("2021-09-25T15:56:13.870+10:00[Australia/Sydney]"),
+                    sunsetStart=ZonedDateTime.parse("2021-09-26T03:50:58.677+10:00[Australia/Sydney]"),
+                    dawn=ZonedDateTime.parse("2021-09-25T15:19:32.279+10:00[Australia/Sydney]"),
+                    dusk=ZonedDateTime.parse("2021-09-26T04:27:40.269+10:00[Australia/Sydney]"),
+                    nauticalDawn=ZonedDateTime.parse("2021-09-25T14:40:20.870+10:00[Australia/Sydney]"),
+                    nauticalDusk=ZonedDateTime.parse("2021-09-26T05:06:51.678+10:00[Australia/Sydney]"),
+                    nightEnd=ZonedDateTime.parse("2021-09-25T13:59:43.486+10:00[Australia/Sydney]"),
+                    night=ZonedDateTime.parse("2021-09-26T05:47:29.061+10:00[Australia/Sydney]"),
+                    goldenHourEnd=ZonedDateTime.parse("2021-09-25T16:36:54.771+10:00[Australia/Sydney]"),
+                    goldenHour=ZonedDateTime.parse("2021-09-26T03:10:17.776+10:00[Australia/Sydney]"),
+                    azimuth=-1.48815118586359, altitude=0.04749226792696052))
+
+                       // uvDataDeferred?.resolve(test)
+    //#Section ------------------
+            //        NetworkRepository.Semi_OLDgetRealTimeUV().success()
+            //        { data ->
+            //            uvDataDeferred?.resolve(data)
+            //        }
+
+    //#Section --------------------
         return Result.success()
     }
 
-    private val locationClient: FusedLocationProviderClient =
-        LocationServices.getFusedLocationProviderClient(applicationContext)
+    private val locationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(applicationContext)
 
     private val locationRequest by lazy()
     {
@@ -267,11 +326,11 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
         uvDataDeferred = deferred()
 
-        if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
             //locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
 
-            //Check that the location is reasonably recent according to the locationRequest parameters
+            // Check that the location is reasonably recent according to the locationRequest parameters
             locationClient.locationAvailability.addOnSuccessListener()
             {
                 if (it.isLocationAvailable)
@@ -282,6 +341,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                         {
 
                             NetworkRepository.Semi_OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude).success()
+                    //        NetworkRepository.Semi_OLDgetRealTimeUV().success()
                             { data ->
                                 uvDataDeferred?.resolve(data)
                             }
@@ -306,9 +366,9 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
                 locationResult.lastLocation.let()
                 {
-                    val data = NetworkRepository.getRealTimeUV(it.latitude, it.longitude, it.altitude)
-                    data?.let()
-                    {
+                    NetworkRepository.Semi_OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude).success()
+                    //NetworkRepository.Semi_OLDgetRealTimeUV().success()
+                    { data ->
                         uvDataDeferred?.resolve(data)
                     }
                 }

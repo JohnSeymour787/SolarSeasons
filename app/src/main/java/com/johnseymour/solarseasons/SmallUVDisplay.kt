@@ -1,22 +1,21 @@
 package com.johnseymour.solarseasons
 
-import android.app.AlarmManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Handler
 import android.os.Looper
+import android.text.format.DateFormat
 import android.widget.RemoteViews
-import androidx.work.Configuration
-import androidx.work.Constraints
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.work.*
 import java.lang.ref.WeakReference
-import java.util.concurrent.TimeUnit
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 /**
  * Implementation of App Widget functionality.
@@ -25,15 +24,21 @@ class SmallUVDisplay : AppWidgetProvider()
 {
     companion object
     {
-        var uvData: UVData? = null
+        var uvData: UVData? = null // todo() probably make private
+
+        var test = 0.0
     }
+
+  //  private var observing: LiveData<List<WorkInfo>>? = null
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray)
     {
-        //Pending intent to launch the MainActivity when a Widget is selected
-        val intent: PendingIntent = Intent(context, MainActivity::class.java).apply { putExtra(UVData.UV_DATA_KEY, uvData) }.let { PendingIntent.getActivity(context, 0, it, 0) }
-
-    //    AlarmManager().set(0, 23000, intent)
+        // Pending intent to launch the MainActivity when a Widget is selected
+        val intent: PendingIntent = Intent(context, MainActivity::class.java).apply()
+        {
+            action = UVData.UV_DATA_CHANGED
+            putExtra(UVData.UV_DATA_KEY, uvData)
+        }.let { PendingIntent.getActivity(context, 0, it, 0) }
 
         // There may be multiple widgets active, so update all of them
         for (appWidgetId in appWidgetIds)
@@ -42,13 +47,46 @@ class SmallUVDisplay : AppWidgetProvider()
         }
     }
 
+    private var observer: Observer<List<WorkInfo>>? = null
+    private var lastObserving: LiveData<List<WorkInfo>>? = null
+
+    // First widget is created
     override fun onEnabled(context: Context)
     {
-        // Enter relevant functionality for when the first widget is created
-        val uvDataRequest = OneTimeWorkRequestBuilder<UVDataWorker>().addTag("sadwadsaw").setInitialDelay(10, TimeUnit.SECONDS).build()
+        lastObserving = UVDataWorker.initiateWorker(context)
 
-        val workManager = WorkManager.getInstance(context)
-        workManager.enqueue(uvDataRequest)
+        if (observer == null)
+        {
+            observer = Observer<List<WorkInfo>>
+            { workInfo ->
+                if (workInfo.firstOrNull()?.state == WorkInfo.State.SUCCEEDED)
+                {
+                    UVDataWorker.uvDataPromise?.success()
+                    {
+                        uvData = it //TODO() Write to disk
+
+
+                      //  updateUVData(context, it)
+
+
+                        // Update all widgets
+                        val intent = Intent(context, SmallUVDisplay::class.java).apply()
+                        {
+                            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                            putExtra(UVData.UV_DATA_KEY, it)
+
+                            //val ids = AppWidgetManager.getInstance(context.).getAppWidgetIds(ComponentName(applicationContext, SmallUVDisplay::class.java))
+                          //  putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+                        }
+
+                        context.sendBroadcast(intent)
+
+                    }
+                }
+            }
+
+            observer?.let { lastObserving?.observeForever(it) }
+        }
 
       //  context.registerReceiver(this, IntentFilter().apply { addAction(UVData.UV_DATA_CHANGED) })
     }
@@ -60,57 +98,61 @@ class SmallUVDisplay : AppWidgetProvider()
 
     private fun updateUVData(context: Context, uvData: UVData)
     {
-        //TODO() Might need to make sure on main thread here
-   //     Handler(Looper.getMainLooper()).post()
- //       {
-            val uv: Float = uvData.uv
+        Handler(Looper.getMainLooper()).post()
+        {
 
-             WeakReference(RemoteViews(context.packageName, R.layout.small_u_v_display)).get()?.let()
+            val uv: Float = test.toFloat()
+
+            //uvData.uv = test.toFloat()
+            test++
+/*
+            return@post
+
+            observer?.let { lastObserving?.removeObserver(it) }
+
+            return@post //TODO() temporarily preventing recursive API calls
+            lastObserving = UVDataWorker.initiateWorker(context, true)
+
+            if (observer == null)
             {
-                val widgetText = context.getString(R.string.widget_uv_value, uv)
-                it.setTextViewText(R.id.uvValue, widgetText)
-                it.setInt(R.id.layout, "setBackgroundColor", context.resources.getColor(uvData.colorInt, context.theme))
+                observer = Observer<List<WorkInfo>>
+                { workInfo ->
+                    if (workInfo.firstOrNull()?.state == WorkInfo.State.SUCCEEDED)
+                    {
+                        UVDataWorker.uvDataPromise?.success()
+                        {
+                            Companion.uvData = it
+                            updateUVData(context, it)
+                        }
+                    }
+                }
+            }*/
 
-                val appWidgetManager = AppWidgetManager.getInstance(context)
-
-                appWidgetManager.updateAppWidget(ComponentName(context, SmallUVDisplay::class.java), it)
-            }
-
-
-
-   //     }
-
+            observer?.let { lastObserving?.observeForever(it) }
+        }
     }
 
     override fun onReceive(context: Context?, intent: Intent?)
     {
-
         val cake = 2
 
-        if (intent?.action == UVData.UV_DATA_CHANGED)
-        {
-            context ?: return
-            val data = 2
-            intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
-            {
-                updateUVData(context, it)
-                uvData = it
+        context ?: return
 
-                val uvDataRequest = OneTimeWorkRequestBuilder<UVDataWorker>().addTag("sadwadsaw").setInitialDelay(10, TimeUnit.SECONDS).build()
-
-                val workManager = WorkManager.getInstance(context)
-                workManager.enqueue(uvDataRequest)
-            }
-
-            //
+        intent?.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
+        { luvData ->
+            uvData = luvData
+            // TODO() Observer can be null at this stage if haven't added a new widget recently (ie, after phone restart)
+            // Stop observing completed work
+            observer?.let { lastObserving?.removeObserver(it) }
+            // Override new work to observe
+            lastObserving = UVDataWorker.initiateWorker(context, true)
+            // Begin observing new work
+            observer?.let { lastObserving?.observeForever(it) }
         }
-        else
-        {
-            super.onReceive(context, intent)
-        }
+
+        // Will call onUpdate
+        super.onReceive(context, intent)
     }
-
-
 
     private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, intent: PendingIntent)
     {
@@ -118,28 +160,25 @@ class SmallUVDisplay : AppWidgetProvider()
         val views = RemoteViews(context.packageName, R.layout.small_u_v_display)
         uvData?.let()
         {
-            val widgetText = context.getString(R.string.widget_uv_value, it.uv)
-            views.setTextViewText(R.id.uvValue, widgetText)
-            views.setInt(R.id.layout, "setBackgroundColor", context.resources.getColor(it.colorInt, context.theme))
-        } ?: run { views.setTextViewText(R.id.uvValue, "Data unavailable") }
+            val uvString = context.getString(R.string.widget_uv_value, it.uv)
+            val timeString = if (DateFormat.is24HourFormat(context)) { Constants.Formatters.hour24.format(it.uvTime) } else { Constants.Formatters.hour12.format(it.uvTime) }
 
-     //   val myconfig = Configuration.Builder().
+            views.setTextViewText(R.id.uvValue, uvString)
+            views.setTextColor(R.id.uvValue, context.resources.getColor(it.textColorInt, context.theme))
 
-      //  val constraints = Constraints.Builder().setTriggerContentMaxDelay(1, TimeUnit.MINUTES).
-      //  val cake = Handler(Looper.myLooper()!!)
-     //   cake.post(UVDataRunnable(context, ::updateUVData))
-      //  Thread(UVDataRunnable(context, ::updateUVData)).start()
-        //TODO DO this in the onEnabled() method
-   //     val uvDataRequest = OneTimeWorkRequestBuilder<UVDataWorker>().addTag("").setInitialDelay(3, TimeUnit.SECONDS).build()
+            views.setTextViewText(R.id.updatedTime, timeString)
+            views.setTextColor(R.id.updatedTime, context.resources.getColor(it.textColorInt, context.theme))
 
-   //     val workManager = WorkManager.getInstance(context)
-    //    workManager.enqueue(uvDataRequest)
+            views.setInt(R.id.widgetSunProgress, "setProgress", it.sunProgressPercent)
 
-                // workManager.cancelAllWorkByTag("")
+            views.setInt(R.id.backgroundView, "setColorFilter", context.resources.getColor(it.backgroundColorInt, context.theme))
 
-        //TODO() seems to call the onReceive method too often, with UPDATE action
-
-
+        } ?: run()
+        {
+            views.setTextViewText(R.id.uvValue, "0.0")
+            views.setTextViewText(R.id.updatedTime, "00:00")
+            views.setInt(R.id.widgetSunProgress, "setProgress", 0)
+        }
 
         views.setOnClickPendingIntent(R.id.layout, intent)
 
