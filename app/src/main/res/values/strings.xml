@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">SolarSeasons</string>
+    <string name="appwidget_uv_text_description">UV value</string>
+    <string name="appwidget_uv_text_default">0.0</string>
+    <string name="add_widget">Add widget</string>
+    <string name="widget_uv_value">%1$.1f</string>
+    <string name="max_uv_time">Max UV Time: %1$s</string>
+    <string name="max_uv">Max UV: %1$.1f</string>
+    <string name="sunset_time">Sunset: %1$s</string>
+    <string name="sunrise_time">Sunrise: %1$s</string>
+    <string name="solar_noon_time">Solar Noon: %1$s</string>
+    <string name="widget_background_image_description">Background colour based on UV level</string>
 </resources>

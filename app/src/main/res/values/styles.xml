@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SolarProgressBar" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:progressTint">@color/secondary_text</item>
+        <item name="android:min">0</item>
+        <item name="android:max">100</item>
+        <item name="android:progress">0</item>
+    </style>
+</resources>

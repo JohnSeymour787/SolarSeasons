@@ -1,0 +1,56 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/widget_margin"
+    android:theme="@style/ThemeOverlay.SolarSeasons.AppWidgetContainer">
+
+    <ImageView
+        android:id="@+id/backgroundView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/widget_background_shape"
+        android:contentDescription="@string/widget_background_image_description" />
+
+    <TextView
+        android:id="@+id/updatedTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/widget_vertical_margin"
+        android:textAlignment="center"
+        android:textSize="@dimen/widget_text_small"
+        tools:text="09:30"
+        android:textColor="@color/primary_text"
+        android:fontFamily="@font/quicksand_medium"/>
+
+    <TextView
+        android:id="@+id/uvValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/appwidget_uv_text_description"
+        tools:text="2.9"
+        android:text="@string/appwidget_uv_text_default"
+        android:textAlignment="center"
+        android:elegantTextHeight="true"
+        android:fontFamily="@font/quicksand_bold"
+        android:textColor="@color/primary_text"
+        android:textSize="@dimen/widget_text_large"
+        android:autoSizeMaxTextSize="@dimen/widget_text_large"
+        android:autoSizeMinTextSize="@dimen/widget_text_medium"
+        android:textStyle="bold" />
+
+    <ProgressBar
+        android:id="@+id/widgetSunProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        tools:progress="20"
+        android:layout_marginHorizontal="@dimen/widget_horizontal_margin"
+        android:layout_marginBottom="@dimen/widget_vertical_margin"
+        style="@style/SolarProgressBar" />
+</RelativeLayout>
