@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.*
 import com.google.android.gms.location.*
+import nl.komponents.kovenant.ui.failUi
 import nl.komponents.kovenant.ui.successUi
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -152,10 +153,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                     {
                         swipeRefresh.isRefreshing = false
                     }
-
                     lastObserving?.removeObserver(this)
-                    lastObserving = UVDataWorker.initiateWorker(this, true)     //TODO() Think about what happens when close the activity but need to keep the widgets updating
-                    lastObserving?.observe(this, this)
 
                     // Update all widgets
                     val intent = Intent(this, SmallUVDisplay::class.java).apply()
@@ -168,7 +166,16 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
                     sendBroadcast(intent)
                 }
-            }
+            }//?.fail()
+//            {
+//                runOnUiThread()
+//                {
+//                    if (swipeRefresh.isRefreshing)
+//                    {
+//                        swipeRefresh.isRefreshing = false
+//                    }
+//                }
+//            }
         }
     }
 
