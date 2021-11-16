@@ -4,30 +4,19 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.content.ContextCompat
-import com.johnseymour.solarseasons.api.NetworkRepository
 import kotlinx.android.synthetic.main.activity_main.*
 import android.Manifest
 import android.appwidget.AppWidgetManager
-import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Intent
-import android.location.Location
-import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.*
-import com.google.android.gms.location.*
-import nl.komponents.kovenant.ui.successUi
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, Observer<List<WorkInfo>>
@@ -152,10 +141,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                     {
                         swipeRefresh.isRefreshing = false
                     }
-
                     lastObserving?.removeObserver(this)
-                    lastObserving = UVDataWorker.initiateWorker(this, true)     //TODO() Think about what happens when close the activity but need to keep the widgets updating
-                    lastObserving?.observe(this, this)
 
                     // Update all widgets
                     val intent = Intent(this, SmallUVDisplay::class.java).apply()
@@ -168,7 +154,16 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
                     sendBroadcast(intent)
                 }
-            }
+            }//?.fail()
+//            {
+//                runOnUiThread()
+//                {
+//                    if (swipeRefresh.isRefreshing)
+//                    {
+//                        swipeRefresh.isRefreshing = false
+//                    }
+//                }
+//            }
         }
     }
 
