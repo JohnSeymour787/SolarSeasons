@@ -69,24 +69,6 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
             }
         }
-        //If on Android 12 or more, show a button to take the user to the Android settings page of this app
-        // to disable auto-revoking of permissions if the app isn't used for a long time period.
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R)
-        {
-            disablePermissionReset.setOnClickListener()
-            {
-                val intent = Intent().apply()
-                {
-                    action = Intent.ACTION_AUTO_REVOKE_PERMISSIONS
-                }
-
-                startActivity(intent)
-            }
-        }
-        else
-        {
-            disablePermissionReset.visibility = View.GONE
-        }
 
         // Coming from a clicked widget
         if (intent.action == UVData.UV_DATA_CHANGED)
