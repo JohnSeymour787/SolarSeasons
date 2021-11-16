@@ -9,7 +9,6 @@ import android.Manifest
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
-import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.LiveData
@@ -17,7 +16,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.*
-
 
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, Observer<List<WorkInfo>>
 {
@@ -137,12 +135,26 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
     private fun updateUIFields(lUVData: UVData)
     {
+        layout.setBackgroundColor(resources.getColor(lUVData.backgroundColorInt, theme))
+
         uvValue.text = resources.getString(R.string.widget_uv_value, lUVData.uv)
+        uvValue.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+
         maxUV.text = resources.getString(R.string.max_uv, lUVData.uvMax)
-        sunProgress.progress = lUVData.sunProgressPercent
+        maxUV.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+
         uvMaxTime.text = resources.getString(R.string.max_uv_time, Constants.Formatters.hour12.format(lUVData.uvMaxTime))
+        uvMaxTime.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+
         sunset.text = resources.getString(R.string.sunset_time, Constants.Formatters.hour12.format(lUVData.sunInfo.sunset))
+        sunset.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+
         sunrise.text = resources.getString(R.string.sunrise_time, Constants.Formatters.hour12.format(lUVData.sunInfo.sunrise))
+        sunrise.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+
         solarNoon.text = resources.getString(R.string.solar_noon_time, Constants.Formatters.hour12.format(lUVData.sunInfo.solarNoon))
+        solarNoon.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+
+        sunProgress.progress = lUVData.sunProgressPercent
     }
 }
