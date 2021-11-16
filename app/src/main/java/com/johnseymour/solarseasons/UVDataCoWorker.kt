@@ -228,20 +228,20 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 return uvDataDeferred?.promise
             }
 
-        private fun createWorkRequest(delayedStart: Boolean): OneTimeWorkRequest
+        private fun createWorkRequest(delayedStart: Boolean, delayTime: Long): OneTimeWorkRequest
         {
             return OneTimeWorkRequestBuilder<UVDataWorker>().run()
             {
                 if (delayedStart)
                 {
-                    setInitialDelay(1, TimeUnit.MINUTES)
+                    setInitialDelay(delayTime, TimeUnit.MINUTES)
                     setConstraints(workConstraints) // Only set the battery constraint when doing a delayed (background) start
                 }
                 build()
             }
         }
 
-        fun initiateWorker(context: Context, delayedStart: Boolean = false): LiveData<List<WorkInfo>>
+        fun initiateWorker(context: Context, delayedStart: Boolean = false, delayTime: Long = 30): LiveData<List<WorkInfo>>
         {
             val workManager = WorkManager.getInstance(context)
             workManager.cancelUniqueWork(WORK_NAME)
@@ -249,12 +249,12 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
             // First time creating, to avoid making the same thing
             if (uvDataRequest == null)
             {
-                uvDataRequest = createWorkRequest(delayedStart)
+                uvDataRequest = createWorkRequest(delayedStart, delayTime)
             }
             // However, if the setting is different from last time, need to make a new request and update the remembered setting
             else if (delayedStart != previousSetting)
             {
-                uvDataRequest = createWorkRequest(delayedStart)
+                uvDataRequest = createWorkRequest(delayedStart, delayTime)
 
                 previousSetting = delayedStart
             }
@@ -330,6 +330,8 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                         location?.let()
                         {
 
+          //                  uvDataDeferred?.resolve(test)
+
                             NetworkRepository.Semi_OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude).success()
                     //        NetworkRepository.Semi_OLDgetRealTimeUV().success()
                             { data ->
@@ -356,6 +358,8 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
                 locationResult.lastLocation.let()
                 {
+         //           uvDataDeferred?.resolve(test)
+
                     NetworkRepository.Semi_OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude).success()
                     //NetworkRepository.Semi_OLDgetRealTimeUV().success()
                     { data ->

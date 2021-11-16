@@ -2,7 +2,10 @@ package com.johnseymour.solarseasons
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import java.time.LocalTime
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
+import kotlin.math.absoluteValue
 
 @Parcelize
 data class UVData(
@@ -56,7 +59,7 @@ data class UVData(
      *            0% represents a time before the sun has risen.
      */
     val sunProgressPercent: Int
-    get()
+        get()
         {
             val startTimeEpoch = (sunInfo.sunrise ?: sunInfo.dawn ?: sunInfo.sunriseEnd)?.toEpochSecond() ?: return 0
             val endTimeEpoch = (sunInfo.sunset ?: sunInfo.dusk ?: sunInfo.sunsetStart)?.toEpochSecond() ?: return 1 // Default to 1 to avoid div 0
@@ -74,6 +77,49 @@ data class UVData(
                 else -> percentage.toInt()
             }
         }
+
+    /**
+     * Calculates the minutes remaining from the uvTime until the next sunrise. Ignores date rollover.
+     */
+    val minutesUntilSunrise: Long
+        get()
+        {
+            val currentTime = (uvTime ?: ZonedDateTime.now()).toLocalTime() ?: return 0
+
+            val startTime = (sunInfo.sunrise ?: sunInfo.dawn ?: sunInfo.sunriseEnd)?.toLocalTime() ?: return 0
+
+            // If on a new day, calculate the time difference directly with the sunrise time
+            return if (currentTime.hour <= 12)
+            {
+                ChronoUnit.MINUTES.between(currentTime, startTime).absoluteValue
+            }
+            // Otherwise, need to manually work out the minutes until midnight MAX and sum this with the minutes
+            //  from midnight MIN to the sunrise time
+            else
+            {
+                val timeUntilMidnight = ChronoUnit.MINUTES.between(currentTime, LocalTime.MAX).absoluteValue
+                val midnightToStart = ChronoUnit.MINUTES.between(LocalTime.MIN, startTime).absoluteValue
+
+                timeUntilMidnight + midnightToStart
+            }
+        }
+
+    /**
+     * Computes whether the uvTime is within the sunrise and sunset of this object's SunInfo field.
+     *  Only checks the time values only, ignores dates.
+     *
+     * @return - true if the uvTime is between sunrise and sunset, thus indicating that the sun is
+     *                 above the horizon.
+     *         - false if the uvTime is either before the sunrise or after the sunset time.
+     */
+    fun sunInSky(): Boolean
+    {
+        val startTime = (sunInfo.sunrise ?: sunInfo.dawn ?: sunInfo.sunriseEnd)?.toLocalTime() ?: return false
+        val endTime = (sunInfo.sunset ?: sunInfo.dusk ?: sunInfo.sunsetStart)?.toLocalTime() ?: return false
+        val timeNow = uvTime?.toLocalTime() ?: LocalTime.now()
+        // Sun is in the sky only if not before sunrise and not after sunset
+        return !timeNow.isBefore(startTime) && !timeNow.isAfter(endTime)
+    }
 
     companion object
     {
