@@ -88,27 +88,13 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
             disablePermissionReset.visibility = View.GONE
         }
 
+        // Coming from a clicked widget
         if (intent.action == UVData.UV_DATA_CHANGED)
         {
-            val date = intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)
             intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
             {
                 updateUIFields(it)
             }
-        }
-
-        testButton.setOnClickListener()
-        {
-            // Update all widgets
-            val intent = Intent(this, SmallUVDisplay::class.java).apply()
-            {
-                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                putExtra(UVData.UV_DATA_KEY, "")
-                val ids = AppWidgetManager.getInstance(application).getAppWidgetIds(ComponentName(applicationContext, SmallUVDisplay::class.java))
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-            }
-
-            sendBroadcast(intent)
         }
 
         swipeRefresh.setOnRefreshListener(this)
