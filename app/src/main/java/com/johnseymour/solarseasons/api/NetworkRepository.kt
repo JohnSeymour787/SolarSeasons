@@ -1,14 +1,11 @@
 package com.johnseymour.solarseasons.api
 
-import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
 import com.johnseymour.solarseasons.SunInfo
 import com.johnseymour.solarseasons.UVData
-import kotlinx.coroutines.*
-import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.deferred
 import nl.komponents.kovenant.Promise
 import okhttp3.OkHttpClient
@@ -17,10 +14,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Query
-import kotlin.coroutines.coroutineContext
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 object NetworkRepository
 {
@@ -30,8 +23,8 @@ object NetworkRepository
     {
         val gsonBuilder = GsonBuilder().run()
         {
-            registerTypeAdapter(SunInfo::class.java, SunInfoDeserialiser)
-            registerTypeAdapter(UVData::class.java, UVDataDeserialiser)
+            registerTypeAdapter(SunInfo::class.java, SunInfoGsonAdapter)
+            registerTypeAdapter(UVData::class.java, UVDataGsonAdapter)
             create()
         }
 

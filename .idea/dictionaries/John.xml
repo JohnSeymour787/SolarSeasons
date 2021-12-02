@@ -1,7 +1,10 @@
 <component name="ProjectDictionaryState">
   <dictionary name="John">
     <words>
+      <w>api</w>
+      <w>deserialiser</w>
       <w>formatters</w>
+      <w>gson</w>
     </words>
   </dictionary>
 </component>

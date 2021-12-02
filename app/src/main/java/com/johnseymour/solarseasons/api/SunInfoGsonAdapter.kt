@@ -1,17 +1,15 @@
 package com.johnseymour.solarseasons.api
 
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
-import com.google.gson.JsonPrimitive
+import com.google.gson.*
 import com.johnseymour.solarseasons.SunInfo
 import java.lang.reflect.Type
+import java.time.DateTimeException
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeParseException
 
-object SunInfoDeserialiser: JsonDeserializer<SunInfo>
+object SunInfoGsonAdapter: JsonDeserializer<SunInfo>, JsonSerializer<SunInfo>
 {
     override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): SunInfo
     {
@@ -61,6 +59,48 @@ object SunInfoDeserialiser: JsonDeserializer<SunInfo>
 
         return SunInfo(solarNoon, nadir, sunrise, sunset, sunriseEnd, sunsetStart, dawn, dusk, nauticalDawn, nauticalDusk, nightEnd, night, goldenHourEnd, goldenHour, azimuth, altitude)
     }
+
+    /**
+     * Serialisation method to convert the SunInfo object to a JSON format that is similar to that returned by the API,
+     *  thus enabling the same deserialiser to be used for writing to disk.
+     */
+    override fun serialize(sunInfo: SunInfo?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement
+    {
+        val result = JsonObject()
+
+        context ?: return result
+        sunInfo ?: return result
+
+        JsonObject().apply()
+        {
+            addProperty("azimuth", sunInfo.azimuth)
+            addProperty("altitude", sunInfo.altitude)
+
+            result.add("sun_position", this)
+        }
+
+        JsonObject().apply()
+        {
+            addProperty("solarNoon", sunInfo.solarNoon?.toString() ?: "")
+            addProperty("nadir", sunInfo.nadir?.toString() ?: "")
+            addProperty("sunrise", sunInfo.sunrise?.toString() ?: "")
+            addProperty("sunset", sunInfo.sunset?.toString() ?: "")
+            addProperty("sunriseEnd", sunInfo.sunriseEnd?.toString() ?: "")
+            addProperty("sunsetStart", sunInfo.sunsetStart?.toString() ?: "")
+            addProperty("dawn", sunInfo.dawn?.toString() ?: "")
+            addProperty("dusk", sunInfo.dusk?.toString() ?: "")
+            addProperty("nauticalDawn", sunInfo.nauticalDawn?.toString() ?: "")
+            addProperty("nauticalDusk", sunInfo.nauticalDusk?.toString() ?: "")
+            addProperty("nightEnd", sunInfo.nightEnd?.toString() ?: "")
+            addProperty("night", sunInfo.night?.toString() ?: "")
+            addProperty("goldenHourEnd", sunInfo.goldenHourEnd?.toString() ?: "")
+            addProperty("goldenHour", sunInfo.goldenHour?.toString() ?: "")
+
+            result.add("sun_times", this)
+        }
+
+        return result
+    }
 }
 
 //Also used in UVDataDeserialiser
@@ -80,9 +120,15 @@ fun JsonElement.toZonedDateTime(zoneID: ZoneId): ZonedDateTime?
     {
         try
         {
+            // When parsing the API's time strings
             Instant.parse((this.asString ?: "")).atZone(zoneID)
         }
         catch (e: DateTimeParseException)
+        {
+            // When reading from ZonedDateTimes that were saved to disk
+            ZonedDateTime.parse(this.asString ?: "")
+        }
+        catch (e: DateTimeException)
         {
             null
         }

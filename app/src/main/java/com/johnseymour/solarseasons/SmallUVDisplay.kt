@@ -10,6 +10,7 @@ import android.widget.RemoteViews
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.work.*
+import java.io.FileNotFoundException
 
 /**
  * Implementation of App Widget functionality.
@@ -62,6 +63,8 @@ class SmallUVDisplay : AppWidgetProvider()
                 {
                     uvData = it //TODO() Write to disk
 
+                    DiskRepository.writeLatestUV(it, context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
+
                     // Update all widgets
                     val intent = Intent(context, SmallUVDisplay::class.java).apply()
                     {
@@ -110,17 +113,19 @@ class SmallUVDisplay : AppWidgetProvider()
 
             // Begin observing new work
             observer?.let { lastObserving?.observeForever(it) }
-        }
 
-        // Will call onUpdate
-        super.onReceive(context, intent)
+            // Will call onUpdate
+            super.onReceive(context, intent)
+        }
     }
 
     private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, intent: PendingIntent)
     {
         // Construct the RemoteViews object
         val views = RemoteViews(context.packageName, R.layout.small_u_v_display)
-        uvData?.let()
+
+        val lUvData = uvData ?: try { DiskRepository.readLatestUV(context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)) } catch (e: FileNotFoundException) { null }
+        lUvData?.let()
         {
             val uvString = context.getString(R.string.widget_uv_value, it.uv)
             val timeString = if (DateFormat.is24HourFormat(context)) { Constants.Formatters.hour24.format(it.uvTime) } else { Constants.Formatters.hour12.format(it.uvTime) }

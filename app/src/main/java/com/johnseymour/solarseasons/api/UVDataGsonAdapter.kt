@@ -1,15 +1,12 @@
 package com.johnseymour.solarseasons.api
 
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
+import com.google.gson.*
 import com.johnseymour.solarseasons.SunInfo
 import com.johnseymour.solarseasons.UVData
 import java.lang.reflect.Type
 import java.time.ZoneId
 
-object UVDataDeserialiser: JsonDeserializer<UVData>
+object UVDataGsonAdapter: JsonDeserializer<UVData>, JsonSerializer<UVData>
 {
     override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): UVData?
     {
@@ -63,5 +60,34 @@ object UVDataDeserialiser: JsonDeserializer<UVData>
         }
 
         return if (result.isNotEmpty()) { result } else { null }
+    }
+
+    /**
+     * Serialisation method to convert the UVData object to a JSON format that is similar to that returned by the API,
+     *  thus enabling the same deserialiser to be used for writing to disk.
+     */
+    override fun serialize(uvData: UVData?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement
+    {
+        val result = JsonObject()
+
+        context ?: return result
+        uvData ?: return result
+
+        val uvJSON = JsonObject()
+
+        uvJSON.addProperty("uv", uvData.uv)
+        uvJSON.addProperty("uv_max", uvData.uvMax)
+        uvJSON.addProperty("ozone", uvData.ozone)
+        uvJSON.addProperty("uv_time", uvData.uvTime?.toString() ?: "")
+        uvJSON.addProperty("uv_max_time", uvData.uvMaxTime?.toString() ?: "")
+        uvJSON.addProperty("ozone_time", uvData.ozoneTime?.toString() ?: "")
+
+        uvJSON.add("safe_exposure_time", context.serialize(uvData.safeExposure) ?: JsonObject())
+
+        uvJSON.add("sun_info", context.serialize(uvData.sunInfo))
+
+        result.add("result", uvJSON)
+
+        return result
     }
 }
