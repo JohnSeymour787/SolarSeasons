@@ -116,10 +116,10 @@ class SmallUVDisplay : AppWidgetProvider()
 
             // Begin observing new work
             observer?.let { lastObserving?.observeForever(it) }
-
-            // Will call onUpdate
-            super.onReceive(context, intent)
         }
+
+        // Will call onUpdate
+        super.onReceive(context, intent)
     }
 
     private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, intent: PendingIntent)
@@ -127,8 +127,10 @@ class SmallUVDisplay : AppWidgetProvider()
         // Construct the RemoteViews object
         val views = RemoteViews(context.packageName, R.layout.small_u_v_display)
 
-        val lUvData = uvData ?: try { DiskRepository.readLatestUV(context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)) } catch (e: FileNotFoundException) { null }
-        lUvData?.let()
+        // Read from disk if memory is null
+        uvData ?: try { uvData = DiskRepository.readLatestUV(context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)) } catch (e: FileNotFoundException) {}
+
+        uvData?.let()
         {
             val uvString = context.getString(R.string.widget_uv_value, it.uv)
             val timeString = if (DateFormat.is24HourFormat(context)) { Constants.Formatters.hour24.format(it.uvTime) } else { Constants.Formatters.hour12.format(it.uvTime) }
