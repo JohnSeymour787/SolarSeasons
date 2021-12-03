@@ -5,6 +5,7 @@
       <w>deserialiser</w>
       <w>formatters</w>
       <w>gson</w>
+      <w>kovenant</w>
     </words>
   </dictionary>
 </component>

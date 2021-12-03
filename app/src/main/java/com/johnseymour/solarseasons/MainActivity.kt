@@ -8,6 +8,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import android.Manifest
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -107,7 +108,10 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                     {
                         swipeRefresh.isRefreshing = false
                     }
+
                     lastObserving?.removeObserver(this)
+
+                    DiskRepository.writeLatestUV(lUVData, getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
 
                     // Update all widgets
                     val intent = Intent(this, SmallUVDisplay::class.java).apply()
@@ -117,6 +121,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                         val ids = AppWidgetManager.getInstance(application).getAppWidgetIds(ComponentName(applicationContext, SmallUVDisplay::class.java))
                         putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
                     }
+
 
                     sendBroadcast(intent)
                 }
@@ -130,6 +135,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 //                    }
 //                }
 //            }
+
         }
     }
 

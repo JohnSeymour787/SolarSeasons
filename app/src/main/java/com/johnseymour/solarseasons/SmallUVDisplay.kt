@@ -61,18 +61,21 @@ class SmallUVDisplay : AppWidgetProvider()
             {
                 UVDataWorker.uvDataPromise?.success()
                 {
-                    uvData = it //TODO() Write to disk
-
-                    DiskRepository.writeLatestUV(it, context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
-
-                    // Update all widgets
-                    val intent = Intent(context, SmallUVDisplay::class.java).apply()
+                    if (!UVDataWorker.ignoreWorkRequest)
                     {
-                        action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                        putExtra(UVData.UV_DATA_KEY, it)
-                    }
+                        uvData = it
 
-                    context.sendBroadcast(intent)
+                        DiskRepository.writeLatestUV(it, context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
+
+                        // Update all widgets
+                        val intent = Intent(context, SmallUVDisplay::class.java).apply()
+                        {
+                            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                            putExtra(UVData.UV_DATA_KEY, it)
+                        }
+
+                        context.sendBroadcast(intent)
+                    }
                 }
             }
         }

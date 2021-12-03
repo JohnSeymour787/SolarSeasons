@@ -227,15 +227,24 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
             {
                 return uvDataDeferred?.promise
             }
+        var ignoreWorkRequest: Boolean = false
+        private set
 
         private fun createWorkRequest(delayedStart: Boolean, delayTime: Long): OneTimeWorkRequest
         {
             return OneTimeWorkRequestBuilder<UVDataWorker>().run()
             {
-                if (delayedStart)
+                ignoreWorkRequest = if (delayedStart)
                 {
                     setInitialDelay(delayTime, TimeUnit.MINUTES)
                     setConstraints(workConstraints) // Only set the battery constraint when doing a delayed (background) start
+                    false
+                }
+                else
+                {
+                    true // For making an immediate request, don't want the widget listener to trigger when the
+                         //  request is done due to a limitation of Kovenant (cannot cancel the previous promise, uses the
+                         //  same object). Otherwise 2 broadcasts are sent.
                 }
                 build()
             }
