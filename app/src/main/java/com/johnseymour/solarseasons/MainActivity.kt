@@ -122,7 +122,6 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                         putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
                     }
 
-
                     sendBroadcast(intent)
                 }
             }//?.fail()
@@ -149,16 +148,16 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         maxUV.text = resources.getString(R.string.max_uv, lUVData.uvMax)
         maxUV.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        uvMaxTime.text = resources.getString(R.string.max_uv_time, Constants.Formatters.hour12.format(lUVData.uvMaxTime))
+        uvMaxTime.text = resources.getString(R.string.max_uv_time, Constants.Formatters.HOUR_12.format(lUVData.uvMaxTime))
         uvMaxTime.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        sunset.text = resources.getString(R.string.sunset_time, Constants.Formatters.hour12.format(lUVData.sunInfo.sunset))
+        sunset.text = resources.getString(R.string.sunset_time, Constants.Formatters.HOUR_12.format(lUVData.sunInfo.sunset))
         sunset.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        sunrise.text = resources.getString(R.string.sunrise_time, Constants.Formatters.hour12.format(lUVData.sunInfo.sunrise))
+        sunrise.text = resources.getString(R.string.sunrise_time, Constants.Formatters.HOUR_12.format(lUVData.sunInfo.sunrise))
         sunrise.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        solarNoon.text = resources.getString(R.string.solar_noon_time, Constants.Formatters.hour12.format(lUVData.sunInfo.solarNoon))
+        solarNoon.text = resources.getString(R.string.solar_noon_time, Constants.Formatters.HOUR_12.format(lUVData.sunInfo.solarNoon))
         solarNoon.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
         sunProgress.progress = lUVData.sunProgressPercent
