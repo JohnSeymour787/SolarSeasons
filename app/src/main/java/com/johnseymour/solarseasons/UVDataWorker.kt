@@ -33,7 +33,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 return uvDataDeferred?.promise
             }
         var ignoreWorkRequest: Boolean = false
-        private set
+            private set
 
         private fun createWorkRequest(delayedStart: Boolean, delayTime: Long): OneTimeWorkRequest
         {
@@ -113,8 +113,8 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
     {
         LocationRequest.create().apply()
         {
-            interval = 10//TimeUnit.MINUTES.toMillis(30)
-//                    fastestInterval = TimeUnit.MINUTES.toMillis(15)
+            interval = TimeUnit.MINUTES.toMillis(30)
+            fastestInterval = TimeUnit.MINUTES.toMillis(15)
             priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
             numUpdates = 1
         }
@@ -132,12 +132,10 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
         if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
-            //locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
-
             // Check that the location is reasonably recent according to the locationRequest parameters
             locationClient.locationAvailability.addOnSuccessListener()
-            {
-                if (it.isLocationAvailable)
+            { availability ->
+                if (availability.isLocationAvailable)
                 {
                     locationClient.lastLocation.addOnSuccessListener()
                     { location: Location? ->
