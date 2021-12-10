@@ -132,8 +132,8 @@ class SmallUVDisplay : AppWidgetProvider()
 
         uvData?.let()
         {
-            val uvString = context.getString(R.string.widget_uv_value, it.uv)
-            val timeString = if (DateFormat.is24HourFormat(context)) { Constants.Formatters.HOUR_24.format(it.uvTime) } else { Constants.Formatters.HOUR_12.format(it.uvTime) }
+            val uvString = context.getString(R.string.uv_value, it.uv)
+            val timeString = preferredTimeString(context, it.uvTime)
 
             views.setTextViewText(R.id.uvValue, uvString)
             views.setTextColor(R.id.uvValue, context.resources.getColor(it.textColorInt, context.theme))
