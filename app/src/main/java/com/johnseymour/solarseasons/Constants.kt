@@ -12,5 +12,5 @@ object Constants
     }
 
     // Default background refresh rate of calling the API in minutes
-    const val DEFAULT_REFRESH_TIME = 1L
+    const val DEFAULT_REFRESH_TIME = 30L
 }

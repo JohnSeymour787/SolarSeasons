@@ -59,7 +59,7 @@ class SmallUVDisplay : AppWidgetProvider()
         { workInfo ->
             if (workInfo.firstOrNull()?.state == WorkInfo.State.SUCCEEDED)
             {
-                UVDataWorker.uvDataPromise?.success()
+                LocationService.uvDataPromise?.success()
                 {
                     if (!UVDataWorker.ignoreWorkRequest)
                     {
