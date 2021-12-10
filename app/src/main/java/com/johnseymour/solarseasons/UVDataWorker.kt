@@ -62,6 +62,12 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
             return workManager.getWorkInfosForUniqueWorkLiveData(WORK_NAME)
         }
+
+        fun cancelWorker(context: Context)
+        {
+            val workManager = WorkManager.getInstance(context)
+            workManager.cancelUniqueWork(WORK_NAME)
+        }
     }
 
     override fun doWork(): Result

@@ -83,7 +83,7 @@ class SmallUVDisplay : AppWidgetProvider()
 
     override fun onDisabled(context: Context)
     {
-        // Enter relevant functionality for when the last widget is disabled
+        UVDataWorker.cancelWorker(context)
     }
 
     override fun onReceive(context: Context?, intent: Intent?)
