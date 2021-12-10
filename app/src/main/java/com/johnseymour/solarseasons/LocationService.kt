@@ -30,7 +30,6 @@ class LocationService: Service()
 
         private const val NOTIFICATION_CHANNEL_ID = "Solar.seasons.id"
         private const val NOTIFICATION_CHANNEL_NAME = "Solar.seasons.foreground_location_channel"
-        private const val NOTIFICATION_TITLE = "Updating UV information"
 
         private var counter = 0F
 
@@ -70,8 +69,7 @@ class LocationService: Service()
     {
         val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT)
-        channel.description = "Getting location and retrieving new UV information"
+        val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW)
         notificationManager.createNotificationChannel(channel)
         channel
     }
@@ -79,9 +77,9 @@ class LocationService: Service()
     private fun createNotification(): Notification
     {
         return NotificationCompat.Builder(applicationContext, notificationChannel.id)
-            .setContentTitle(NOTIFICATION_TITLE)
-            .setTicker(NOTIFICATION_TITLE)
-            .setContentText("Updating UV Data")
+            .setContentTitle(getString(R.string.service_notification_title))
+            .setTicker(getString(R.string.service_notification_title))
+            .setContentText(getString(R.string.service_notification_description))
             .setSmallIcon(R.mipmap.ic_launcher_legacy)
             .setOngoing(true)
             .build()

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SolarSeasons</string>
+    <string name="app_name">Solar Seasons</string>
     <string name="appwidget_uv_text_description">UV value</string>
     <string name="appwidget_uv_text_default">0.0</string>
     <string name="add_widget">Add widget</string>
@@ -10,4 +10,6 @@
     <string name="sunrise_time">Sunrise: %1$s</string>
     <string name="solar_noon_time">Solar Noon: %1$s</string>
     <string name="widget_background_image_description">Background colour based on UV level</string>
+    <string name="service_notification_title">Updating UV Information</string>
+    <string name="service_notification_description">Getting location and retrieving new UV information</string>
 </resources>
