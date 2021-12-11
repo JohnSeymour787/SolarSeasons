@@ -142,14 +142,17 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
     {
         layout.setBackgroundColor(resources.getColor(lUVData.backgroundColorInt, theme))
 
-        uvValue.text = resources.getString(R.string.widget_uv_value, lUVData.uv)
+        uvValue.text = resources.getString(R.string.uv_value, lUVData.uv)
         uvValue.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        maxUV.text = resources.getString(R.string.max_uv, lUVData.uvMax)
+        uvText.text = resources.getText(lUVData.uvLevelTextInt)
+        uvText.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+
+        maxUV.text = resources.getString(R.string.max_uv_and_time, lUVData.uvMax, preferredTimeString(this, lUVData.uvMaxTime))
         maxUV.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        uvMaxTime.text = resources.getString(R.string.max_uv_time, Constants.Formatters.HOUR_12.format(lUVData.uvMaxTime))
-        uvMaxTime.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+        lastUpdated.text = resources.getString(R.string.latest_update, preferredTimeString(this, lUVData.uvTime))
+        lastUpdated.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
         sunset.text = resources.getString(R.string.sunset_time, Constants.Formatters.HOUR_12.format(lUVData.sunInfo.sunset))
         sunset.setTextColor(resources.getColor(lUVData.textColorInt, theme))

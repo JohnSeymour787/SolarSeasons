@@ -52,6 +52,29 @@ data class UVData(
                 R.color.white
             }
 
+    val uvLevelTextInt: Int
+        get() =
+            if (uv < UV_LOW)
+            {
+                R.string.uv_level_low
+            }
+            else if (uv >= UV_LOW && uv < UV_MODERATE)
+            {
+                R.string.uv_level_moderate
+            }
+            else if (uv >= UV_MODERATE && uv < UV_HIGH)
+            {
+                R.string.uv_level_high
+            }
+            else if (uv >= UV_HIGH && uv < UV_VERY_HIGH)
+            {
+                R.string.uv_level_very_high
+            }
+            else
+            {
+                R.string.uv_level_extreme
+            }
+
     /**
      * Calculates the progress percentage of the uvTime of this object in the sun-up range from sunrise to sunset.
      * @return - An Int between 0 and 100, representing the completion of the sun through the sky during the day.
