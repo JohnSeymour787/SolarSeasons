@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.*
 
@@ -79,6 +80,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         }
 
         swipeRefresh.setOnRefreshListener(this)
+        sunInfoList.layoutManager = LinearLayoutManager(this)
     }
 
     private var lastObserving: LiveData<List<WorkInfo>>? = null
@@ -164,5 +166,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         solarNoon.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
         sunProgress.progress = lUVData.sunProgressPercent
+
+        sunInfoList.adapter = SunInfoAdapter(lUVData.sunInfo.timesArray.sortedWith { a, b -> a.second.compareTo(b.second) })
     }
 }
