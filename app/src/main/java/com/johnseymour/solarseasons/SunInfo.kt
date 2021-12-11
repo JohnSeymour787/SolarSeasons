@@ -22,5 +22,31 @@ data class SunInfo(val solarNoon: ZonedDateTime?,
                    val azimuth: Double,
                    val altitude: Double): Parcelable
 {
+    /**
+     * Returns a list of all non-null times of this SunInfo paired with their name
+     *
+     * @return - List<Pair<String, ZonedDateTime>> with the string representing the name for that time (eg, sunset)
+     */
+    val timesArray: List<Pair<String, ZonedDateTime>>
+        get()
+        {
+            val result = mutableListOf<Pair<String, ZonedDateTime>>()
 
+            solarNoon?.let { result.add("solarNoon" to it) }
+            nadir?.let { result.add("nadir" to it) }
+            sunrise?.let { result.add("sunrise" to it) }
+            sunset?.let { result.add("sunset" to it) }
+            sunriseEnd?.let { result.add("sunriseEnd" to it) }
+            sunsetStart?.let { result.add("sunsetStart" to it) }
+            dawn?.let { result.add("dawn" to it) }
+            dusk?.let { result.add("dusk" to it) }
+            nauticalDawn?.let { result.add("nauticalDawn" to it) }
+            nauticalDusk?.let { result.add("nauticalDusk" to it) }
+            nightEnd?.let { result.add("nightEnd" to it) }
+            night?.let { result.add("night" to it) }
+            goldenHourEnd?.let { result.add("goldenHourEnd" to it) }
+            goldenHour?.let { result.add("goldenHour" to it) }
+
+            return result
+        }
 }

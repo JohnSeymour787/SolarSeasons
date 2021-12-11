@@ -1,13 +1,21 @@
 <resources>
-    <string name="app_name">SolarSeasons</string>
+    <string name="app_name">Solar Seasons</string>
     <string name="appwidget_uv_text_description">UV value</string>
     <string name="appwidget_uv_text_default">0.0</string>
     <string name="add_widget">Add widget</string>
-    <string name="widget_uv_value">%1$.1f</string>
-    <string name="max_uv_time">Max UV Time: %1$s</string>
-    <string name="max_uv">Max UV: %1$.1f</string>
+    <string name="uv_value">%1$.1f</string>
+    <string name="latest_update">Last updated: %1$s</string>
+    <string name="max_uv_and_time">Maximum %1$.1f expected at %2$s</string>
     <string name="sunset_time">Sunset: %1$s</string>
     <string name="sunrise_time">Sunrise: %1$s</string>
     <string name="solar_noon_time">Solar Noon: %1$s</string>
     <string name="widget_background_image_description">Background colour based on UV level</string>
+    <string name="service_notification_title">Updating UV Information</string>
+    <string name="service_notification_description">Getting location and retrieving new UV information</string>
+
+    <string name="uv_level_low">Low UV Rating</string>
+    <string name="uv_level_moderate">Moderate UV Rating</string>
+    <string name="uv_level_high">High UV Rating</string>
+    <string name="uv_level_very_high">Very High UV Rating</string>
+    <string name="uv_level_extreme">Extreme UV Rating</string>
 </resources>

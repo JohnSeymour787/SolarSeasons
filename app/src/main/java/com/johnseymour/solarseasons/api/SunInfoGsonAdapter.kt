@@ -2,12 +2,10 @@ package com.johnseymour.solarseasons.api
 
 import com.google.gson.*
 import com.johnseymour.solarseasons.SunInfo
+import com.johnseymour.solarseasons.toZonedDateTime
 import java.lang.reflect.Type
-import java.time.DateTimeException
-import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.time.format.DateTimeParseException
 
 object SunInfoGsonAdapter: JsonDeserializer<SunInfo>, JsonSerializer<SunInfo>
 {
@@ -100,37 +98,5 @@ object SunInfoGsonAdapter: JsonDeserializer<SunInfo>, JsonSerializer<SunInfo>
         }
 
         return result
-    }
-}
-
-//Also used in UVDataDeserialiser
-/**
- * If this JsonElement is a String representing a date, this method will convert it to a ZonedDateTime.
- * @param zoneID - ZoneID of the ZonedDateTime to convert to
- * @return - If this element is a string and can be parsed, returns a ZonedDateTime instance using the passed zoneID parameter.
- *           Otherwise, returns null
- */
-fun JsonElement.toZonedDateTime(zoneID: ZoneId): ZonedDateTime?
-{
-    return if (this.isJsonNull)
-    {
-        null
-    }
-    else
-    {
-        try
-        {
-            // When parsing the API's time strings
-            Instant.parse((this.asString ?: "")).atZone(zoneID)
-        }
-        catch (e: DateTimeParseException)
-        {
-            // When reading from ZonedDateTimes that were saved to disk
-            ZonedDateTime.parse(this.asString ?: "")
-        }
-        catch (e: DateTimeException)
-        {
-            null
-        }
     }
 }

@@ -7,7 +7,10 @@ object Constants
 {
     object Formatters
     {
-        val hour12: DateTimeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-        val hour24: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+        val HOUR_12: DateTimeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+        val HOUR_24: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     }
+
+    // Default background refresh rate of calling the API in minutes
+    const val DEFAULT_REFRESH_TIME = 30L
 }

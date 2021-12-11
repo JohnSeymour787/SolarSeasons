@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.*
 
@@ -79,6 +80,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         }
 
         swipeRefresh.setOnRefreshListener(this)
+        sunInfoList.layoutManager = LinearLayoutManager(this)
     }
 
     private var lastObserving: LiveData<List<WorkInfo>>? = null
@@ -98,7 +100,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
     {
         if (workInfo?.firstOrNull()?.state == WorkInfo.State.SUCCEEDED)
         {
-            UVDataWorker.uvDataPromise?.success()
+            LocationService.uvDataPromise?.success()
             { lUVData ->
                 runOnUiThread()
                 {
@@ -122,7 +124,6 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                         putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
                     }
 
-
                     sendBroadcast(intent)
                 }
             }//?.fail()
@@ -143,24 +144,29 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
     {
         layout.setBackgroundColor(resources.getColor(lUVData.backgroundColorInt, theme))
 
-        uvValue.text = resources.getString(R.string.widget_uv_value, lUVData.uv)
+        uvValue.text = resources.getString(R.string.uv_value, lUVData.uv)
         uvValue.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        maxUV.text = resources.getString(R.string.max_uv, lUVData.uvMax)
+        uvText.text = resources.getText(lUVData.uvLevelTextInt)
+        uvText.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+
+        maxUV.text = resources.getString(R.string.max_uv_and_time, lUVData.uvMax, preferredTimeString(this, lUVData.uvMaxTime))
         maxUV.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        uvMaxTime.text = resources.getString(R.string.max_uv_time, Constants.Formatters.hour12.format(lUVData.uvMaxTime))
-        uvMaxTime.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+        lastUpdated.text = resources.getString(R.string.latest_update, preferredTimeString(this, lUVData.uvTime))
+        lastUpdated.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        sunset.text = resources.getString(R.string.sunset_time, Constants.Formatters.hour12.format(lUVData.sunInfo.sunset))
+        sunset.text = resources.getString(R.string.sunset_time, Constants.Formatters.HOUR_12.format(lUVData.sunInfo.sunset))
         sunset.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        sunrise.text = resources.getString(R.string.sunrise_time, Constants.Formatters.hour12.format(lUVData.sunInfo.sunrise))
+        sunrise.text = resources.getString(R.string.sunrise_time, Constants.Formatters.HOUR_12.format(lUVData.sunInfo.sunrise))
         sunrise.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        solarNoon.text = resources.getString(R.string.solar_noon_time, Constants.Formatters.hour12.format(lUVData.sunInfo.solarNoon))
+        solarNoon.text = resources.getString(R.string.solar_noon_time, Constants.Formatters.HOUR_12.format(lUVData.sunInfo.solarNoon))
         solarNoon.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
         sunProgress.progress = lUVData.sunProgressPercent
+
+        sunInfoList.adapter = SunInfoAdapter(lUVData.sunInfo.timesArray.sortedWith { a, b -> a.second.compareTo(b.second) })
     }
 }

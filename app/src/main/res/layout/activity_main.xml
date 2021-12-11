@@ -8,47 +8,52 @@
     android:background="@color/uv_low"
     tools:context=".MainActivity">
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefresh"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
     <TextView
         android:id="@+id/uvValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/primary_text"
         tools:text="@string/appwidget_uv_text_default"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="72sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/uvText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primary_text"
+        tools:text="Low UV Rating"
+        android:textSize="@dimen/widget_text_medium"
+        app:layout_constraintBottom_toTopOf="@id/lastUpdated"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/uvValue" />
+
+    <TextView
+        android:id="@+id/lastUpdated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primary_text"
+        tools:text="Last updated: 07:13"
+        android:textSize="@dimen/widget_text_small"
+        app:layout_constraintBottom_toTopOf="@id/maxUV"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/uvText" />
 
     <TextView
         android:id="@+id/maxUV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/primary_text"
-        tools:text="Max UV"
-        app:layout_constraintBottom_toTopOf="@id/uvMaxTime"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/uvValue" />
-
-    <TextView
-        android:id="@+id/uvMaxTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/primary_text"
-        tools:text="UV Max Time"
+        tools:text="9.2 maximum expected at 13:49"
+        android:layout_marginTop="24dp"
         app:layout_constraintBottom_toTopOf="@id/sunset"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/maxUV" />
+        app:layout_constraintTop_toBottomOf="@id/lastUpdated" />
 
     <TextView
         android:id="@+id/sunset"
@@ -56,9 +61,10 @@
         android:layout_height="wrap_content"
         android:textColor="@color/primary_text"
         tools:text="Sunset"
+        app:layout_constraintBottom_toTopOf="@id/sunrise"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/uvMaxTime" />
+        app:layout_constraintTop_toBottomOf="@id/maxUV" />
 
     <TextView
         android:id="@+id/sunrise"
@@ -91,5 +97,22 @@
         app:layout_constraintTop_toBottomOf="@id/solarNoon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/sunInfoList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/sunProgress"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
