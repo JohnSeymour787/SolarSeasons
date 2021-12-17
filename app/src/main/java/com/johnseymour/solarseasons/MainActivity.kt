@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.*
+import java.time.ZonedDateTime
 
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, Observer<List<WorkInfo>>
 {
@@ -170,6 +171,16 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         sunInfoListLabel.visibility = View.VISIBLE
         sunInfoListLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        sunInfoList.adapter = SunInfoAdapter(lUVData.sunInfo.timesArray.sortedWith { a, b -> a.second.compareTo(b.second) }, lUVData.textColorInt)
+        val sortedSolarTimes = lUVData.sunInfo.timesArray.sortedWith { a, b -> a.second.compareTo(b.second) }
+        // Calculate the index for the List of times that is closest to now, use this to set the default scroll position
+        val timeNow = ZonedDateTime.now()
+        var bestScrollPosition = 0
+        while ((bestScrollPosition < sortedSolarTimes.size - 1) && (timeNow.isAfter(sortedSolarTimes[bestScrollPosition].second)))
+        {
+            bestScrollPosition++
+        }
+
+        sunInfoList.adapter = SunInfoAdapter(sortedSolarTimes, lUVData.textColorInt)
+        sunInfoList.scrollToPosition(bestScrollPosition)
     }
 }
