@@ -10,6 +10,7 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.LiveData
@@ -160,16 +161,14 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         lastUpdated.text = resources.getString(R.string.latest_update, preferredTimeString(this, lUVData.uvTime))
         lastUpdated.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        sunset.text = resources.getString(R.string.sunset_time, Constants.Formatters.HOUR_12.format(lUVData.sunInfo.sunset))
-        sunset.setTextColor(resources.getColor(lUVData.textColorInt, theme))
-
-        sunrise.text = resources.getString(R.string.sunrise_time, Constants.Formatters.HOUR_12.format(lUVData.sunInfo.sunrise))
-        sunrise.setTextColor(resources.getColor(lUVData.textColorInt, theme))
-
-        solarNoon.text = resources.getString(R.string.solar_noon_time, Constants.Formatters.HOUR_12.format(lUVData.sunInfo.solarNoon))
-        solarNoon.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+        sunProgressLabel.visibility = View.VISIBLE
+        sunProgressLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
         sunProgress.progress = lUVData.sunProgressPercent
+        sunProgress.visibility = View.VISIBLE
+
+        sunInfoListLabel.visibility = View.VISIBLE
+        sunInfoListLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
         sunInfoList.adapter = SunInfoAdapter(lUVData.sunInfo.timesArray.sortedWith { a, b -> a.second.compareTo(b.second) }, lUVData.textColorInt)
     }

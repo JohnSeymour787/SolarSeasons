@@ -7,6 +7,10 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     -->
     <dimen name="widget_margin">0dp</dimen>
     <dimen name="standard_corner_round">7dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_medium">12dp</dimen>
+    <dimen name="margin_large">24dp</dimen>
+    <dimen name="margin_very_large">36dp</dimen>
     <dimen name="widget_horizontal_margin">10dp</dimen>
     <dimen name="widget_vertical_margin">4dp</dimen>
     <dimen name="widget_text_small">12sp</dimen>

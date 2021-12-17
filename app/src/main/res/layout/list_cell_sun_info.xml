@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         tools:text="Nadir"
         android:maxLines="2"
+        android:textStyle="bold"
         android:textAlignment="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
