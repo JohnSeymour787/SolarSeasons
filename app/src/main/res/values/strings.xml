@@ -5,7 +5,8 @@
     <string name="add_widget">Add widget</string>
     <string name="uv_value">%1$.1f</string>
     <string name="latest_update">Last updated: %1$s</string>
-    <string name="max_uv_and_time">Maximum %1$.1f expected at %2$s</string>
+    <string name="max_uv">Expected max: %1$.1f</string>
+    <string name="max_uv_time">Time of max: %1$s</string>
     <string name="sunset_time">Sunset: %1$s</string>
     <string name="sunrise_time">Sunrise: %1$s</string>
     <string name="solar_noon_time">Solar Noon: %1$s</string>
@@ -18,4 +19,20 @@
     <string name="uv_level_high">High UV Rating</string>
     <string name="uv_level_very_high">Very High UV Rating</string>
     <string name="uv_level_extreme">Extreme UV Rating</string>
+
+
+    <string name="sun_info_solar_noon">Solar Noon</string>
+    <string name="sun_info_nadir">Nadir</string>
+    <string name="sun_info_sunrise">Sunrise</string>
+    <string name="sun_info_sunset">Sunset</string>
+    <string name="sun_info_sunrise_end">Sunrise Ends</string>
+    <string name="sun_info_sunset_start">Sunset Starts</string>
+    <string name="sun_info_dawn">Dawn</string>
+    <string name="sun_info_dusk">Dusk</string>
+    <string name="sun_info_nautical_dawn">Nautical Dawn</string>
+    <string name="sun_info_nautical_dusk">Nautical Dusk</string>
+    <string name="sun_info_night_end">Night Ends</string>
+    <string name="sun_info_night">Night</string>
+    <string name="sun_info_golden_hour_end">Golden Hour Ends</string>
+    <string name="sun_info_golden_hour">Golden Hour Starts</string>
 </resources>

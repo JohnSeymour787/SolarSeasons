@@ -10,16 +10,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="Nadir"
+        android:maxLines="2"
+        android:textAlignment="center"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/infoTime"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-    <TextClock
+    <TextView
         android:id="@+id/infoTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="09:31"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/infoImage"
         app:layout_constraintTop_toBottomOf="@id/infoTitle"/>
 
     <ImageView
@@ -28,6 +32,7 @@
         android:layout_height="wrap_content"
         android:src="@mipmap/ic_launcher_legacy"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/infoTime"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

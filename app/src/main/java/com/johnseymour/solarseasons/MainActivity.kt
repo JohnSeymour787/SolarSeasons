@@ -80,7 +80,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         }
 
         swipeRefresh.setOnRefreshListener(this)
-        sunInfoList.layoutManager = LinearLayoutManager(this)
+        sunInfoList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        sunInfoList.addItemDecoration(SunInfoHorizontalSpaceDecoration(resources.getDimensionPixelOffset(R.dimen.cell_sun_info_horizontal_spacing)))
     }
 
     private var lastObserving: LiveData<List<WorkInfo>>? = null
@@ -150,8 +151,11 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         uvText.text = resources.getText(lUVData.uvLevelTextInt)
         uvText.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        maxUV.text = resources.getString(R.string.max_uv_and_time, lUVData.uvMax, preferredTimeString(this, lUVData.uvMaxTime))
+        maxUV.text = resources.getString(R.string.max_uv, lUVData.uvMax)
         maxUV.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+
+        maxUVTime.text = resources.getString(R.string.max_uv_time, preferredTimeString(this, lUVData.uvMaxTime))
+        maxUVTime.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
         lastUpdated.text = resources.getString(R.string.latest_update, preferredTimeString(this, lUVData.uvTime))
         lastUpdated.setTextColor(resources.getColor(lUVData.textColorInt, theme))

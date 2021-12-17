@@ -23,29 +23,29 @@ data class SunInfo(val solarNoon: ZonedDateTime?,
                    val altitude: Double): Parcelable
 {
     /**
-     * Returns a list of all non-null times of this SunInfo paired with their name
+     * Returns a list of all non-null times of this SunInfo paired with their string name ID
      *
-     * @return - List<Pair<String, ZonedDateTime>> with the string representing the name for that time (eg, sunset)
+     * @return - List<Pair<Int, ZonedDateTime>> with the strings.xml ID integer representing the name for that time (eg, Sunset)
      */
-    val timesArray: List<Pair<String, ZonedDateTime>>
+    val timesArray: List<Pair<Int, ZonedDateTime>>
         get()
         {
-            val result = mutableListOf<Pair<String, ZonedDateTime>>()
+            val result = mutableListOf<Pair<Int, ZonedDateTime>>()
 
-            solarNoon?.let { result.add("solarNoon" to it) }
-            nadir?.let { result.add("nadir" to it) }
-            sunrise?.let { result.add("sunrise" to it) }
-            sunset?.let { result.add("sunset" to it) }
-            sunriseEnd?.let { result.add("sunriseEnd" to it) }
-            sunsetStart?.let { result.add("sunsetStart" to it) }
-            dawn?.let { result.add("dawn" to it) }
-            dusk?.let { result.add("dusk" to it) }
-            nauticalDawn?.let { result.add("nauticalDawn" to it) }
-            nauticalDusk?.let { result.add("nauticalDusk" to it) }
-            nightEnd?.let { result.add("nightEnd" to it) }
-            night?.let { result.add("night" to it) }
-            goldenHourEnd?.let { result.add("goldenHourEnd" to it) }
-            goldenHour?.let { result.add("goldenHour" to it) }
+            solarNoon?.let { result.add(R.string.sun_info_solar_noon to it) }
+            nadir?.let { result.add(R.string.sun_info_nadir to it) }
+            sunrise?.let { result.add(R.string.sun_info_sunrise to it) }
+            sunset?.let { result.add(R.string.sun_info_sunset to it) }
+            sunriseEnd?.let { result.add(R.string.sun_info_sunrise_end to it) }
+            sunsetStart?.let { result.add(R.string.sun_info_sunset_start to it) }
+            dawn?.let { result.add(R.string.sun_info_dawn to it) }
+            dusk?.let { result.add(R.string.sun_info_dusk to it) }
+            nauticalDawn?.let { result.add(R.string.sun_info_nautical_dawn to it) }
+            nauticalDusk?.let { result.add(R.string.sun_info_nautical_dusk to it) }
+            nightEnd?.let { result.add(R.string.sun_info_night_end to it) }
+            night?.let { result.add(R.string.sun_info_night to it) }
+            goldenHourEnd?.let { result.add(R.string.sun_info_golden_hour_end to it) }
+            goldenHour?.let { result.add(R.string.sun_info_golden_hour to it) }
 
             return result
         }
