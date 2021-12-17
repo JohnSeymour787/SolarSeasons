@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.*
@@ -84,6 +85,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         swipeRefresh.setOnRefreshListener(this)
         sunInfoList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         sunInfoList.addItemDecoration(SunInfoHorizontalSpaceDecoration(resources.getDimensionPixelOffset(R.dimen.cell_sun_info_horizontal_spacing)))
+
+        skinExposureList.layoutManager = GridLayoutManager(this, 2)
     }
 
     private var lastObserving: LiveData<List<WorkInfo>>? = null
@@ -170,6 +173,18 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
         sunInfoListLabel.visibility = View.VISIBLE
         sunInfoListLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+
+        skinExposureLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+        lUVData.safeExposure?.entries?.toList()?.let()
+        {
+            skinExposureList.adapter = SkinExposureAdapter(it, lUVData.textColorInt)
+            skinExposureLabel.visibility = View.VISIBLE
+            skinExposureList.visibility = View.VISIBLE
+        } ?: run()
+        {
+            skinExposureLabel.visibility = View.GONE
+            skinExposureList.visibility = View.GONE
+        }
 
         val sortedSolarTimes = lUVData.sunInfo.timesArray.sortedWith { a, b -> a.second.compareTo(b.second) }
         // Calculate the index for the List of times that is closest to now, use this to set the default scroll position

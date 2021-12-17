@@ -9,6 +9,7 @@
     <string name="max_uv_time">Time of max: %1$s</string>
     <string name="sun_progress_label">Sun Progress In Sky (Sunrise to Sunset)</string>
     <string name="sun_info_list_label">Solar Times Today</string>
+    <string name="skin_exposure_label">Max Exposure Times</string>
     <string name="widget_background_image_description">Background colour based on UV level</string>
     <string name="sun_info_cell_image_description">Image representing the sun time</string>
     <string name="service_notification_title">Updating UV Information</string>

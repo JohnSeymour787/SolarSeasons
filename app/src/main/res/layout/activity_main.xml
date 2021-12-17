@@ -64,10 +64,34 @@
         android:textColor="@color/primary_text"
         tools:text="Time of max: 13:43"
         android:textSize="@dimen/widget_text_small"
-        app:layout_constraintBottom_toTopOf="@id/sunInfoListLabel"
+        app:layout_constraintBottom_toTopOf="@id/skinExposureLabel"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/maxUV" />
+
+    <TextView
+        android:id="@+id/skinExposureLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/skin_exposure_label"
+        android:visibility="invisible"
+        android:textSize="@dimen/widget_text_medium"
+        android:textStyle="bold"
+        android:labelFor="@id/skinExposureList"
+        android:layout_marginTop="@dimen/margin_very_large"
+        android:layout_marginHorizontal="@dimen/margin_small"
+        app:layout_constraintTop_toBottomOf="@id/maxUVTime"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/skinExposureList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:layout_marginHorizontal="@dimen/widget_horizontal_margin"
+        android:layout_marginTop="@dimen/margin_medium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/skinExposureLabel" />
 
     <TextView
         android:id="@+id/sunInfoListLabel"
@@ -83,7 +107,17 @@
         android:visibility="invisible"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/maxUVTime" />
+        app:layout_constraintTop_toBottomOf="@id/skinExposureList" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/sunInfoList"
@@ -122,15 +156,5 @@
         app:layout_constraintTop_toBottomOf="@id/sunProgressLabel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
-
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefresh"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"/>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
