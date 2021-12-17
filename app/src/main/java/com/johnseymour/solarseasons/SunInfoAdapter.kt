@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.list_cell_sun_info.view.*
 import java.time.ZonedDateTime
 
-class SunInfoAdapter(private val sunTimes: List<Pair<Int, ZonedDateTime>>): RecyclerView.Adapter<SunInfoAdapter.SunInfoViewHolder>()
+class SunInfoAdapter(private val sunTimes: List<Pair<Int, ZonedDateTime>>, private val textColorInt: Int): RecyclerView.Adapter<SunInfoAdapter.SunInfoViewHolder>()
 {
     inner class SunInfoViewHolder(view: SunInfoViewCell): RecyclerView.ViewHolder(view)
     {
@@ -26,6 +26,8 @@ class SunInfoAdapter(private val sunTimes: List<Pair<Int, ZonedDateTime>>): Recy
         val cell = SunInfoViewCell(parent.context).apply()
         {
             layoutParams = ConstraintLayout.LayoutParams(resources.getDimensionPixelSize(R.dimen.cell_sun_info_width), resources.getDimensionPixelSize(R.dimen.cell_sun_info_height))
+            infoTitle.setTextColor(resources.getColor(textColorInt, context.theme))
+            infoTime.setTextColor(resources.getColor(textColorInt, context.theme))
         }
 
         return SunInfoViewHolder(cell)

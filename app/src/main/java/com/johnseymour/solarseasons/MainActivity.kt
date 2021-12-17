@@ -171,6 +171,6 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
         sunProgress.progress = lUVData.sunProgressPercent
 
-        sunInfoList.adapter = SunInfoAdapter(lUVData.sunInfo.timesArray.sortedWith { a, b -> a.second.compareTo(b.second) })
+        sunInfoList.adapter = SunInfoAdapter(lUVData.sunInfo.timesArray.sortedWith { a, b -> a.second.compareTo(b.second) }, lUVData.textColorInt)
     }
 }
