@@ -5,7 +5,6 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
-import android.text.format.DateFormat
 import android.widget.RemoteViews
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -46,11 +45,17 @@ class SmallUVDisplay : AppWidgetProvider()
         // If not already observing something, start a new immediate request
         if (observer == null)
         {
-            observer = createObserver(context)
-
-            lastObserving = UVDataWorker.initiateWorker(context)
-            observer?.let { lastObserving?.observeForever(it) }
+            initiateImmediateRequest(context)
         }
+    }
+
+    private fun initiateImmediateRequest(context: Context)
+    {
+        observer = createObserver(context)
+
+        lastObserving = UVDataWorker.initiateWorker(context)
+
+        observer?.let { lastObserving?.observeForever(it) }
     }
 
     private fun createObserver(context: Context): Observer<List<WorkInfo>>
@@ -90,10 +95,18 @@ class SmallUVDisplay : AppWidgetProvider()
     {
         context ?: return
 
+        // Send an immediate request on phone startup
+        if (intent?.action == Intent.ACTION_BOOT_COMPLETED)
+        {
+            observer?.let { lastObserving?.removeObserver(it) }
+
+            initiateImmediateRequest(context)
+        }
+
         intent?.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
         { luvData ->
             uvData = luvData
-            // Observer can be null at this stage if haven't added a new widget recently (ie, after phone restart)
+            // Observer can be null at this stage if haven't added a new widget recently
             if (observer == null)
             {
                 observer = createObserver(context)
