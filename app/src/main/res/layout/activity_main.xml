@@ -63,41 +63,21 @@
         android:textColor="@color/primary_text"
         tools:text="Time of max: 13:43"
         android:textSize="@dimen/widget_text_small"
-        app:layout_constraintBottom_toTopOf="@id/sunset"
+        app:layout_constraintBottom_toTopOf="@id/sunInfoListLabel"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/maxUV" />
 
     <TextView
-        android:id="@+id/sunset"
-        android:layout_width="wrap_content"
+        android:id="@+id/sunInfoListLabel"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/primary_text"
-        tools:text="Sunset"
-        app:layout_constraintBottom_toTopOf="@id/sunrise"
+        android:labelFor="@id/sunInfoList"
+        android:text="@string/sun_info_list_label"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/maxUVTime" />
-
-    <TextView
-        android:id="@+id/sunrise"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/primary_text"
-        tools:text="Sunrise"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sunset" />
-
-    <TextView
-        android:id="@+id/solarNoon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/primary_text"
-        tools:text="Solar Noon"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sunrise" />
 
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -114,7 +94,19 @@
         android:id="@+id/sunInfoList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/solarNoon"
+        app:layout_constraintTop_toBottomOf="@id/sunInfoListLabel"
+        app:layout_constraintBottom_toTopOf="@id/sunProgressLabel"/>
+
+    <TextView
+        android:id="@+id/sunProgressLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primary_text"
+        android:text="@string/sun_progress_label"
+        android:labelFor="@id/sunProgress"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sunInfoList"
         app:layout_constraintBottom_toTopOf="@id/sunProgress"/>
 
     <ProgressBar
@@ -125,7 +117,7 @@
         android:maxHeight="50dp"
         android:scaleY="3"
         style="@style/SolarProgressBar"
-        app:layout_constraintTop_toBottomOf="@id/sunInfoList"
+        app:layout_constraintTop_toBottomOf="@id/sunProgressLabel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
