@@ -1,12 +1,9 @@
 package com.johnseymour.solarseasons
 
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.list_cell_skin_exposure.view.*
-import kotlinx.android.synthetic.main.list_cell_sun_info.view.*
-import java.time.ZonedDateTime
 
 class SkinExposureAdapter(private val exposureTimes: List<Map.Entry<String, Int>>, private val textColorInt: Int): RecyclerView.Adapter<SkinExposureAdapter.SkinExposureViewHolder>()
 {
@@ -16,6 +13,7 @@ class SkinExposureAdapter(private val exposureTimes: List<Map.Entry<String, Int>
         {
             itemView.apply()
             {
+                skinIcon.drawable.setTint(resources.getColor(UVData.skinTypeColorInt(exposureTimeEntry.key), context.theme))
                 skinType.text = exposureTimeEntry.key
                 exposureTime.text = exposureTimeEntry.value.toString()//preferredTimeString(context, sunTime.second)
             }
@@ -27,7 +25,6 @@ class SkinExposureAdapter(private val exposureTimes: List<Map.Entry<String, Int>
         val cell = SkinExposureViewCell(parent.context).apply()
         {
             layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
-          //  layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, resources.getDimensionPixelSize(R.dimen.cell_sun_info_height))
             skinType.setTextColor(resources.getColor(textColorInt, context.theme))
             exposureTime.setTextColor(resources.getColor(textColorInt, context.theme))
         }
