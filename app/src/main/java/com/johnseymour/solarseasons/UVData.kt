@@ -167,5 +167,19 @@ data class UVData(
                 else -> R.color.skin_type_1
             }
         }
+
+        fun skinTypeNameInt(skinTypeString: String): Int
+        {
+            return when (skinTypeString)
+            {
+                "st1" -> R.string.skin_type_1
+                "st2" -> R.string.skin_type_2
+                "st3" -> R.string.skin_type_3
+                "st4" -> R.string.skin_type_4
+                "st5" -> R.string.skin_type_5
+                "st6" -> R.string.skin_type_6
+                else -> R.string.skin_type_1
+            }
+        }
     }
 }

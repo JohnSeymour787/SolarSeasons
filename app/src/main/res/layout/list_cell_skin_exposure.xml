@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/skin_type_icon_circle"
-        android:contentDescription="@string/sun_info_cell_image_description"
+        android:contentDescription="@string/skin_type_cell_image_description"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
@@ -22,6 +22,7 @@
         tools:text="Nadir"
         android:textStyle="bold"
         android:textAlignment="center"
+        android:layout_marginStart="@dimen/cell_sun_info_horizontal_spacing"
         app:layout_constraintStart_toEndOf="@id/skinIcon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
@@ -31,6 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="09:31"
+        android:layout_marginStart="@dimen/cell_sun_info_horizontal_spacing"
         app:layout_constraintStart_toEndOf="@id/skinType"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>

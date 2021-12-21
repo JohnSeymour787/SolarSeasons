@@ -14,6 +14,7 @@
     <string name="sun_info_cell_image_description">Image representing the sun time</string>
     <string name="service_notification_title">Updating UV Information</string>
     <string name="service_notification_description">Getting location and retrieving new UV information</string>
+    <string name="skin_type_cell_image_description">Image representing the skin color</string>
 
     <string name="uv_level_low">Low UV Rating</string>
     <string name="uv_level_moderate">Moderate UV Rating</string>
@@ -35,4 +36,11 @@
     <string name="sun_info_night">Night</string>
     <string name="sun_info_golden_hour_end">Golden Hour Ends</string>
     <string name="sun_info_golden_hour">Golden Hour Starts</string>
+
+    <string name="skin_type_1">Skin Type 1</string>
+    <string name="skin_type_2">Skin Type 2</string>
+    <string name="skin_type_3">Skin Type 3</string>
+    <string name="skin_type_4">Skin Type 4</string>
+    <string name="skin_type_5">Skin Type 5</string>
+    <string name="skin_type_6">Skin Type 6</string>
 </resources>
