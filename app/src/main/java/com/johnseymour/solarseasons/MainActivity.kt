@@ -188,11 +188,11 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
             skinExposureList.visibility = View.GONE
         }
 
-        val sortedSolarTimes = lUVData.sunInfo.timesArray.sortedWith { a, b -> a.second.compareTo(b.second) }
+        val sortedSolarTimes = lUVData.sunInfo.timesArray.sortedWith { a, b -> a.time.compareTo(b.time) }
         // Calculate the index for the List of times that is closest to now, use this to set the default scroll position
         val timeNow = ZonedDateTime.now()
         var bestScrollPosition = 0
-        while ((bestScrollPosition < sortedSolarTimes.size - 1) && (timeNow.isAfter(sortedSolarTimes[bestScrollPosition].second)))
+        while ((bestScrollPosition < sortedSolarTimes.size - 1) && (timeNow.isAfter(sortedSolarTimes[bestScrollPosition].time)))
         {
             bestScrollPosition++
         }
