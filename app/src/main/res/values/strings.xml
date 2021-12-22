@@ -15,6 +15,10 @@
     <string name="service_notification_title">Updating UV Information</string>
     <string name="service_notification_description">Getting location and retrieving new UV information</string>
     <string name="skin_type_cell_image_description">Image representing the skin color</string>
+    <string name="exposure_time_hours_and_minutes">%1$s %2$s</string>
+    <string name="exposure_time_max_hours">>24 hours</string>
+    <string name="exposure_time_hours">%dh</string>
+    <string name="exposure_time_short_minutes">%dm</string>
 
     <string name="uv_level_low">Low UV Rating</string>
     <string name="uv_level_moderate">Moderate UV Rating</string>
@@ -43,4 +47,9 @@
     <string name="skin_type_4">Skin Type 4</string>
     <string name="skin_type_5">Skin Type 5</string>
     <string name="skin_type_6">Skin Type 6</string>
+
+    <plurals name="exposure_time_minutes">
+        <item quantity="one">%d min</item>
+        <item quantity="other">%d mins</item>
+    </plurals>
 </resources>

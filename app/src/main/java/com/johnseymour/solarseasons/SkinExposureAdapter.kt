@@ -15,7 +15,7 @@ class SkinExposureAdapter(private val exposureTimes: List<Map.Entry<String, Int>
             {
                 skinIcon.drawable.setTint(resources.getColor(UVData.skinTypeColorInt(exposureTimeEntry.key), context.theme))
                 skinType.text = resources.getString(UVData.skinTypeNameInt(exposureTimeEntry.key))
-                exposureTime.text = exposureTimeEntry.value.toString()//preferredTimeString(context, sunTime.second)
+                exposureTime.text = exposureDurationString(resources, exposureTimeEntry.value)
             }
         }
     }
