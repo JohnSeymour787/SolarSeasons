@@ -38,8 +38,8 @@
     <string name="sun_info_nautical_dusk">Nautical Dusk</string>
     <string name="sun_info_night_end">Night Ends</string>
     <string name="sun_info_night">Night</string>
-    <string name="sun_info_golden_hour_end">Golden Hour Ends</string>
-    <string name="sun_info_golden_hour">Golden Hour Starts</string>
+    <string name="sun_info_golden_hour_end">Golden Hr Ends</string>
+    <string name="sun_info_golden_hour">Golden Hr Starts</string>
 
     <string name="skin_type_1">Skin Type 1</string>
     <string name="skin_type_2">Skin Type 2</string>

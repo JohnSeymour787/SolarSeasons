@@ -1,22 +1,21 @@
 package com.johnseymour.solarseasons
 
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.list_cell_sun_info.view.*
-import java.time.ZonedDateTime
 
-class SunInfoAdapter(private val sunTimes: List<Pair<Int, ZonedDateTime>>, private val textColorInt: Int): RecyclerView.Adapter<SunInfoAdapter.SunInfoViewHolder>()
+class SunInfoAdapter(private val sunTimes: List<SunInfo.SunTimeData>, private val textColorInt: Int): RecyclerView.Adapter<SunInfoAdapter.SunInfoViewHolder>()
 {
     inner class SunInfoViewHolder(view: SunInfoViewCell): RecyclerView.ViewHolder(view)
     {
-        internal fun bind(sunTime: Pair<Int, ZonedDateTime>)
+        internal fun bind(sunTime: SunInfo.SunTimeData)
         {
             itemView.apply()
             {
-                infoTitle.text = resources.getString(sunTime.first)
-                infoTime.text = preferredTimeString(context, sunTime.second)
+                infoTitle.text = resources.getString(sunTime.nameResourceInt)
+                infoTime.text = preferredTimeString(context, sunTime.time)
+                infoImage.setImageResource(sunTime.imageResourceInt)
             }
         }
     }

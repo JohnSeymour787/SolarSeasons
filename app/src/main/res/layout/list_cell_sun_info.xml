@@ -29,9 +29,10 @@
 
     <ImageView
         android:id="@+id/infoImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/cell_sun_info_image_dimen"
+        android:layout_height="@dimen/cell_sun_info_image_dimen"
         android:src="@mipmap/ic_launcher_legacy"
+        android:scaleType="fitCenter"
         android:contentDescription="@string/sun_info_cell_image_description"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

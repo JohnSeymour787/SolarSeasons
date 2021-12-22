@@ -34,20 +34,20 @@ data class SunInfo(val solarNoon: ZonedDateTime?,
         {
             val result = mutableListOf<SunTimeData>()
 
-            solarNoon?.let { result.add(SunTimeData(R.string.sun_info_solar_noon, it, R.mipmap.ic_launcher_legacy)) }
-            nadir?.let { result.add(SunTimeData(R.string.sun_info_nadir, it, R.mipmap.ic_launcher_legacy)) }
-            sunrise?.let { result.add(SunTimeData(R.string.sun_info_sunrise, it, R.mipmap.ic_launcher_legacy)) }
-            sunset?.let { result.add(SunTimeData(R.string.sun_info_sunset, it, R.mipmap.ic_launcher_legacy)) }
-            sunriseEnd?.let { result.add(SunTimeData(R.string.sun_info_sunrise_end, it, R.mipmap.ic_launcher_legacy)) }
-            sunsetStart?.let { result.add(SunTimeData(R.string.sun_info_sunset_start, it, R.mipmap.ic_launcher_legacy)) }
-            dawn?.let { result.add(SunTimeData(R.string.sun_info_dawn, it, R.mipmap.ic_launcher_legacy)) }
-            dusk?.let { result.add(SunTimeData(R.string.sun_info_dusk, it, R.mipmap.ic_launcher_legacy)) }
-            nauticalDawn?.let { result.add(SunTimeData(R.string.sun_info_nautical_dawn, it, R.mipmap.ic_launcher_legacy)) }
-            nauticalDusk?.let { result.add(SunTimeData(R.string.sun_info_nautical_dusk, it, R.mipmap.ic_launcher_legacy)) }
-            nightEnd?.let { result.add(SunTimeData(R.string.sun_info_night_end, it, R.mipmap.ic_launcher_legacy)) }
-            night?.let { result.add(SunTimeData(R.string.sun_info_night, it, R.mipmap.ic_launcher_legacy)) }
-            goldenHourEnd?.let { result.add(SunTimeData(R.string.sun_info_golden_hour_end, it, R.mipmap.ic_launcher_legacy)) }
-            goldenHour?.let { result.add(SunTimeData(R.string.sun_info_golden_hour, it, R.mipmap.ic_launcher_legacy)) }
+            solarNoon?.let { result.add(SunTimeData(R.string.sun_info_solar_noon, it, R.drawable.solar_noon)) }
+            nadir?.let { result.add(SunTimeData(R.string.sun_info_nadir, it, R.drawable.nadir)) }
+            sunrise?.let { result.add(SunTimeData(R.string.sun_info_sunrise, it, R.drawable.sunrise)) }
+            sunset?.let { result.add(SunTimeData(R.string.sun_info_sunset, it, R.drawable.sunset)) }
+            sunriseEnd?.let { result.add(SunTimeData(R.string.sun_info_sunrise_end, it, R.drawable.sunrise_end)) }
+            sunsetStart?.let { result.add(SunTimeData(R.string.sun_info_sunset_start, it, R.drawable.sunset_start)) }
+            dawn?.let { result.add(SunTimeData(R.string.sun_info_dawn, it, R.drawable.dawn)) }
+            dusk?.let { result.add(SunTimeData(R.string.sun_info_dusk, it, R.drawable.dusk)) }
+            nauticalDawn?.let { result.add(SunTimeData(R.string.sun_info_nautical_dawn, it, R.drawable.nautical_dawn)) }
+            nauticalDusk?.let { result.add(SunTimeData(R.string.sun_info_nautical_dusk, it, R.drawable.nautical_dusk)) }
+            nightEnd?.let { result.add(SunTimeData(R.string.sun_info_night_end, it, R.drawable.night_end)) }
+            night?.let { result.add(SunTimeData(R.string.sun_info_night, it, R.drawable.night)) }
+            goldenHourEnd?.let { result.add(SunTimeData(R.string.sun_info_golden_hour_end, it, R.drawable.golden_hour_end)) }
+            goldenHour?.let { result.add(SunTimeData(R.string.sun_info_golden_hour, it, R.drawable.golden_hour)) }
 
             return result
         }
