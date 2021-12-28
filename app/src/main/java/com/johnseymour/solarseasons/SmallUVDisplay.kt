@@ -25,16 +25,16 @@ class SmallUVDisplay : AppWidgetProvider()
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray)
     {
-        // Pending intent to launch the MainActivity when a Widget is selected
-        val intent: PendingIntent = Intent(context, MainActivity::class.java).apply()
-        {
-            action = UVData.UV_DATA_CHANGED
-            putExtra(UVData.UV_DATA_KEY, uvData)
-        }.let { PendingIntent.getActivity(context, 0, it, PendingIntent.FLAG_UPDATE_CURRENT) }
-
         // There may be multiple widgets active, so update all of them
         for (appWidgetId in appWidgetIds)
         {
+            // Pending intent to launch the MainActivity when a Widget is selected
+            val intent: PendingIntent = Intent(context, MainActivity::class.java).apply()
+            {
+                action = UVData.UV_DATA_CHANGED
+                putExtra(UVData.UV_DATA_KEY, uvData)
+            }.let { PendingIntent.getActivity(context, appWidgetId, it, PendingIntent.FLAG_UPDATE_CURRENT) }
+
             updateAppWidget(context, appWidgetManager, appWidgetId, intent)
         }
     }
