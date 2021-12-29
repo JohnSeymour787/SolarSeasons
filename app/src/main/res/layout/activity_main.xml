@@ -69,6 +69,21 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/maxUV" />
 
+    <View
+        android:id="@+id/skinExposureBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/widget_background_shape"
+        android:backgroundTint="@color/white"
+        android:alpha="@fraction/activity_background_alpha"
+        android:visibility="invisible"
+        app:layout_constrainedHeight="true"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintTop_toTopOf="@id/skinExposureLabel"
+        app:layout_constraintBottom_toBottomOf="@id/skinExposureList"
+        app:layout_constraintStart_toStartOf="@id/skinExposureList"
+        app:layout_constraintEnd_toEndOf="@id/skinExposureList" />
+
     <TextView
         android:id="@+id/skinExposureLabel"
         android:layout_width="wrap_content"
@@ -80,6 +95,7 @@
         android:labelFor="@id/skinExposureList"
         android:layout_marginTop="@dimen/margin_very_large"
         android:layout_marginHorizontal="@dimen/margin_small"
+        android:paddingHorizontal="@dimen/margin_small"
         app:layout_constraintTop_toBottomOf="@id/maxUVTime"
         app:layout_constraintStart_toStartOf="parent"/>
 
@@ -90,8 +106,24 @@
         android:visibility="invisible"
         android:layout_marginHorizontal="@dimen/widget_horizontal_margin"
         android:layout_marginTop="@dimen/margin_medium"
+        android:paddingHorizontal="@dimen/margin_small"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/skinExposureLabel" />
+
+    <View
+        android:id="@+id/sunInfoListBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/widget_background_shape"
+        android:backgroundTint="@color/white"
+        android:alpha="@fraction/activity_background_alpha"
+        android:visibility="invisible"
+        app:layout_constrainedHeight="true"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintTop_toTopOf="@id/sunInfoListLabel"
+        app:layout_constraintBottom_toBottomOf="@id/sunInfoList"
+        app:layout_constraintStart_toStartOf="@id/sunInfoList"
+        app:layout_constraintEnd_toEndOf="@id/sunInfoList" />
 
     <TextView
         android:id="@+id/sunInfoListLabel"
@@ -105,6 +137,7 @@
         android:textSize="@dimen/widget_text_medium"
         android:textStyle="bold"
         android:visibility="invisible"
+        android:paddingHorizontal="@dimen/margin_small"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/skinExposureList" />
@@ -123,9 +156,26 @@
         android:id="@+id/sunInfoList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/widget_horizontal_margin"
+        android:paddingBottom="@dimen/list_view_cell_spacing"
         android:layout_marginTop="@dimen/margin_medium"
         app:layout_constraintTop_toBottomOf="@id/sunInfoListLabel"
         app:layout_constraintBottom_toTopOf="@id/sunProgressLabel"/>
+
+    <View
+        android:id="@+id/sunProgressLabelBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/widget_background_shape"
+        android:backgroundTint="@color/white"
+        android:alpha="@fraction/activity_background_alpha"
+        android:visibility="invisible"
+        app:layout_constrainedHeight="true"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintTop_toTopOf="@id/sunProgressLabel"
+        app:layout_constraintBottom_toBottomOf="@id/sunProgress"
+        app:layout_constraintStart_toStartOf="@id/sunInfoListBackground"
+        app:layout_constraintEnd_toEndOf="@id/sunInfoListBackground" />
 
     <TextView
         android:id="@+id/sunProgressLabel"
@@ -136,6 +186,7 @@
         android:labelFor="@id/sunProgress"
         android:layout_marginTop="@dimen/margin_very_large"
         android:layout_marginHorizontal="@dimen/margin_small"
+        android:paddingHorizontal="@dimen/margin_small"
         android:textSize="@dimen/widget_text_medium"
         android:textStyle="bold"
         android:visibility="invisible"

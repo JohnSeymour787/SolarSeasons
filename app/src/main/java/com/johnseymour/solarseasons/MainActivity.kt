@@ -172,6 +172,9 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
         sunProgress.progress = lUVData.sunProgressPercent
         sunProgress.visibility = View.VISIBLE
+        sunProgressLabelBackground.visibility = View.VISIBLE
+
+        sunInfoListBackground.visibility = View.VISIBLE
 
         sunInfoListLabel.visibility = View.VISIBLE
         sunInfoListLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
@@ -182,10 +185,12 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
             skinExposureList.adapter = SkinExposureAdapter(it, lUVData.textColorInt)
             skinExposureLabel.visibility = View.VISIBLE
             skinExposureList.visibility = View.VISIBLE
+            skinExposureBackground.visibility = View.VISIBLE
         } ?: run()
         {
             skinExposureLabel.visibility = View.GONE
             skinExposureList.visibility = View.GONE
+            skinExposureBackground.visibility = View.GONE
         }
 
         val sortedSolarTimes = lUVData.sunInfo.timesArray.sortedWith { a, b -> a.time.compareTo(b.time) }
