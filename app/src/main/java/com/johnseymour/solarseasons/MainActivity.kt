@@ -6,18 +6,22 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import android.Manifest
+import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.*
+import java.time.ZonedDateTime
 
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, Observer<List<WorkInfo>>
 {
@@ -80,7 +84,12 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         }
 
         swipeRefresh.setOnRefreshListener(this)
-        sunInfoList.layoutManager = LinearLayoutManager(this)
+
+        sunInfoList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        sunInfoList.addItemDecoration(SunInfoHorizontalSpaceDecoration(resources.getDimensionPixelOffset(R.dimen.list_view_cell_spacing)))
+
+        skinExposureList.layoutManager = GridLayoutManager(this, 2)
+        skinExposureList.addItemDecoration(SkinExposureVerticalSpaceDecoration(resources.getDimensionPixelOffset(R.dimen.list_view_cell_spacing)))
     }
 
     private var lastObserving: LiveData<List<WorkInfo>>? = null
@@ -150,23 +159,66 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         uvText.text = resources.getText(lUVData.uvLevelTextInt)
         uvText.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        maxUV.text = resources.getString(R.string.max_uv_and_time, lUVData.uvMax, preferredTimeString(this, lUVData.uvMaxTime))
+        maxUV.text = resources.getString(R.string.max_uv, lUVData.uvMax)
         maxUV.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+
+        maxUVTime.text = resources.getString(R.string.max_uv_time, preferredTimeString(this, lUVData.uvMaxTime))
+        maxUVTime.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
         lastUpdated.text = resources.getString(R.string.latest_update, preferredTimeString(this, lUVData.uvTime))
         lastUpdated.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
-        sunset.text = resources.getString(R.string.sunset_time, Constants.Formatters.HOUR_12.format(lUVData.sunInfo.sunset))
-        sunset.setTextColor(resources.getColor(lUVData.textColorInt, theme))
-
-        sunrise.text = resources.getString(R.string.sunrise_time, Constants.Formatters.HOUR_12.format(lUVData.sunInfo.sunrise))
-        sunrise.setTextColor(resources.getColor(lUVData.textColorInt, theme))
-
-        solarNoon.text = resources.getString(R.string.solar_noon_time, Constants.Formatters.HOUR_12.format(lUVData.sunInfo.solarNoon))
-        solarNoon.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+        sunProgressLabel.visibility = View.VISIBLE
+        sunProgressLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
         sunProgress.progress = lUVData.sunProgressPercent
+        sunProgress.visibility = View.VISIBLE
+        sunProgressLabelBackground.visibility = View.VISIBLE
 
-        sunInfoList.adapter = SunInfoAdapter(lUVData.sunInfo.timesArray.sortedWith { a, b -> a.second.compareTo(b.second) })
+        sunInfoListBackground.visibility = View.VISIBLE
+
+        sunInfoListTitleLabel.visibility = View.VISIBLE
+        sunInfoListTitleLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+
+        sunInfoListSubLabel.visibility = View.VISIBLE
+        sunInfoListSubLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+
+        skinExposureLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+        lUVData.safeExposure?.entries?.toList()?.let()
+        {
+            skinExposureList.adapter = SkinExposureAdapter(it, lUVData.textColorInt)
+            skinExposureLabel.visibility = View.VISIBLE
+            skinExposureList.visibility = View.VISIBLE
+            skinExposureBackground.visibility = View.VISIBLE
+        } ?: run()
+        {
+            skinExposureLabel.visibility = View.GONE
+            skinExposureList.visibility = View.GONE
+            skinExposureBackground.visibility = View.GONE
+        }
+
+        val sortedSolarTimes = lUVData.sunInfo.timesArray.sortedWith { a, b -> a.time.compareTo(b.time) }
+        // Calculate the index for the List of times that is closest to now, use this to set the default scroll position
+        val timeNow = ZonedDateTime.now()
+        var bestScrollPosition = 0
+        while ((bestScrollPosition < sortedSolarTimes.size - 1) && (timeNow.isAfter(sortedSolarTimes[bestScrollPosition].time)))
+        {
+            bestScrollPosition++
+        }
+
+        sunInfoList.adapter = SunInfoAdapter(sortedSolarTimes, lUVData.textColorInt, ::sunTimeOnClick)
+        sunInfoList.scrollToPosition(bestScrollPosition)
+    }
+
+    private fun sunTimeOnClick(sunTimeData: SunInfo.SunTimeData)
+    {
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle(sunTimeData.nameResourceInt)
+        builder.setIcon(sunTimeData.imageResourceInt)
+        builder.setMessage(SunInfo.sunTimeDescription(sunTimeData.nameResourceInt))
+        builder.setPositiveButton(R.string.close_window) { _, _ -> }
+
+        builder.create().show()
     }
 }

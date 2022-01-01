@@ -15,9 +15,17 @@
     <color name="light_blue_200">#FF81D4FA</color>
     <color name="light_blue_600">#FF039BE5</color>
     <color name="light_blue_900">#FF01579B</color>
+
     <color name="uv_low">#558B2F</color>
     <color name="uv_moderate">#F9A825</color>
     <color name="uv_high">#EF6C00</color>
     <color name="uv_very_high">#B71C1C</color>
     <color name="uv_extreme">#6A1B9A</color>
+
+    <color name="skin_type_1">#F1D1B1</color>
+    <color name="skin_type_2">#E4B590</color>
+    <color name="skin_type_3">#CF9F7D</color>
+    <color name="skin_type_4">#B67851</color>
+    <color name="skin_type_5">#A15E2D</color>
+    <color name="skin_type_6">#513938</color>
 </resources>

@@ -153,5 +153,33 @@ data class UVData(
         private const val UV_MODERATE = 6.0
         private const val UV_HIGH = 8.0
         private const val UV_VERY_HIGH = 11.0
+
+        fun skinTypeColorInt(skinTypeString: String): Int
+        {
+            return when (skinTypeString)
+            {
+                "st1" -> R.color.skin_type_1
+                "st2" -> R.color.skin_type_2
+                "st3" -> R.color.skin_type_3
+                "st4" -> R.color.skin_type_4
+                "st5" -> R.color.skin_type_5
+                "st6" -> R.color.skin_type_6
+                else -> R.color.skin_type_1
+            }
+        }
+
+        fun skinTypeNameInt(skinTypeString: String): Int
+        {
+            return when (skinTypeString)
+            {
+                "st1" -> R.string.skin_type_1
+                "st2" -> R.string.skin_type_2
+                "st3" -> R.string.skin_type_3
+                "st4" -> R.string.skin_type_4
+                "st5" -> R.string.skin_type_5
+                "st6" -> R.string.skin_type_6
+                else -> R.string.skin_type_1
+            }
+        }
     }
 }

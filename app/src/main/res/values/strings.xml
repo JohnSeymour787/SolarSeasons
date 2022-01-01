@@ -5,17 +5,68 @@
     <string name="add_widget">Add widget</string>
     <string name="uv_value">%1$.1f</string>
     <string name="latest_update">Last updated: %1$s</string>
-    <string name="max_uv_and_time">Maximum %1$.1f expected at %2$s</string>
-    <string name="sunset_time">Sunset: %1$s</string>
-    <string name="sunrise_time">Sunrise: %1$s</string>
-    <string name="solar_noon_time">Solar Noon: %1$s</string>
+    <string name="max_uv">Expected max: %1$.1f</string>
+    <string name="max_uv_time">Time of max: %1$s</string>
+    <string name="sun_progress_label">Sun Progress In Sky (Sunrise to Sunset)</string>
+    <string name="sun_info_list_title_label">Solar Times Today</string>
+    <string name="sun_info_list_title_sub_label">(Tap each time for more info)</string>
+    <string name="skin_exposure_label">Max Exposure Times</string>
     <string name="widget_background_image_description">Background colour based on UV level</string>
+    <string name="sun_info_cell_image_description">Image representing the sun time</string>
     <string name="service_notification_title">Updating UV Information</string>
     <string name="service_notification_description">Getting location and retrieving new UV information</string>
+    <string name="skin_type_cell_image_description">Image representing the skin color</string>
+    <string name="exposure_time_hours_and_minutes">%1$s %2$s</string>
+    <string name="exposure_time_max_hours">>24 hrs</string>
+    <string name="exposure_time_hours">%dh</string>
+    <string name="exposure_time_short_minutes">%dm</string>
+    <string name="close_window">Close</string>
+    <string name="description_not_found">Description not found</string>
 
     <string name="uv_level_low">Low UV Rating</string>
     <string name="uv_level_moderate">Moderate UV Rating</string>
     <string name="uv_level_high">High UV Rating</string>
     <string name="uv_level_very_high">Very High UV Rating</string>
     <string name="uv_level_extreme">Extreme UV Rating</string>
+
+    <string name="sun_info_solar_noon">Solar Noon</string>
+    <string name="sun_info_solar_noon_description">During the solar noon, the sun is at its highest position in the daytime sky, resulting in the maximum UV exposure.</string>
+    <string name="sun_info_nadir">Nadir</string>
+    <string name="sun_info_nadir_description">During the nadir, the sun is at its lowest position below the earth, making it the darkest moment in the night.</string>
+    <string name="sun_info_sunrise">Sunrise</string>
+    <string name="sun_info_sunrise_description">Sunrise marks the moment when the top edge of sun is just visible on the horizon.</string>
+    <string name="sun_info_sunset">Sunset</string>
+    <string name="sun_info_sunset_description">Sunset marks the moment when the bottom edge of the sun begins to go below the horizon. At this point, the sun is slightly lower than Sunset Start time.</string>
+    <string name="sun_info_sunrise_end">Sunrise Ends</string>
+    <string name="sun_info_sunrise_end_description">The sunrise officially ends once the bottom edge of the sun touches the horizon, as the sun is going up.</string>
+    <string name="sun_info_sunset_start">Sunset Starts</string>
+    <string name="sun_info_sunset_start_description">Sunset technically starts the moment that the bottom edge of the sun touches the horizon, as it is going down.</string>
+    <string name="sun_info_dawn">Dawn</string>
+    <string name="sun_info_dawn_description">Dawn is the time from which the appearance of indirect sunlight can be observed.</string>
+    <string name="sun_info_dusk">Dusk</string>
+    <string name="sun_info_dusk_description">Dusk is the time when the sunset is ending just before night, with only indirect sunlight still visible.</string>
+    <string name="sun_info_nautical_dawn">Nautical Dawn</string>
+    <string name="sun_info_nautical_dawn_description">Nautical Dawn refers to the original definition observation of dawn by sailors. Whereas astronomical dawn occurs when the sun is 18 degrees below the horizon in the morning, nautical dawn is defined as the sun being 12 degrees below the horizon.</string>
+    <string name="sun_info_nautical_dusk">Nautical Dusk</string>
+    <string name="sun_info_nautical_dusk_description">Nautical Dusk refers to the original definition observation of dusk by sailors. Whereas astronomical dusk occurs when the sun is 18 degrees below the horizon in the evening, nautical dusk is defined as the sun being 12 degrees below the horizon.</string>
+    <string name="sun_info_night_end">Night Ends</string>
+    <string name="sun_info_night_end_description">This is the time when night officially ends, just before the dawn appears.</string>
+    <string name="sun_info_night">Night</string>
+    <string name="sun_info_night_description">The is the official time when the night starts and dusk has completely ended.</string>
+    <string name="sun_info_golden_hour_end">Golden Hr Ends</string>
+    <string name="sun_info_golden_hour_end_description">This is the time when the morning golden hour ends. Between dawn and this time is the best time for photography.</string>
+    <string name="sun_info_golden_hour">Golden Hr Starts</string>
+    <string name="sun_info_golden_hour_description">This is the time when the evening golden hour starts. After this time is the best for photography.</string>
+
+    <string name="skin_type_1">Skin Type 1</string>
+    <string name="skin_type_2">Skin Type 2</string>
+    <string name="skin_type_3">Skin Type 3</string>
+    <string name="skin_type_4">Skin Type 4</string>
+    <string name="skin_type_5">Skin Type 5</string>
+    <string name="skin_type_6">Skin Type 6</string>
+
+    <plurals name="exposure_time_minutes">
+        <item quantity="one">%d min</item>
+        <item quantity="other">%d mins</item>
+    </plurals>
 </resources>

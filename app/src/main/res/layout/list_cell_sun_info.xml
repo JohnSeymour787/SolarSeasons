@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/infoTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Nadir"
+        android:lines="2"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/infoTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="09:31"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/infoImage"
+        app:layout_constraintTop_toBottomOf="@id/infoTitle"/>
+
+    <ImageView
+        android:id="@+id/infoImage"
+        android:layout_width="@dimen/cell_sun_info_image_dimen"
+        android:layout_height="@dimen/cell_sun_info_image_dimen"
+        android:src="@mipmap/ic_launcher_legacy"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/sun_info_cell_image_description"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</merge>

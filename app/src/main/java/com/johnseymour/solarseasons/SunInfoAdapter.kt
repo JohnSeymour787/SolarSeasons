@@ -1,23 +1,35 @@
 package com.johnseymour.solarseasons
 
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import java.time.ZonedDateTime
+import kotlinx.android.synthetic.main.list_cell_sun_info.view.*
 
-class SunInfoAdapter(private val sunTimes: List<Pair<String, ZonedDateTime>>): RecyclerView.Adapter<SunInfoAdapter.SunInfoViewHolder>()
+class SunInfoAdapter(private val sunTimes: List<SunInfo.SunTimeData>, private val textColorInt: Int, private val onClick: (SunInfo.SunTimeData) -> Unit): RecyclerView.Adapter<SunInfoAdapter.SunInfoViewHolder>()
 {
-    inner class SunInfoViewHolder(val view: TextView): RecyclerView.ViewHolder(view)
+    inner class SunInfoViewHolder(view: SunInfoViewCell): RecyclerView.ViewHolder(view)
     {
-        internal fun bind(sunTime: Pair<String, ZonedDateTime>)
+        internal fun bind(sunTime: SunInfo.SunTimeData)
         {
-            view.text = sunTime.first + " " + preferredTimeString(itemView.context, sunTime.second)
+            itemView.apply()
+            {
+                infoTitle.text = resources.getString(sunTime.nameResourceInt)
+                infoTime.text = preferredTimeString(context, sunTime.time)
+                infoImage.setImageResource(sunTime.imageResourceInt)
+
+                setOnClickListener { onClick(sunTime) }
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SunInfoViewHolder
     {
-        val cell = TextView(parent.context)
+        val cell = SunInfoViewCell(parent.context).apply()
+        {
+            layoutParams = ConstraintLayout.LayoutParams(resources.getDimensionPixelSize(R.dimen.cell_sun_info_width), resources.getDimensionPixelSize(R.dimen.cell_sun_info_height))
+            infoTitle.setTextColor(resources.getColor(textColorInt, context.theme))
+            infoTime.setTextColor(resources.getColor(textColorInt, context.theme))
+        }
 
         return SunInfoViewHolder(cell)
     }

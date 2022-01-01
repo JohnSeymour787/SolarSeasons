@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <solid android:color="@color/skin_type_1"/>
+    <size android:width="@dimen/cell_skin_type_diameter" android:height="@dimen/cell_skin_type_diameter"/>
+</shape>
