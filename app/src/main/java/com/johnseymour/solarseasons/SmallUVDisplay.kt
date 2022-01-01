@@ -33,7 +33,7 @@ class SmallUVDisplay : AppWidgetProvider()
             {
                 action = UVData.UV_DATA_CHANGED
                 putExtra(UVData.UV_DATA_KEY, uvData)
-            }.let { PendingIntent.getActivity(context, appWidgetId, it, PendingIntent.FLAG_UPDATE_CURRENT) }
+            }.let { PendingIntent.getActivity(context, appWidgetId, it, PendingIntent.FLAG_CANCEL_CURRENT) }
 
             updateAppWidget(context, appWidgetManager, appWidgetId, intent)
         }
