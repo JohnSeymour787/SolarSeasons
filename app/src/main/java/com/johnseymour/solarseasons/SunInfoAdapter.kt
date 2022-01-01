@@ -5,7 +5,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.list_cell_sun_info.view.*
 
-class SunInfoAdapter(private val sunTimes: List<SunInfo.SunTimeData>, private val textColorInt: Int): RecyclerView.Adapter<SunInfoAdapter.SunInfoViewHolder>()
+class SunInfoAdapter(private val sunTimes: List<SunInfo.SunTimeData>, private val textColorInt: Int, private val onClick: (SunInfo.SunTimeData) -> Unit): RecyclerView.Adapter<SunInfoAdapter.SunInfoViewHolder>()
 {
     inner class SunInfoViewHolder(view: SunInfoViewCell): RecyclerView.ViewHolder(view)
     {
@@ -16,6 +16,8 @@ class SunInfoAdapter(private val sunTimes: List<SunInfo.SunTimeData>, private va
                 infoTitle.text = resources.getString(sunTime.nameResourceInt)
                 infoTime.text = preferredTimeString(context, sunTime.time)
                 infoImage.setImageResource(sunTime.imageResourceInt)
+
+                setOnClickListener { onClick(sunTime) }
             }
         }
     }

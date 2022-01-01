@@ -120,27 +120,42 @@
         android:visibility="invisible"
         app:layout_constrainedHeight="true"
         app:layout_constrainedWidth="true"
-        app:layout_constraintTop_toTopOf="@id/sunInfoListLabel"
+        app:layout_constraintTop_toTopOf="@id/sunInfoListTitleLabel"
         app:layout_constraintBottom_toBottomOf="@id/sunInfoList"
         app:layout_constraintStart_toStartOf="@id/sunInfoList"
         app:layout_constraintEnd_toEndOf="@id/sunInfoList" />
 
     <TextView
-        android:id="@+id/sunInfoListLabel"
+        android:id="@+id/sunInfoListTitleLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/primary_text"
         android:labelFor="@id/sunInfoList"
-        android:text="@string/sun_info_list_label"
+        android:text="@string/sun_info_list_title_label"
         android:layout_marginTop="@dimen/margin_very_large"
-        android:layout_marginHorizontal="@dimen/margin_small"
         android:textSize="@dimen/widget_text_medium"
         android:textStyle="bold"
         android:visibility="invisible"
+        android:layout_marginHorizontal="@dimen/margin_small"
         android:paddingHorizontal="@dimen/margin_small"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/skinExposureList" />
+
+    <TextView
+        android:id="@+id/sunInfoListSubLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primary_text"
+        android:labelFor="@id/sunInfoList"
+        android:text="@string/sun_info_list_title_sub_label"
+        android:textSize="@dimen/widget_text_small"
+        android:visibility="invisible"
+        android:layout_marginHorizontal="@dimen/margin_small"
+        android:paddingHorizontal="@dimen/margin_small"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sunInfoListTitleLabel" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
@@ -159,7 +174,7 @@
         android:layout_marginHorizontal="@dimen/widget_horizontal_margin"
         android:paddingBottom="@dimen/list_view_cell_spacing"
         android:layout_marginTop="@dimen/margin_medium"
-        app:layout_constraintTop_toBottomOf="@id/sunInfoListLabel"
+        app:layout_constraintTop_toBottomOf="@id/sunInfoListSubLabel"
         app:layout_constraintBottom_toTopOf="@id/sunProgressLabel"/>
 
     <View

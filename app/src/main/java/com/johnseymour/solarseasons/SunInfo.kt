@@ -51,4 +51,30 @@ data class SunInfo(val solarNoon: ZonedDateTime?,
 
             return result
         }
+
+    companion object
+    {
+        fun sunTimeDescription(timeNameResourceInt: Int): Int
+        {
+            return when(timeNameResourceInt)
+            {
+                R.string.sun_info_solar_noon -> R.string.sun_info_solar_noon_description
+                R.string.sun_info_nadir -> R.string.sun_info_nadir_description
+                R.string.sun_info_sunrise -> R.string.sun_info_sunrise_description
+                R.string.sun_info_sunset -> R.string.sun_info_sunset_description
+                R.string.sun_info_sunrise_end -> R.string.sun_info_sunrise_end_description
+                R.string.sun_info_sunset_start -> R.string.sun_info_sunset_start_description
+                R.string.sun_info_dawn -> R.string.sun_info_dawn_description
+                R.string.sun_info_dusk -> R.string.sun_info_dusk_description
+                R.string.sun_info_nautical_dawn -> R.string.sun_info_nautical_dawn_description
+                R.string.sun_info_nautical_dusk -> R.string.sun_info_nautical_dusk_description
+                R.string.sun_info_night_end -> R.string.sun_info_night_end_description
+                R.string.sun_info_night -> R.string.sun_info_night_description
+                R.string.sun_info_golden_hour_end -> R.string.sun_info_golden_hour_end_description
+                R.string.sun_info_golden_hour -> R.string.sun_info_golden_hour_description
+
+                else -> R.string.description_not_found
+            }
+        }
+    }
 }

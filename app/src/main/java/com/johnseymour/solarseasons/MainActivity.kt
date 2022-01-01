@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import android.Manifest
+import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
@@ -176,8 +177,11 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
         sunInfoListBackground.visibility = View.VISIBLE
 
-        sunInfoListLabel.visibility = View.VISIBLE
-        sunInfoListLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+        sunInfoListTitleLabel.visibility = View.VISIBLE
+        sunInfoListTitleLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+
+        sunInfoListSubLabel.visibility = View.VISIBLE
+        sunInfoListSubLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
         skinExposureLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
         lUVData.safeExposure?.entries?.toList()?.let()
@@ -202,7 +206,19 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
             bestScrollPosition++
         }
 
-        sunInfoList.adapter = SunInfoAdapter(sortedSolarTimes, lUVData.textColorInt)
+        sunInfoList.adapter = SunInfoAdapter(sortedSolarTimes, lUVData.textColorInt, ::sunTimeOnClick)
         sunInfoList.scrollToPosition(bestScrollPosition)
+    }
+
+    private fun sunTimeOnClick(sunTimeData: SunInfo.SunTimeData)
+    {
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle(sunTimeData.nameResourceInt)
+        builder.setIcon(sunTimeData.imageResourceInt)
+        builder.setMessage(SunInfo.sunTimeDescription(sunTimeData.nameResourceInt))
+        builder.setPositiveButton(R.string.close_window) { _, _ -> }
+
+        builder.create().show()
     }
 }
