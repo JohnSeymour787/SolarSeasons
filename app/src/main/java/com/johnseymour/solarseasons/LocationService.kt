@@ -11,27 +11,31 @@ import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.location.Location
 import android.os.IBinder
-import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.*
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.johnseymour.solarseasons.api.NetworkRepository
 import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise
 import nl.komponents.kovenant.deferred
+import java.lang.Exception
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
-class LocationService: Service()
+class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
 {
     companion object
     {
         private const val TEST_MODE = false
+        private var counter = 0F
 
         private const val NOTIFICATION_CHANNEL_ID = "Solar.seasons.id"
         private const val NOTIFICATION_CHANNEL_NAME = "Solar.seasons.foreground_location_channel"
 
-        private var counter = 0F
+        private var locationCancellationSource: CancellationTokenSource? = null
 
         private var uvDataDeferred: Deferred<UVData, String>? = null
         val uvDataPromise: Promise<UVData, String>?
@@ -98,43 +102,12 @@ class LocationService: Service()
     {
         uvDataDeferred = deferred()
 
-        if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        // Widget is responsible for additionally checking the background permission
+        if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
-            // Check that the location is reasonably recent according to the locationRequest parameters
-            locationClient.locationAvailability.addOnSuccessListener()
-            { availability ->
-                if (availability.isLocationAvailable)
-                {
-                    locationClient.lastLocation.addOnSuccessListener()
-                    { location: Location? ->
-                        location?.let()
-                        {
-
-                            if (TEST_MODE)
-                            {
-                                counter++
-                                test.uv = counter
-                                uvDataDeferred?.resolve(test)
-                                stopSelf()
-                            }
-                            else
-                            {
-                                NetworkRepository.Semi_OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude).success()
-                                //        NetworkRepository.Semi_OLDgetRealTimeUV().success()
-                                { data ->
-                                    uvDataDeferred?.resolve(data)
-                                    stopSelf()
-                                }
-                            }
-
-                        } ?: run { locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper()) }
-                    }
-                }
-                else
-                {
-                    locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
-                }
-            }
+            locationClient.lastLocation
+                .addOnSuccessListener(this)
+                .addOnFailureListener(this)
         }
 
         return START_STICKY
@@ -150,6 +123,7 @@ class LocationService: Service()
             interval = TimeUnit.MINUTES.toMillis(Constants.DEFAULT_REFRESH_TIME)
             fastestInterval = TimeUnit.SECONDS.toMillis(30)
             // fastestInterval = TimeUnit.MINUTES.toMillis(15)
+            expirationTime = TimeUnit.MINUTES.toMillis(Constants.DEFAULT_REFRESH_TIME*2)
             priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
             numUpdates = 1
         }
@@ -180,11 +154,59 @@ class LocationService: Service()
                                 uvDataDeferred?.resolve(data)
                             }
 
-                        stopSelf()
                     }
+
+                    stopSelf()
                 }
 
                 locationClient.removeLocationUpdates(this)
             }
         }
+
+    override fun onSuccess(location: Location?)
+    {
+        location?.let()
+        {
+            if (TEST_MODE)
+            {
+                counter++
+                test.uv = counter
+                uvDataDeferred?.resolve(test)
+                stopSelf()
+            }
+            else
+            {
+                NetworkRepository.Semi_OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude).success()
+                { data ->
+                    uvDataDeferred?.resolve(data)
+                    stopSelf()
+                }
+            }
+
+        } ?: run()
+        {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            {
+                locationCancellationSource = CancellationTokenSource().apply()
+                {
+                    locationClient.getCurrentLocation(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, this.token)
+                        .addOnSuccessListener(this@LocationService)
+                        .addOnFailureListener(this@LocationService)
+                }
+            }
+        }
+    }
+
+    override fun onFailure(e: Exception)
+    {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
+            locationCancellationSource = CancellationTokenSource().apply()
+            {
+                locationClient.getCurrentLocation(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, this.token)
+                    .addOnSuccessListener(this@LocationService)
+                    .addOnFailureListener { stopSelf() } // Don't want to recursively retry
+            }
+        }
+    }
 }
