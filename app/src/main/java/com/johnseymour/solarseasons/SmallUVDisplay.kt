@@ -1,11 +1,14 @@
 package com.johnseymour.solarseasons
 
+import android.Manifest
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.widget.RemoteViews
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.work.*
@@ -106,6 +109,13 @@ class SmallUVDisplay : AppWidgetProvider()
         intent?.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
         { luvData ->
             uvData = luvData
+
+            // Don't initiate a background request if that permission isn't given
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            {
+                return
+            }
+
             // Observer can be null at this stage if haven't added a new widget recently
             if (observer == null)
             {
