@@ -183,7 +183,7 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
                 }
             }
 
-        } ?: run()
+        } ?: run() // Can be null if location was turned off or device restarted
         {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             {
