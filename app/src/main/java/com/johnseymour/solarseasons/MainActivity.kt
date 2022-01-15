@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.*
+import java.io.FileNotFoundException
 import java.time.ZonedDateTime
 
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, Observer<List<WorkInfo>>
@@ -80,7 +81,11 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
             intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
             {
                 updateUIFields(it)
-            }
+            } ?: updateUIFromDisk()
+        }
+        else
+        {
+            updateUIFromDisk() // TODO() Might cause problems when using a view model
         }
 
         swipeRefresh.setOnRefreshListener(this)
@@ -90,6 +95,17 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
         skinExposureList.layoutManager = GridLayoutManager(this, 2)
         skinExposureList.addItemDecoration(SkinExposureVerticalSpaceDecoration(resources.getDimensionPixelOffset(R.dimen.list_view_cell_spacing)))
+    }
+
+    private fun updateUIFromDisk()
+    {
+        try
+        {
+            DiskRepository.readLatestUV(getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, MODE_PRIVATE))?.let()
+            {
+                updateUIFields(it)
+            }
+        } catch (e: FileNotFoundException){ }
     }
 
     private var lastObserving: LiveData<List<WorkInfo>>? = null
