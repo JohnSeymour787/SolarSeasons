@@ -12,7 +12,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
     {
         private const val WORK_NAME = "UV_DATA_WORK"
 
-        private val workConstraints = Constraints.Builder().setRequiresBatteryNotLow(true).setRequiresDeviceIdle(true).build()
+        private val workConstraints = Constraints.Builder().setRequiresBatteryNotLow(true).build()
         private var uvDataRequest: OneTimeWorkRequest? = null
         private var previousSetting = false // Previous setting of initialDelay for the work or not
 
