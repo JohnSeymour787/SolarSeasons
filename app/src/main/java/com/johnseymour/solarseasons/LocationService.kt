@@ -205,11 +205,11 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
             {
                 locationClient.getCurrentLocation(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, this.token)
                     .addOnSuccessListener(this@LocationService)
-                    .addOnFailureListener()
+                    .addOnFailureListener() // Don't want to recursively retry
                     {
                         uvDataDeferred?.reject(it.localizedMessage ?: "")
                         stopSelf()
-                    } // Don't want to recursively retry
+                    }
             }
         }
     }
@@ -217,6 +217,8 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
     override fun onDestroy()
     {
         super.onDestroy()
+
+        locationCancellationSource?.cancel()
 
         if (uvDataDeferred?.promise?.isDone() == false)
         {
