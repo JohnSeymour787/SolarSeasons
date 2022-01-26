@@ -213,4 +213,11 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
             }
         }
     }
+
+    override fun onDestroy()
+    {
+        super.onDestroy()
+
+        uvDataDeferred?.reject(applicationContext.getString(R.string.location_service_destroyed))
+    }
 }

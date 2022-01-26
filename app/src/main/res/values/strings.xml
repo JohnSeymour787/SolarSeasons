@@ -22,6 +22,7 @@
     <string name="exposure_time_short_minutes">%dm</string>
     <string name="close_window">Close</string>
     <string name="description_not_found">Description not found</string>
+    <string name="location_service_destroyed">Location service destroyed</string>
 
     <string name="uv_level_low">Low UV Rating</string>
     <string name="uv_level_moderate">Moderate UV Rating</string>
