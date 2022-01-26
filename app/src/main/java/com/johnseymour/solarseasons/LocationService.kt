@@ -177,8 +177,8 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
             else
             {
                 NetworkRepository.Semi_OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude).success()
-                { data ->
-                    uvDataDeferred?.resolve(data)
+                { uvData ->
+                    uvDataDeferred?.resolve(uvData)
                     stopSelf()
                 }
             }
