@@ -8,15 +8,13 @@ import kotlinx.android.synthetic.main.activity_main.*
 import android.Manifest
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -30,6 +28,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
     {
         ViewModelProvider(this).get(MainViewModel::class.java)
     }
+
+    private val localBroadcastManager = LocalBroadcastManager.getInstance(this)
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -80,45 +80,75 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         {
             intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
             {
-                updateUIFields(it)
-            } ?: updateUIFromDisk()
-        }
-        else
-        {
-            updateUIFromDisk() // TODO() Might cause problems when using a view model
+                viewModel.uvData = it
+            } ?: updateUVDataFromDisk()
+
+            updateUIFields()
         }
 
         swipeRefresh.setOnRefreshListener(this)
 
-        sunInfoList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         sunInfoList.addItemDecoration(SunInfoHorizontalSpaceDecoration(resources.getDimensionPixelOffset(R.dimen.list_view_cell_spacing)))
 
-        skinExposureList.layoutManager = GridLayoutManager(this, 2)
         skinExposureList.addItemDecoration(SkinExposureVerticalSpaceDecoration(resources.getDimensionPixelOffset(R.dimen.list_view_cell_spacing)))
     }
 
-    private fun updateUIFromDisk()
+    private val uvDataForegroundBroadcastReceiver = object : BroadcastReceiver()
+    {
+        override fun onReceive(context: Context, intent: Intent)
+        {
+            if (intent.action == UVData.UV_DATA_CHANGED)
+            {
+                intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
+                {
+                    viewModel.uvData = it
+                    updateUIFields()
+                }
+            }
+        }
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+
+        localBroadcastManager.unregisterReceiver(viewModel.uvDataBackgroundBroadcastReceiver)
+
+        updateUIFields()
+
+        // Actively update UI when background requests come in when activity is in foreground
+        localBroadcastManager.registerReceiver(uvDataForegroundBroadcastReceiver, viewModel.uvDataChangedIntentFilter)
+    }
+
+    override fun onPause()
+    {
+        super.onPause()
+
+        localBroadcastManager.unregisterReceiver(uvDataForegroundBroadcastReceiver)
+
+        localBroadcastManager.registerReceiver(viewModel.uvDataBackgroundBroadcastReceiver, viewModel.uvDataChangedIntentFilter)
+    }
+
+    private fun updateUVDataFromDisk()
     {
         try
         {
             DiskRepository.readLatestUV(getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, MODE_PRIVATE))?.let()
             {
-                updateUIFields(it)
+                viewModel.uvData = it
             }
         } catch (e: FileNotFoundException){ }
     }
 
-    private var lastObserving: LiveData<List<WorkInfo>>? = null
-
-    private fun updateUVData()
+    private fun prepareUVDataRequest()
     {
-        lastObserving = UVDataWorker.initiateWorker(this)
-        lastObserving?.observe(this, this)
+        viewModel.lastObserving = UVDataWorker.initiateWorker(this)
+        viewModel.lastObserving?.observe(this, this)
     }
 
     override fun onRefresh()
     {
-        updateUVData()
+        prepareUVDataRequest()
     }
 
     override fun onChanged(workInfo: List<WorkInfo>?)
@@ -129,14 +159,15 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
             { lUVData ->
                 runOnUiThread()
                 {
-                    updateUIFields(lUVData)
+                    viewModel.uvData = lUVData
+                    updateUIFields()
 
                     if (swipeRefresh.isRefreshing)
                     {
                         swipeRefresh.isRefreshing = false
                     }
 
-                    lastObserving?.removeObserver(this)
+                    viewModel.lastObserving?.removeObserver(this)
 
                     DiskRepository.writeLatestUV(lUVData, getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
 
@@ -165,8 +196,10 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         }
     }
 
-    private fun updateUIFields(lUVData: UVData)
+    private fun updateUIFields()
     {
+        val lUVData = viewModel.uvData ?: return
+
         layout.setBackgroundColor(resources.getColor(lUVData.backgroundColorInt, theme))
 
         uvValue.text = resources.getString(R.string.uv_value, lUVData.uv)
@@ -203,6 +236,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         lUVData.safeExposure?.entries?.toList()?.let()
         {
             skinExposureList.adapter = SkinExposureAdapter(it, lUVData.textColorInt)
+            skinExposureList.layoutManager = GridLayoutManager(this, 2)
             skinExposureLabel.visibility = View.VISIBLE
             skinExposureList.visibility = View.VISIBLE
             skinExposureBackground.visibility = View.VISIBLE
@@ -224,6 +258,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
         sunInfoList.adapter = SunInfoAdapter(sortedSolarTimes, lUVData.textColorInt, ::sunTimeOnClick)
         sunInfoList.scrollToPosition(bestScrollPosition)
+        sunInfoList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
     }
 
     private fun sunTimeOnClick(sunTimeData: SunInfo.SunTimeData)

@@ -11,6 +11,7 @@ import android.widget.RemoteViews
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
 import java.io.FileNotFoundException
 
@@ -36,7 +37,7 @@ class SmallUVDisplay : AppWidgetProvider()
             {
                 action = UVData.UV_DATA_CHANGED
                 putExtra(UVData.UV_DATA_KEY, uvData)
-            }.let { PendingIntent.getActivity(context, appWidgetId, it, PendingIntent.FLAG_CANCEL_CURRENT) }
+            }.let { PendingIntent.getActivity(context, appWidgetId, it, PendingIntent.FLAG_UPDATE_CURRENT) }
 
             updateAppWidget(context, appWidgetManager, appWidgetId, intent)
         }
@@ -76,13 +77,21 @@ class SmallUVDisplay : AppWidgetProvider()
                         DiskRepository.writeLatestUV(it, context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
 
                         // Update all widgets
-                        val intent = Intent(context, SmallUVDisplay::class.java).apply()
+                        val widgetIntent = Intent(context, SmallUVDisplay::class.java).apply()
                         {
                             action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                             putExtra(UVData.UV_DATA_KEY, it)
                         }
 
-                        context.sendBroadcast(intent)
+                        // Update activity
+                        val activityIntent = Intent(context, MainActivity::class.java).apply()
+                        {
+                            action = UVData.UV_DATA_CHANGED
+                            putExtra(UVData.UV_DATA_KEY, it)
+                        }
+
+                        context.sendBroadcast(widgetIntent)
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(activityIntent)
                     }
                 }
             }
