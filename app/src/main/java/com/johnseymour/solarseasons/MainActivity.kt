@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         ViewModelProvider(this).get(MainViewModel::class.java)
     }
 
-    private val localBroadcastManager = LocalBroadcastManager.getInstance(this)
+    private val localBroadcastManager by lazy { LocalBroadcastManager.getInstance(this) }
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -182,17 +182,16 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
                     sendBroadcast(intent)
                 }
-            }//?.fail()
-//            {
-//                runOnUiThread()
-//                {
-//                    if (swipeRefresh.isRefreshing)
-//                    {
-//                        swipeRefresh.isRefreshing = false
-//                    }
-//                }
-//            }
-
+            }?.fail()
+            {
+                runOnUiThread()
+                {
+                    if (swipeRefresh.isRefreshing)
+                    {
+                        swipeRefresh.isRefreshing = false
+                    }
+                }
+            }
         }
     }
 
@@ -257,8 +256,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         }
 
         sunInfoList.adapter = SunInfoAdapter(sortedSolarTimes, lUVData.textColorInt, ::sunTimeOnClick)
-        sunInfoList.scrollToPosition(bestScrollPosition)
         sunInfoList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        sunInfoList.scrollToPosition(bestScrollPosition)
     }
 
     private fun sunTimeOnClick(sunTimeData: SunInfo.SunTimeData)
