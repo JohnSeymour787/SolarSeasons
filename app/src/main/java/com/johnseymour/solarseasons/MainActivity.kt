@@ -171,16 +171,19 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
                     DiskRepository.writeLatestUV(lUVData, getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
 
-                    // Update all widgets
-                    val intent = Intent(this, SmallUVDisplay::class.java).apply()
+                    val ids = AppWidgetManager.getInstance(application).getAppWidgetIds(ComponentName(applicationContext, SmallUVDisplay::class.java))
+                    if (ids.isNotEmpty())
                     {
-                        action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                        putExtra(UVData.UV_DATA_KEY, lUVData)
-                        val ids = AppWidgetManager.getInstance(application).getAppWidgetIds(ComponentName(applicationContext, SmallUVDisplay::class.java))
-                        putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-                    }
+                        // Update all widgets
+                        val intent = Intent(this, SmallUVDisplay::class.java).apply()
+                        {
+                            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                            putExtra(UVData.UV_DATA_KEY, lUVData)
+                            putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+                        }
 
-                    sendBroadcast(intent)
+                        sendBroadcast(intent) // Will result in background updates if the relevant permission is granted
+                    }
                 }
             }?.fail()
             {
