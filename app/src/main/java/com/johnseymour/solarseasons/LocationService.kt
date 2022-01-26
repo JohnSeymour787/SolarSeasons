@@ -205,7 +205,11 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
             {
                 locationClient.getCurrentLocation(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, this.token)
                     .addOnSuccessListener(this@LocationService)
-                    .addOnFailureListener { stopSelf() } // Don't want to recursively retry
+                    .addOnFailureListener()
+                    {
+                        uvDataDeferred?.reject(it.localizedMessage ?: "")
+                        stopSelf()
+                    } // Don't want to recursively retry
             }
         }
     }
