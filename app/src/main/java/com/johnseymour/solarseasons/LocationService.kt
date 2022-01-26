@@ -37,8 +37,8 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
 
         private var locationCancellationSource: CancellationTokenSource? = null
 
-        private var uvDataDeferred: Deferred<UVData, String>? = null
-        val uvDataPromise: Promise<UVData, String>?
+        private var uvDataDeferred: Deferred<UVData, ErrorStatus>? = null
+        val uvDataPromise: Promise<UVData, ErrorStatus>?
             get()
             {
                 return uvDataDeferred?.promise
@@ -180,6 +180,10 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
                 { uvData ->
                     uvDataDeferred?.resolve(uvData)
                     stopSelf()
+                }.fail()
+                { errorStatus ->
+                    uvDataDeferred?.reject(errorStatus)
+                    stopSelf()
                 }
             }
 
@@ -207,11 +211,11 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
                     .addOnSuccessListener(this@LocationService)
                     .addOnFailureListener() // Don't want to recursively retry
                     {
-                        uvDataDeferred?.reject(it.localizedMessage ?: "")
+                        uvDataDeferred?.reject(ErrorStatus.GeneralLocationError)
                         stopSelf()
                     }
             }
-        }
+        } // TODO reject promise with location permission error
     }
 
     override fun onDestroy()
@@ -222,7 +226,7 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
 
         if (uvDataDeferred?.promise?.isDone() == false)
         {
-            uvDataDeferred?.reject(applicationContext.getString(R.string.location_service_destroyed))
+            uvDataDeferred?.reject(ErrorStatus.LocationServiceTerminated)
         }
     }
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
 import com.johnseymour.solarseasons.SunInfo
 import com.johnseymour.solarseasons.UVData
+import com.johnseymour.solarseasons.ErrorStatus
 import nl.komponents.kovenant.deferred
 import nl.komponents.kovenant.Promise
 import okhttp3.OkHttpClient
@@ -14,6 +15,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 
 object NetworkRepository
 {
@@ -129,9 +131,9 @@ object NetworkRepository
         return uvDataLive
     }
 
-    fun Semi_OLDgetRealTimeUV(latitude: Double = 51.50636369327448, longitude: Double = -0.15934363365078322, altitude: Double = 0.0): Promise<UVData, String>
+    fun Semi_OLDgetRealTimeUV(latitude: Double = 51.50636369327448, longitude: Double = -0.15934363365078322, altitude: Double = 0.0): Promise<UVData, ErrorStatus>
     {
-        val result = deferred<UVData, String>()
+        val result = deferred<UVData, ErrorStatus>()
 
         openUVAPI.getRealTimeUV(latitude, longitude, altitude).enqueue(object: Callback<UVData>
         {
@@ -140,14 +142,19 @@ object NetworkRepository
                 response.body()?.let()
                 {
                     result.resolve(it)
-                }
+                } ?: run { result.reject(ErrorStatus.GeneralError) }
             }
 
             override fun onFailure(call: Call<UVData>, t: Throwable)
             {
-                val cake = 2
-                TODO("Not yet implemented")
-                result.reject("")
+                if (t is IOException) // If network error
+                {
+                    result.reject(ErrorStatus.NetworkError)
+                }
+                else
+                {
+                    result.reject(ErrorStatus.GeneralError)
+                }
             }
         })
 
