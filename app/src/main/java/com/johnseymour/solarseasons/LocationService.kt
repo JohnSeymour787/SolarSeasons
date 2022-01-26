@@ -218,6 +218,9 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
     {
         super.onDestroy()
 
-        uvDataDeferred?.reject(applicationContext.getString(R.string.location_service_destroyed))
+        if (uvDataDeferred?.promise?.isDone() == false)
+        {
+            uvDataDeferred?.reject(applicationContext.getString(R.string.location_service_destroyed))
+        }
     }
 }
