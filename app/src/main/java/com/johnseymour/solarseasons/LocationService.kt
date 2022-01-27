@@ -89,6 +89,8 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
             .build()
     }
 
+    private var activeLocationRequestMade = false
+
     override fun onCreate()
     {
         super.onCreate()
@@ -189,6 +191,12 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
 
         } ?: run() // Can be null if location was turned off or device restarted
         {
+            if (activeLocationRequestMade) // If locationClient.getCurrentLocation was already called, don't call again
+            {
+                finalLocationFailure()
+                return
+            }
+
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             {
                 locationCancellationSource = CancellationTokenSource().apply()
@@ -196,9 +204,18 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
                     locationClient.getCurrentLocation(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, this.token)
                         .addOnSuccessListener(this@LocationService)
                         .addOnFailureListener(this@LocationService)
+
+                    activeLocationRequestMade = true
                 }
             }
         }
+    }
+
+    private fun finalLocationFailure()
+    {
+        activeLocationRequestMade = false
+        uvDataDeferred?.reject(ErrorStatus.GeneralLocationError)
+        stopSelf()
     }
 
     override fun onFailure(e: Exception)
@@ -211,9 +228,10 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
                     .addOnSuccessListener(this@LocationService)
                     .addOnFailureListener() // Don't want to recursively retry
                     {
-                        uvDataDeferred?.reject(ErrorStatus.GeneralLocationError)
-                        stopSelf()
+                        finalLocationFailure()
                     }
+
+                activeLocationRequestMade = true
             }
         } // TODO reject promise with location permission error
     }
