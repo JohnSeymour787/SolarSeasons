@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                 viewModel.uvData = it
             } ?: updateUVDataFromDisk()
 
-            updateUIFields()
+            displayNewUVData()
         }
 
         swipeRefresh.setOnRefreshListener(this)
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                 intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
                 {
                     viewModel.uvData = it
-                    updateUIFields()
+                    displayNewUVData()
                 }
             }
         }
@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
         localBroadcastManager.unregisterReceiver(viewModel.uvDataBackgroundBroadcastReceiver)
 
-        updateUIFields()
+        displayNewUVData()
 
         // Actively update UI when background requests come in when activity is in foreground
         localBroadcastManager.registerReceiver(uvDataForegroundBroadcastReceiver, viewModel.uvDataChangedIntentFilter)
@@ -148,6 +148,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
     override fun onRefresh()
     {
+        appStatusInformation.visibility = View.INVISIBLE
         prepareUVDataRequest()
     }
 
@@ -160,7 +161,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                 runOnUiThread()
                 {
                     viewModel.uvData = lUVData
-                    updateUIFields()
+                    displayNewUVData()
 
                     if (swipeRefresh.isRefreshing)
                     {
@@ -186,36 +187,65 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                     }
                 }
             }?.fail()
-            {
+            { errorStatus ->
                 runOnUiThread()
                 {
                     if (swipeRefresh.isRefreshing)
                     {
                         swipeRefresh.isRefreshing = false
                     }
+
+                    displayError(errorStatus)
                 }
             }
         }
     }
 
-    private fun updateUIFields()
+    private fun displayError(errorStatus: ErrorStatus)
+    {
+        appStatusInformation.text = errorStatus.statusString(resources)
+        appStatusInformation.visibility = View.VISIBLE
+
+        uvValue.visibility = View.INVISIBLE
+        uvText.visibility = View.INVISIBLE
+        maxUV.visibility = View.INVISIBLE
+        maxUVTime.visibility = View.INVISIBLE
+        lastUpdated.visibility = View.INVISIBLE
+        sunProgressLabel.visibility = View.INVISIBLE
+        sunProgress.visibility = View.INVISIBLE
+        sunProgressLabelBackground.visibility = View.INVISIBLE
+        sunInfoListTitleLabel.visibility = View.INVISIBLE
+        sunInfoListSubLabel.visibility = View.INVISIBLE
+        sunInfoList.visibility = View.INVISIBLE
+        sunInfoListBackground.visibility = View.INVISIBLE
+        skinExposureLabel.visibility = View.INVISIBLE
+        skinExposureList.visibility = View.INVISIBLE
+        skinExposureBackground.visibility = View.INVISIBLE
+    }
+
+    private fun displayNewUVData()
     {
         val lUVData = viewModel.uvData ?: return
 
         layout.setBackgroundColor(resources.getColor(lUVData.backgroundColorInt, theme))
 
+        uvValue.visibility = View.VISIBLE
         uvValue.text = resources.getString(R.string.uv_value, lUVData.uv)
         uvValue.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
+        uvText.visibility = View.VISIBLE
         uvText.text = resources.getText(lUVData.uvLevelTextInt)
         uvText.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
+        maxUV.visibility = View.VISIBLE
         maxUV.text = resources.getString(R.string.max_uv, lUVData.uvMax)
         maxUV.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
+        maxUVTime.visibility = View.VISIBLE
         maxUVTime.text = resources.getString(R.string.max_uv_time, preferredTimeString(this, lUVData.uvMaxTime))
         maxUVTime.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
+        lastUpdated.visibility = View.VISIBLE
         lastUpdated.text = resources.getString(R.string.latest_update, preferredTimeString(this, lUVData.uvTime))
         lastUpdated.setTextColor(resources.getColor(lUVData.textColorInt, theme))
 
@@ -258,9 +288,12 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
             bestScrollPosition++
         }
 
+        sunInfoList.visibility = View.VISIBLE
         sunInfoList.adapter = SunInfoAdapter(sortedSolarTimes, lUVData.textColorInt, ::sunTimeOnClick)
         sunInfoList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         sunInfoList.scrollToPosition(bestScrollPosition)
+
+        appStatusInformation.visibility = View.INVISIBLE
     }
 
     private fun sunTimeOnClick(sunTimeData: SunInfo.SunTimeData)

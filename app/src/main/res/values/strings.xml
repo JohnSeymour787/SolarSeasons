@@ -69,6 +69,7 @@
     <string name="skin_type_4">Skin Type 4</string>
     <string name="skin_type_5">Skin Type 5</string>
     <string name="skin_type_6">Skin Type 6</string>
+    <string name="activity_status_information_swipe_hint">Pull down to start a new request</string>
 
     <plurals name="exposure_time_minutes">
         <item quantity="one">%d min</item>
