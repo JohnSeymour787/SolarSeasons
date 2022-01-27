@@ -27,6 +27,7 @@
     <string name="location_no_permission">Location permission not granted</string>
     <string name="no_network_connection">Can\'t connect to the network</string>
     <string name="unknown_error">An unexpected error occurred, please try again</string>
+    <string name="widget_error">UV data update had an error</string>
 
     <string name="uv_level_low">Low UV Rating</string>
     <string name="uv_level_moderate">Moderate UV Rating</string>

@@ -76,14 +76,15 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         }
 
         // Coming from a clicked widget
-        if (intent.action == UVData.UV_DATA_CHANGED)
+        if (intent.action == UVData.UV_DATA_UPDATED)
         {
-            intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
+            (intent.getSerializableExtra(ErrorStatus.ERROR_STATUS_KEY) as? ErrorStatus)?.let()
             {
-                viewModel.uvData = it
+                displayError(it)
+            } ?: intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
+            {
+                newUVDataReceived(it)
             } ?: updateUVDataFromDisk()
-
-            displayNewUVData()
         }
 
         swipeRefresh.setOnRefreshListener(this)
@@ -97,12 +98,11 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
     {
         override fun onReceive(context: Context, intent: Intent)
         {
-            if (intent.action == UVData.UV_DATA_CHANGED)
+            if (intent.action == UVData.UV_DATA_UPDATED)
             {
                 intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
                 {
-                    viewModel.uvData = it
-                    displayNewUVData()
+                    newUVDataReceived(it)
                 }
             }
         }
@@ -114,7 +114,13 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
         localBroadcastManager.unregisterReceiver(viewModel.uvDataBackgroundBroadcastReceiver)
 
-        displayNewUVData()
+        viewModel.latestError?.let()
+        {
+            displayError(it)
+        } ?: run()
+        {
+            viewModel.uvData?.let { displayNewUVData(it) }
+        }
 
         // Actively update UI when background requests come in when activity is in foreground
         localBroadcastManager.registerReceiver(uvDataForegroundBroadcastReceiver, viewModel.uvDataChangedIntentFilter)
@@ -129,6 +135,13 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         localBroadcastManager.registerReceiver(viewModel.uvDataBackgroundBroadcastReceiver, viewModel.uvDataChangedIntentFilter)
     }
 
+    private fun newUVDataReceived(uvData: UVData)
+    {
+        viewModel.uvData = uvData
+        viewModel.latestError = null
+        displayNewUVData(uvData)
+    }
+
     private fun updateUVDataFromDisk()
     {
         try
@@ -136,6 +149,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
             DiskRepository.readLatestUV(getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, MODE_PRIVATE))?.let()
             {
                 viewModel.uvData = it
+                displayNewUVData(it)
             }
         } catch (e: FileNotFoundException){ }
     }
@@ -160,8 +174,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
             { lUVData ->
                 runOnUiThread()
                 {
-                    viewModel.uvData = lUVData
-                    displayNewUVData()
+                    newUVDataReceived(lUVData)
 
                     if (swipeRefresh.isRefreshing)
                     {
@@ -195,6 +208,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                         swipeRefresh.isRefreshing = false
                     }
 
+                    viewModel.latestError = errorStatus
+
                     displayError(errorStatus)
                 }
             }
@@ -223,10 +238,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         skinExposureBackground.visibility = View.INVISIBLE
     }
 
-    private fun displayNewUVData()
+    private fun displayNewUVData(lUVData: UVData)
     {
-        val lUVData = viewModel.uvData ?: return
-
         layout.setBackgroundColor(resources.getColor(lUVData.backgroundColorInt, theme))
 
         uvValue.visibility = View.VISIBLE

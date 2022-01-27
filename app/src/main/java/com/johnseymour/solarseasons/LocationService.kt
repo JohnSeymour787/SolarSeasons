@@ -144,7 +144,6 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
                     if (TEST_MODE)
                     {
                         counter++
-                        test.uv = counter
                         uvDataDeferred?.resolve(test)
                     }
                     else
@@ -172,7 +171,6 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
             if (TEST_MODE)
             {
                 counter++
-                test.uv = counter
                 uvDataDeferred?.resolve(test)
                 stopSelf()
             }

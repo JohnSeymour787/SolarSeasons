@@ -21,4 +21,9 @@ enum class ErrorStatus
             LocationPermissionError -> resources.getString(R.string.location_no_permission)
         }
     }
+
+    companion object
+    {
+        const val ERROR_STATUS_KEY = "error_status_key"
+    }
 }

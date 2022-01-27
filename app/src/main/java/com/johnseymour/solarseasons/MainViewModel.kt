@@ -12,12 +12,13 @@ class MainViewModel: ViewModel()
 {
     var lastObserving: LiveData<List<WorkInfo>>? = null
     var uvData: UVData? = null
+    var latestError: ErrorStatus? = null
 
     val uvDataBackgroundBroadcastReceiver = object : BroadcastReceiver()
     {
         override fun onReceive(context: Context, intent: Intent)
         {
-            if (intent.action == UVData.UV_DATA_CHANGED)
+            if (intent.action == UVData.UV_DATA_UPDATED)
             {
                 intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
                 {
@@ -27,5 +28,5 @@ class MainViewModel: ViewModel()
         }
     }
 
-    val uvDataChangedIntentFilter = IntentFilter(UVData.UV_DATA_CHANGED)
+    val uvDataChangedIntentFilter = IntentFilter(UVData.UV_DATA_UPDATED)
 }

@@ -4,9 +4,12 @@ import android.Manifest
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.util.TypedValue
+import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
@@ -23,6 +26,7 @@ class SmallUVDisplay : AppWidgetProvider()
     companion object
     {
         private var uvData: UVData? = null
+        private var latestError: ErrorStatus? = null
         private var observer: Observer<List<WorkInfo>>? = null
         private var lastObserving: LiveData<List<WorkInfo>>? = null
     }
@@ -35,8 +39,11 @@ class SmallUVDisplay : AppWidgetProvider()
             // Pending intent to launch the MainActivity when a Widget is selected
             val intent: PendingIntent = Intent(context, MainActivity::class.java).apply()
             {
-                action = UVData.UV_DATA_CHANGED
-                putExtra(UVData.UV_DATA_KEY, uvData)
+                action = UVData.UV_DATA_UPDATED
+                latestError?.let()
+                {
+                    this.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
+                } ?: run { putExtra(UVData.UV_DATA_KEY, uvData) }
             }.let { PendingIntent.getActivity(context, appWidgetId, it, PendingIntent.FLAG_UPDATE_CURRENT) }
 
             updateAppWidget(context, appWidgetManager, appWidgetId, intent)
@@ -68,31 +75,39 @@ class SmallUVDisplay : AppWidgetProvider()
         { workInfo ->
             if (workInfo.firstOrNull()?.state == WorkInfo.State.SUCCEEDED)
             {
+                val widgetIds = AppWidgetManager.getInstance(context).getAppWidgetIds(ComponentName(context, SmallUVDisplay::class.java))
+
+                // Update intents
+                val widgetIntent = Intent(context, SmallUVDisplay::class.java)
+                    .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
+
+                val activityIntent = Intent(context, MainActivity::class.java)
+                    .setAction(UVData.UV_DATA_UPDATED)
+
                 LocationService.uvDataPromise?.success()
                 {
                     if (!UVDataWorker.ignoreWorkRequest)
                     {
                         uvData = it
+                        latestError = null
 
                         DiskRepository.writeLatestUV(it, context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
 
-                        // Update all widgets
-                        val widgetIntent = Intent(context, SmallUVDisplay::class.java).apply()
-                        {
-                            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                            putExtra(UVData.UV_DATA_KEY, it)
-                        }
-
-                        // Update activity
-                        val activityIntent = Intent(context, MainActivity::class.java).apply()
-                        {
-                            action = UVData.UV_DATA_CHANGED
-                            putExtra(UVData.UV_DATA_KEY, it)
-                        }
+                        widgetIntent.putExtra(UVData.UV_DATA_KEY, it)
+                        activityIntent.putExtra(UVData.UV_DATA_KEY, it)
 
                         context.sendBroadcast(widgetIntent)
                         LocalBroadcastManager.getInstance(context).sendBroadcast(activityIntent)
                     }
+                }?.fail()
+                {
+                    latestError = it
+
+                    activityIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
+
+                    context.sendBroadcast(widgetIntent)
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(activityIntent)
                 }
             }
         }
@@ -118,6 +133,7 @@ class SmallUVDisplay : AppWidgetProvider()
         intent?.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
         { luvData ->
             uvData = luvData
+            latestError = null
 
             // Don't initiate a background request if that permission isn't given
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -162,26 +178,46 @@ class SmallUVDisplay : AppWidgetProvider()
         // Read from disk if memory is null
         uvData ?: try { uvData = DiskRepository.readLatestUV(context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)) } catch (e: FileNotFoundException) {}
 
-        uvData?.let()
+        when
         {
-            val uvString = context.getString(R.string.uv_value, it.uv)
-            val timeString = preferredTimeString(context, it.uvTime)
+            latestError != null -> // Error has occurred
+            {
+                views.setTextViewText(R.id.uvValue, context.getString(R.string.widget_error))
+                views.setTextColor(R.id.uvValue, context.resources.getColor(R.color.primary_text, context.theme))
+                views.setTextViewTextSize(R.id.uvValue, TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.widget_text_small))
 
-            views.setTextViewText(R.id.uvValue, uvString)
-            views.setTextColor(R.id.uvValue, context.resources.getColor(it.textColorInt, context.theme))
+                views.setViewVisibility(R.id.widgetSunProgress, View.INVISIBLE)
+                views.setViewVisibility(R.id.updatedTime, View.INVISIBLE)
+                views.setInt(R.id.backgroundView, "setColorFilter", context.resources.getColor(R.color.uv_low, context.theme))
+            }
 
-            views.setTextViewText(R.id.updatedTime, timeString)
-            views.setTextColor(R.id.updatedTime, context.resources.getColor(it.textColorInt, context.theme))
+            uvData != null -> // Valid data
+            {
+                val luvData = uvData ?: return
 
-            views.setInt(R.id.widgetSunProgress, "setProgress", it.sunProgressPercent)
+                val uvString = context.getString(R.string.uv_value, luvData.uv)
+                val timeString = preferredTimeString(context, luvData.uvTime)
 
-            views.setInt(R.id.backgroundView, "setColorFilter", context.resources.getColor(it.backgroundColorInt, context.theme))
+                views.setTextViewText(R.id.uvValue, uvString)
+                views.setTextColor(R.id.uvValue, context.resources.getColor(luvData.textColorInt, context.theme))
+                views.setTextViewTextSize(R.id.uvValue, TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.widget_text_large))
 
-        } ?: run()
-        {
-            views.setTextViewText(R.id.uvValue, "0.0")
-            views.setTextViewText(R.id.updatedTime, "00:00")
-            views.setInt(R.id.widgetSunProgress, "setProgress", 0)
+                views.setTextViewText(R.id.updatedTime, timeString)
+                views.setTextColor(R.id.updatedTime, context.resources.getColor(luvData.textColorInt, context.theme))
+                views.setViewVisibility(R.id.updatedTime, View.VISIBLE)
+
+                views.setInt(R.id.widgetSunProgress, "setProgress", luvData.sunProgressPercent)
+                views.setViewVisibility(R.id.widgetSunProgress, View.VISIBLE)
+
+                views.setInt(R.id.backgroundView, "setColorFilter", context.resources.getColor(luvData.backgroundColorInt, context.theme))
+            }
+
+            else -> // Default values on startup
+            {
+                views.setTextViewText(R.id.uvValue, "0.0")
+                views.setTextViewText(R.id.updatedTime, "00:00")
+                views.setInt(R.id.widgetSunProgress, "setProgress", 0)
+            }
         }
 
         views.setOnClickPendingIntent(R.id.layout, intent)

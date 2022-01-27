@@ -146,7 +146,7 @@ data class UVData(
 
     companion object
     {
-        const val UV_DATA_CHANGED = "com.johnseymour.solarseasons.UVDATA_CHANGED"
+        const val UV_DATA_UPDATED = "com.johnseymour.solarseasons.UVDATA_CHANGED"
         const val UV_DATA_KEY = "uv_data_key"
 
         private const val UV_LOW = 3.0
