@@ -20,7 +20,10 @@ class MainViewModel: ViewModel()
         {
             if (intent.action == UVData.UV_DATA_UPDATED)
             {
-                intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
+                (intent.getSerializableExtra(ErrorStatus.ERROR_STATUS_KEY) as? ErrorStatus)?.let()
+                {
+                    latestError = it
+                } ?: intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
                 {
                     uvData = it
                 }

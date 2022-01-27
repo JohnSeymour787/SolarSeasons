@@ -220,6 +220,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
     {
         appStatusInformation.text = errorStatus.statusString(resources)
         appStatusInformation.visibility = View.VISIBLE
+        layout.setBackgroundColor(resources.getColor(R.color.uv_low, theme))
 
         uvValue.visibility = View.INVISIBLE
         uvText.visibility = View.INVISIBLE
