@@ -26,10 +26,12 @@
     <string name="location_not_found">Could not find your location</string>
     <string name="location_permission_any_denied">Location permission not granted</string>
     <string name="location_permission_fine_error">There is no previous location data on the device. A precise location permission is required to update this, otherwise use a different app that has such permission (such as a maps app)</string>
-    <string name="location_permission_generic_rational">Location permission is required in order to get the UV information at your position</string>
+    <string name="location_permission_generic_rationale">Location permission is required in order to get the UV information at your position</string>
+    <string name="location_permission_background_rationale">Pull down to start a new request\n\nBackground location required for widget background updates</string>
     <string name="no_network_connection">Can\'t connect to the network</string>
     <string name="unknown_error">An unexpected error occurred, please try again</string>
     <string name="widget_error">UV data update had an error</string>
+    <string name="activity_status_information_swipe_hint">Pull down to start a new request</string>
 
     <string name="uv_level_low">Low UV Rating</string>
     <string name="uv_level_moderate">Moderate UV Rating</string>
@@ -72,7 +74,6 @@
     <string name="skin_type_4">Skin Type 4</string>
     <string name="skin_type_5">Skin Type 5</string>
     <string name="skin_type_6">Skin Type 6</string>
-    <string name="activity_status_information_swipe_hint">Pull down to start a new request</string>
 
     <plurals name="exposure_time_minutes">
         <item quantity="one">%d min</item>

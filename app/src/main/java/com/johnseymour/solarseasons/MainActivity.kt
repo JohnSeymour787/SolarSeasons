@@ -36,20 +36,33 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
         val requestPermissionsLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
         { permissions ->
-
             if (permissions[Manifest.permission.ACCESS_COARSE_LOCATION] != true)
             {
-                appStatusInformation.text = getString(R.string.location_permission_generic_rational)
+                appStatusInformation.text = getString(R.string.location_permission_generic_rationale)
             }
         }
 
-        if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION))
+        when
         {
-           appStatusInformation.text = getString(R.string.location_permission_generic_rational)
-        }
-        else if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
-            requestPermissionsLauncher.launch(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION))
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) ->
+            {
+                appStatusInformation.text = getString(R.string.location_permission_generic_rationale)
+            }
+
+            checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ->
+            {
+                requestPermissionsLauncher.launch(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION))
+            }
+
+            checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED ->
+            {
+                appStatusInformation.text = getString(R.string.location_permission_background_rationale)
+            }
+
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION) ->
+            {
+                appStatusInformation.text = getString(R.string.location_permission_background_rationale)
+            }
         }
 
         // Coming from a clicked widget
