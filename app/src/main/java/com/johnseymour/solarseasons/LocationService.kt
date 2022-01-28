@@ -90,6 +90,7 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
     }
 
     private var activeLocationRequestMade = false
+    private var highAccuracyLocationRequestMade = false
 
     override fun onCreate()
     {
@@ -159,8 +160,6 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
 
                     stopSelf()
                 }
-
-                locationClient.removeLocationUpdates(this)
             }
         }
 
@@ -189,13 +188,31 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
 
         } ?: run() // Can be null if location was turned off or device restarted
         {
-            if (activeLocationRequestMade) // If locationClient.getCurrentLocation was already called, don't call again
+            if (activeLocationRequestMade) // If locationClient.getCurrentLocation initially returns a null location, try again with PRIORITY_HIGH_ACCURACY
             {
-                finalLocationFailure()
-                return
-            }
+                if (highAccuracyLocationRequestMade)
+                {
+                    finalLocationFailure()
+                    return
+                }
 
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                {
+                    locationCancellationSource = CancellationTokenSource().apply()
+                    {
+                        locationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, this.token) // Forcing the GPS to turn on, if available
+                            .addOnSuccessListener(this@LocationService)
+                            .addOnFailureListener()
+                            {
+                                finalLocationFailure()
+                            }
+
+                        activeLocationRequestMade = true
+                        highAccuracyLocationRequestMade = true
+                    }
+                }
+            }
+            else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             {
                 locationCancellationSource = CancellationTokenSource().apply()
                 {
@@ -212,6 +229,7 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
     private fun finalLocationFailure()
     {
         activeLocationRequestMade = false
+        highAccuracyLocationRequestMade = false
         uvDataDeferred?.reject(ErrorStatus.GeneralLocationError)
         stopSelf()
     }
