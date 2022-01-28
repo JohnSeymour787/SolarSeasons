@@ -18,7 +18,7 @@ enum class ErrorStatus
             NetworkError -> resources.getString(R.string.no_network_connection)
             LocationServiceTerminated -> resources.getString(R.string.location_service_terminated)
             GeneralLocationError -> resources.getString(R.string.location_not_found)
-            LocationPermissionError -> resources.getString(R.string.location_no_permission)
+            LocationPermissionError -> resources.getString(R.string.location_permission_denied)
         }
     }
 

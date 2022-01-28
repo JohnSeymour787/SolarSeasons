@@ -3,14 +3,12 @@ package com.johnseymour.solarseasons
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import android.Manifest
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.*
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -36,43 +34,22 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
-        { isGranted ->
-            if (isGranted)
-            {
-                Toast.makeText(this, "Just given permission", Toast.LENGTH_SHORT).show()
+        val requestPermissionsLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
+        { permissions ->
 
-                //updateUVData()
-            }
-            else
+            if (permissions[Manifest.permission.ACCESS_COARSE_LOCATION] != true)
             {
-                Toast.makeText(
-                    this,
-                    "Permission required for getting UV at current location.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                appStatusInformation.text = getString(R.string.location_permission_generic_rational)
             }
         }
 
-        when
+        if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION))
         {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED ->
-            {
-                Toast.makeText(this, "Already have permission", Toast.LENGTH_SHORT).show()
-
-                //TODO() Probably dont request new data here, rather need to read from a file the last data saved (probably by a widget)
-                //updateUVData()
-            }
-
-            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION) ->
-            {
-                Toast.makeText(this, "Permission required for getting UV at current location.", Toast.LENGTH_SHORT).show()
-            }
-
-            else ->
-            {
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-            }
+           appStatusInformation.text = getString(R.string.location_permission_generic_rational)
+        }
+        else if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            requestPermissionsLauncher.launch(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION))
         }
 
         // Coming from a clicked widget
@@ -162,8 +139,15 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
     override fun onRefresh()
     {
-        appStatusInformation.visibility = View.INVISIBLE
-        prepareUVDataRequest()
+        if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
+            appStatusInformation.visibility = View.INVISIBLE
+            prepareUVDataRequest()
+        }
+        else if (swipeRefresh.isRefreshing)
+        {
+            swipeRefresh.isRefreshing = false
+        }
     }
 
     override fun onChanged(workInfo: List<WorkInfo>?)
