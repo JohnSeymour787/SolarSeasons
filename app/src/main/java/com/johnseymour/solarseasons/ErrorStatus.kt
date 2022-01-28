@@ -8,7 +8,8 @@ enum class ErrorStatus
     NetworkError,
     LocationServiceTerminated,
     GeneralLocationError,
-    LocationPermissionError;
+    LocationAnyPermissionError,
+    FineLocationPermissionError;
 
     fun statusString(resources: Resources): String
     {
@@ -18,7 +19,8 @@ enum class ErrorStatus
             NetworkError -> resources.getString(R.string.no_network_connection)
             LocationServiceTerminated -> resources.getString(R.string.location_service_terminated)
             GeneralLocationError -> resources.getString(R.string.location_not_found)
-            LocationPermissionError -> resources.getString(R.string.location_permission_denied)
+            LocationAnyPermissionError -> resources.getString(R.string.location_permission_any_denied)
+            FineLocationPermissionError -> resources.getString(R.string.location_permission_fine_error)
         }
     }
 

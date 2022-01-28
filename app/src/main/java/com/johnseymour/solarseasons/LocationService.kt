@@ -196,7 +196,7 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
                     return
                 }
 
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                 {
                     locationCancellationSource = CancellationTokenSource().apply()
                     {
@@ -210,6 +210,11 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
                         activeLocationRequestMade = true
                         highAccuracyLocationRequestMade = true
                     }
+                }
+                else
+                {
+                    uvDataDeferred?.reject(ErrorStatus.FineLocationPermissionError)
+                    stopSelf()
                 }
             }
             else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)

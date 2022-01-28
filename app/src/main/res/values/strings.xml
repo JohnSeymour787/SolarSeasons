@@ -24,7 +24,8 @@
     <string name="description_not_found">Description not found</string>
     <string name="location_service_terminated">Location service destroyed</string>
     <string name="location_not_found">Could not find your location</string>
-    <string name="location_permission_denied">Location permission not granted</string>
+    <string name="location_permission_any_denied">Location permission not granted</string>
+    <string name="location_permission_fine_error">There is no previous location data on the device. A precise location permission is required to update this, otherwise use a different app that has such permission (such as a maps app)</string>
     <string name="location_permission_generic_rational">Location permission is required in order to get the UV information at your position</string>
     <string name="no_network_connection">Can\'t connect to the network</string>
     <string name="unknown_error">An unexpected error occurred, please try again</string>

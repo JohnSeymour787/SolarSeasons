@@ -232,7 +232,7 @@
         android:textSize="@dimen/widget_text_medium"
         android:text="@string/activity_status_information_swipe_hint"
         android:visibility="visible"
-        android:layout_marginHorizontal="@dimen/margin_small"
+        android:layout_marginHorizontal="@dimen/margin_medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
