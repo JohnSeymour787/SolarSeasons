@@ -77,7 +77,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
             } ?: updateUVDataFromDisk()
         }
 
-        swipeRefresh.setOnRefreshListener(this)
+        layout.setOnRefreshListener(this)
+        layout.setProgressViewOffset(true, resources.getDimensionPixelOffset(R.dimen.activity_swipe_refresh_offset_start), resources.getDimensionPixelOffset(R.dimen.activity_swipe_refresh_offset_end))
 
         sunInfoList.addItemDecoration(SunInfoHorizontalSpaceDecoration(resources.getDimensionPixelOffset(R.dimen.list_view_cell_spacing)))
 
@@ -157,9 +158,9 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
             appStatusInformation.visibility = View.INVISIBLE
             prepareUVDataRequest()
         }
-        else if (swipeRefresh.isRefreshing)
+        else if (layout.isRefreshing)
         {
-            swipeRefresh.isRefreshing = false
+            layout.isRefreshing = false
         }
     }
 
@@ -173,9 +174,9 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                 {
                     newUVDataReceived(lUVData)
 
-                    if (swipeRefresh.isRefreshing)
+                    if (layout.isRefreshing)
                     {
-                        swipeRefresh.isRefreshing = false
+                        layout.isRefreshing = false
                     }
 
                     viewModel.lastObserving?.removeObserver(this)
@@ -200,9 +201,9 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
             { errorStatus ->
                 runOnUiThread()
                 {
-                    if (swipeRefresh.isRefreshing)
+                    if (layout.isRefreshing)
                     {
-                        swipeRefresh.isRefreshing = false
+                        layout.isRefreshing = false
                     }
 
                     viewModel.latestError = errorStatus
