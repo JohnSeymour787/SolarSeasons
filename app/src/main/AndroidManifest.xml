@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SolarSeasons">
 
-        <service android:name=".LocationService"
+        <service android:name=".LocationServiceGooglePlay"
             android:foregroundServiceType="location"/>
 
         <receiver android:name=".SmallUVDisplay">

@@ -25,7 +25,7 @@ import java.lang.Exception
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
-class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
+class LocationServiceGooglePlay: Service(), OnSuccessListener<Location>, OnFailureListener
 {
     companion object
     {
@@ -201,7 +201,7 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
                     locationCancellationSource = CancellationTokenSource().apply()
                     {
                         locationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, this.token) // Forcing the GPS to turn on, if available
-                            .addOnSuccessListener(this@LocationService)
+                            .addOnSuccessListener(this@LocationServiceGooglePlay)
                             .addOnFailureListener()
                             {
                                 finalLocationFailure()
@@ -222,8 +222,8 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
                 locationCancellationSource = CancellationTokenSource().apply()
                 {
                     locationClient.getCurrentLocation(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, this.token)
-                        .addOnSuccessListener(this@LocationService)
-                        .addOnFailureListener(this@LocationService)
+                        .addOnSuccessListener(this@LocationServiceGooglePlay)
+                        .addOnFailureListener(this@LocationServiceGooglePlay)
 
                     activeLocationRequestMade = true
                 }
@@ -246,7 +246,7 @@ class LocationService: Service(), OnSuccessListener<Location>, OnFailureListener
             locationCancellationSource = CancellationTokenSource().apply()
             {
                 locationClient.getCurrentLocation(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, this.token)
-                    .addOnSuccessListener(this@LocationService)
+                    .addOnSuccessListener(this@LocationServiceGooglePlay)
                     .addOnFailureListener() // Don't want to recursively retry
                     {
                         finalLocationFailure()

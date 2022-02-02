@@ -168,7 +168,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
     {
         if (workInfo?.firstOrNull()?.state == WorkInfo.State.SUCCEEDED)
         {
-            LocationService.uvDataPromise?.success()
+            LocationServiceGooglePlay.uvDataPromise?.success()
             { lUVData ->
                 runOnUiThread()
                 {
