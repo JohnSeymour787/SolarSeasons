@@ -28,7 +28,9 @@
     <string name="location_disabled_error">Location is disabled. Turn it on then try again</string>
     <string name="location_permission_fine_error">There is no previous location data on the device. A precise location permission is required to update this, otherwise use a different app that has such permission (such as a maps app)</string>
     <string name="location_permission_generic_rationale">Location permission is required in order to get the UV information at your position</string>
-    <string name="location_permission_background_rationale">Pull down to start a new request\n\nBackground location required for widget background updates</string>
+    <string name="location_permission_background_rationale">%1$s\n\nBackground location required for widget background updates. Go to location permissions in app settings and select the %2$s option</string>
+    <string name="default_background_permission_option_label">relevant</string>
+    <string name="activity_open_app_settings_text">Open App Settings</string>
     <string name="no_network_connection">Can\'t connect to the network</string>
     <string name="unknown_error">An unexpected error occurred, please try again</string>
     <string name="widget_error">UV data update had an error</string>

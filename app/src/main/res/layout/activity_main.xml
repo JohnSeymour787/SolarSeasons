@@ -239,6 +239,24 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
+            <Button
+                android:id="@+id/launchAppDetailsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/primary_text"
+                android:textStyle="bold"
+                android:textSize="@dimen/widget_text_medium"
+                android:text="@string/activity_open_app_settings_text"
+                android:visibility="invisible"
+                android:backgroundTint="@color/secondary_text"
+                android:onClick="launchAppDetailsActivity"
+                android:layout_marginHorizontal="@dimen/margin_medium"
+                android:layout_marginTop="@dimen/margin_small"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/appStatusInformation"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>

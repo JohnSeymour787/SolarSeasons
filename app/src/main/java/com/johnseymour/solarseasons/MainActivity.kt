@@ -8,6 +8,8 @@ import android.Manifest
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.*
+import android.net.Uri
+import android.provider.Settings
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.Observer
@@ -19,6 +21,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.*
 import java.io.FileNotFoundException
 import java.time.ZonedDateTime
+import android.os.Build
 
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, Observer<List<WorkInfo>>
 {
@@ -29,6 +32,20 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
     private val localBroadcastManager by lazy { LocalBroadcastManager.getInstance(this) }
 
+    private val uvDataForegroundBroadcastReceiver = object : BroadcastReceiver()
+    {
+        override fun onReceive(context: Context, intent: Intent)
+        {
+            if (intent.action == UVData.UV_DATA_UPDATED)
+            {
+                intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
+                {
+                    newUVDataReceived(it)
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -36,9 +53,13 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
         val requestPermissionsLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
         { permissions ->
-            if (permissions[Manifest.permission.ACCESS_COARSE_LOCATION] != true)
-            {
-                appStatusInformation.text = getString(R.string.location_permission_generic_rationale)
+            permissions[Manifest.permission.ACCESS_COARSE_LOCATION]?.let()
+            { granted ->
+                if (!granted)
+                {
+                    appStatusInformation.text = getString(R.string.location_permission_generic_rationale)
+                    return@registerForActivityResult
+                }
             }
         }
 
@@ -56,12 +77,22 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
             checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED ->
             {
-                appStatusInformation.text = getString(R.string.location_permission_background_rationale)
-            }
+                if (getWidgetIDs().isNotEmpty())
+                {
+                    val backgroundOptionLabel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                    {
+                        // Text for the option in the location permissions screen, eg, "Allow all the time"
+                        packageManager.backgroundPermissionOptionLabel
+                    }
+                    else
+                    {
+                        getString(R.string.default_background_permission_option_label)
+                    }
 
-            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION) ->
-            {
-                appStatusInformation.text = getString(R.string.location_permission_background_rationale)
+                    appStatusInformation.text = getString(R.string.location_permission_background_rationale, getString(R.string.activity_status_information_swipe_hint), backgroundOptionLabel)
+
+                    launchAppDetailsButton.visibility = View.VISIBLE
+                }
             }
         }
 
@@ -83,20 +114,6 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         sunInfoList.addItemDecoration(SunInfoHorizontalSpaceDecoration(resources.getDimensionPixelOffset(R.dimen.list_view_cell_spacing)))
 
         skinExposureList.addItemDecoration(SkinExposureVerticalSpaceDecoration(resources.getDimensionPixelOffset(R.dimen.list_view_cell_spacing)))
-    }
-
-    private val uvDataForegroundBroadcastReceiver = object : BroadcastReceiver()
-    {
-        override fun onReceive(context: Context, intent: Intent)
-        {
-            if (intent.action == UVData.UV_DATA_UPDATED)
-            {
-                intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
-                {
-                    newUVDataReceived(it)
-                }
-            }
-        }
     }
 
     override fun onResume()
@@ -156,6 +173,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
             appStatusInformation.visibility = View.INVISIBLE
+            launchAppDetailsButton.visibility = View.INVISIBLE
             prepareUVDataRequest()
         }
         else if (layout.isRefreshing)
@@ -183,7 +201,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
                     DiskRepository.writeLatestUV(lUVData, getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
 
-                    val ids = AppWidgetManager.getInstance(application).getAppWidgetIds(ComponentName(applicationContext, SmallUVDisplay::class.java))
+                    val ids = getWidgetIDs()
                     if (ids.isNotEmpty())
                     {
                         // Update all widgets
@@ -306,6 +324,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         sunInfoList.scrollToPosition(bestScrollPosition)
 
         appStatusInformation.visibility = View.INVISIBLE
+        launchAppDetailsButton.visibility = View.INVISIBLE
     }
 
     private fun sunTimeOnClick(sunTimeData: SunInfo.SunTimeData)
@@ -318,5 +337,17 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
         builder.setPositiveButton(R.string.close_window) { _, _ -> }
 
         builder.create().show()
+    }
+
+    private fun getWidgetIDs(): IntArray = AppWidgetManager.getInstance(application).getAppWidgetIds(ComponentName(applicationContext, SmallUVDisplay::class.java))
+
+    fun launchAppDetailsActivity(v: View)
+    {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply()
+        {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            data = Uri.fromParts("package", packageName, null)
+        }
+        startActivity(intent)
     }
 }
