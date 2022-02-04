@@ -226,7 +226,7 @@
 
             <TextView
                 android:id="@+id/appStatusInformation"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textColor="@color/primary_text"
