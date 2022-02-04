@@ -17,7 +17,7 @@ open class LocationService: Service()
 {
     companion object
     {
-        const val TEST_MODE = true
+        const val TEST_MODE = false
         var counter = 0F
 
         private const val NOTIFICATION_CHANNEL_ID = "Solar.seasons.id"
