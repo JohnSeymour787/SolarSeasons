@@ -72,7 +72,14 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
     override fun doWork(): Result
     {
-       val intent = Intent(applicationContext, LocationService::class.java)
+        val intent = if (Constants.USE_GOOGLE_PLAY_LOCATION)
+        {
+           Intent(applicationContext, LocationServiceGooglePlay::class.java)
+        }
+        else
+        {
+           Intent(applicationContext, LocationServiceNonGoogle::class.java)
+        }
 
         applicationContext.startForegroundService(intent)
 

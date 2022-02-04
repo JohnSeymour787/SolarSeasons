@@ -19,10 +19,13 @@
         android:theme="@style/Theme.SolarSeasons"
         tools:ignore="AllowBackup">
 
+        <service android:name=".LocationService"
+            android:foregroundServiceType="location"/>
+
         <service android:name=".LocationServiceGooglePlay"
             android:foregroundServiceType="location"/>
 
-        <service android:name=".LocationService"
+        <service android:name=".LocationServiceNonGoogle"
             android:foregroundServiceType="location"/>
 
         <receiver android:name=".SmallUVDisplay">

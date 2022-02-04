@@ -1,66 +1,66 @@
 package com.johnseymour.solarseasons
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
-import android.os.Build
-import android.os.CancellationSignal
 import android.os.IBinder
-import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import com.johnseymour.solarseasons.api.NetworkRepository
 import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise
-import nl.komponents.kovenant.deferred
-import java.util.function.Consumer
+import java.time.ZonedDateTime
 
-class LocationService: Service(), Consumer<Location?>, LocationListener
+open class LocationService: Service()
 {
     companion object
     {
-        private const val TEST_MODE = true
-        private var counter = 0F
+        const val TEST_MODE = true
+        var counter = 0F
 
         private const val NOTIFICATION_CHANNEL_ID = "Solar.seasons.id"
         private const val NOTIFICATION_CHANNEL_NAME = "Solar.seasons.foreground_location_channel"
 
-        private var uvDataDeferred: Deferred<UVData, ErrorStatus>? = null
+        var uvDataDeferred: Deferred<UVData, ErrorStatus>? = null
         val uvDataPromise: Promise<UVData, ErrorStatus>?
             get()
             {
                 return uvDataDeferred?.promise
             }
+
+        val test = UVData(
+            uv = 0.0399F, uvTime = ZonedDateTime.parse("2021-09-25T00:00:30.826+10:00[Australia/Sydney]"),
+            uvMax = 3.0005F, uvMaxTime = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"),
+            ozone = 332.5F, ozoneTime = ZonedDateTime.parse("2021-09-25T16:04:07.137+10:00[Australia/Sydney]"),
+            safeExposure = mapOf("st1" to 4180, "st2" to 5016, "st3" to 6688, "st4" to 8360, "st5" to 13376, "st6" to 25079),
+            sunInfo = SunInfo(
+                solarNoon = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"), nadir = ZonedDateTime.parse("2021-09-25T09:53:36.274+10:00[Australia/Sydney]"),
+                sunrise = ZonedDateTime.parse("2021-09-25T15:52:48.317+10:00[Australia/Sydney]"),
+                sunset = ZonedDateTime.parse("2021-09-26T03:54:24.230+10:00[Australia/Sydney]"),
+                sunriseEnd = ZonedDateTime.parse("2021-09-25T15:56:13.870+10:00[Australia/Sydney]"),
+                sunsetStart = ZonedDateTime.parse("2021-09-26T03:50:58.677+10:00[Australia/Sydney]"),
+                dawn = ZonedDateTime.parse("2021-09-25T15:19:32.279+10:00[Australia/Sydney]"),
+                dusk = ZonedDateTime.parse("2021-09-26T04:27:40.269+10:00[Australia/Sydney]"),
+                nauticalDawn = ZonedDateTime.parse("2021-09-25T14:40:20.870+10:00[Australia/Sydney]"),
+                nauticalDusk = ZonedDateTime.parse("2021-09-26T05:06:51.678+10:00[Australia/Sydney]"),
+                nightEnd = ZonedDateTime.parse("2021-09-25T13:59:43.486+10:00[Australia/Sydney]"),
+                night = ZonedDateTime.parse("2021-09-26T05:47:29.061+10:00[Australia/Sydney]"),
+                goldenHourEnd = ZonedDateTime.parse("2021-09-25T16:36:54.771+10:00[Australia/Sydney]"),
+                goldenHour = ZonedDateTime.parse("2021-09-26T03:10:17.776+10:00[Australia/Sydney]"),
+                azimuth = -1.48815118586359, altitude = 0.04749226792696052
+            )
+        )
     }
-
-    private enum class LocationRequestStatus
-    {
-        FirstActiveRequest,
-        SecondActiveRequestNetwork,
-        SecondActiveRequestGPS
-    }
-
-    // applicationContext not ready until after super.onCreate()
-    private val locationManager: LocationManager by lazy { applicationContext.getSystemService(LOCATION_SERVICE) as LocationManager }
-
-    private var locationRequestStatus = LocationRequestStatus.FirstActiveRequest
-
-    private var locationCancellationSignal: CancellationSignal? = null
 
     private val notificationChannel by lazy()
     {
-        val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW)
+        val channel =
+            NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW)
         notificationManager.createNotificationChannel(channel)
         channel
     }
@@ -85,149 +85,13 @@ class LocationService: Service(), Consumer<Location?>, LocationListener
 
     override fun onBind(intent: Intent): IBinder? = null
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int
-    {
-        uvDataDeferred = deferred()
-
-        if (!locationManager.isLocationEnabled)
-        {
-            uvDataDeferred?.reject(ErrorStatus.LocationDisabledError)
-            stopSelf()
-
-            return START_STICKY
-        }
-
-        // Widget is responsible for additionally checking the background permission
-        if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-        {
-            locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)?.let()
-            {
-               accept(it)
-            } ?: run()
-            {
-                initiateLocationRequest(LocationManager.NETWORK_PROVIDER)
-
-                locationRequestStatus = LocationRequestStatus.FirstActiveRequest
-            }
-        }
-        else
-        {
-            uvDataDeferred?.reject(ErrorStatus.LocationAnyPermissionError)
-            stopSelf()
-        }
-
-        return START_STICKY
-    }
-
-    /**
-     * Initiates an active location request using the locationManager. LocationManager method called
-     *  depends on build version. Assumes appropriate permission already granted for given provider parameter.
-     *
-     *  @param provider - Location provider source, must have values of either LocationManager.GPS_PROVIDER,
-     *   LocationManager.NETWORK_PROVIDER, LocationManager.PASSIVE_PROVIDER, or LocationManager.FUSED_PROVIDER.
-     */
-    @SuppressLint("MissingPermission")
-    private fun initiateLocationRequest(provider: String)
-    {
-        if (!locationManager.isProviderEnabled(provider)) { return }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-        {
-            locationCancellationSignal = CancellationSignal().apply()
-            {
-                locationManager.getCurrentLocation(provider, this, applicationContext.mainExecutor, this@LocationService)
-            }
-        }
-        else
-        {
-            locationManager.requestSingleUpdate(provider, this@LocationService, applicationContext.mainLooper)
-        }
-    }
-
-    /**
-     * Consumer#accept override callback for LocationManager location requests.
-     *
-     * @param location - Location retrieved from the LocationManager, can be null for various reasons.
-     */
-    override fun accept(location: Location?)
-    {
-        location?.let()
-        {
-            if (TEST_MODE)
-            {
-                counter++
-                LocationServiceGooglePlay.test.uv = counter
-                uvDataDeferred?.resolve(LocationServiceGooglePlay.test)
-                stopSelf()
-            }
-            else
-            {
-                NetworkRepository.Semi_OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude).success()
-                { uvData ->
-                    uvDataDeferred?.resolve(uvData)
-                    stopSelf()
-                }.fail()
-                { errorStatus ->
-                    uvDataDeferred?.reject(errorStatus)
-                    stopSelf()
-                }
-            }
-        } ?: run()
-        {
-            when (locationRequestStatus)
-            {
-                LocationRequestStatus.FirstActiveRequest ->
-                {
-                    when (PackageManager.PERMISSION_GRANTED)
-                    {
-                        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ->
-                        {
-                            initiateLocationRequest(LocationManager.GPS_PROVIDER)
-
-                            locationRequestStatus = LocationRequestStatus.SecondActiveRequestGPS
-                        }
-
-                        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ->
-                        {
-                            initiateLocationRequest(LocationManager.NETWORK_PROVIDER)
-
-                            locationRequestStatus = LocationRequestStatus.SecondActiveRequestNetwork
-                        }
-
-                        else -> finalLocationFailure(ErrorStatus.LocationAnyPermissionError)
-                    }
-                }
-
-                LocationRequestStatus.SecondActiveRequestNetwork -> // If 2 network requests fail then it is likely due to a lack of any location data on the device (ie, location has only just been enabled)
-                {
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-                    {
-                        finalLocationFailure(ErrorStatus.FineLocationPermissionError)
-                    }
-                    else
-                    {
-                        finalLocationFailure(ErrorStatus.GeneralLocationError)
-                    }
-                }
-
-                LocationRequestStatus.SecondActiveRequestGPS -> finalLocationFailure(ErrorStatus.GeneralLocationError)
-            }
-        }
-    }
-
-    /**
-     * LocationListener callback required by some LocationManager methods, rather than a Consumer callback.
-     *  Same behaviour is used.
-     */
-    override fun onLocationChanged(location: Location) = accept(location)
-
     /**
      * Called when it is determined that the location cannot be determined anymore. Rejects the current
      *  uvDataDeferred promise and stops this service.
      *
      *  @param errorStatus - ErrorStatus used to reject the uvDataDeferred promise with.
      */
-    private fun finalLocationFailure(errorStatus: ErrorStatus)
+    fun finalLocationFailure(errorStatus: ErrorStatus)
     {
         uvDataDeferred?.reject(errorStatus)
         stopSelf()
@@ -236,8 +100,6 @@ class LocationService: Service(), Consumer<Location?>, LocationListener
     override fun onDestroy()
     {
         super.onDestroy()
-
-        locationCancellationSignal?.cancel()
 
         if (uvDataDeferred?.promise?.isDone() == false)
         {

@@ -85,7 +85,7 @@ class SmallUVDisplay : AppWidgetProvider()
                 val activityIntent = Intent(context, MainActivity::class.java)
                     .setAction(UVData.UV_DATA_UPDATED)
 
-                LocationServiceGooglePlay.uvDataPromise?.success()
+                LocationService.uvDataPromise?.success()
                 {
                     if (!UVDataWorker.ignoreWorkRequest)
                     {

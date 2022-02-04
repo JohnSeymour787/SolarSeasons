@@ -16,4 +16,6 @@ object Constants
 
     const val MINUTES_PER_HOUR = 60
     const val MINUTES_PER_DAY = 1440
+
+    const val USE_GOOGLE_PLAY_LOCATION = false
 }
