@@ -4,11 +4,11 @@
     package="com.johnseymour.solarseasons">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -20,18 +20,18 @@
         tools:ignore="AllowBackup">
 
         <service android:name=".LocationService"
-            android:foregroundServiceType="location"/>
+            android:foregroundServiceType="location" />
 
         <service android:name=".LocationServiceGooglePlay"
-            android:foregroundServiceType="location"/>
+            android:foregroundServiceType="location" />
 
         <service android:name=".LocationServiceNonGoogle"
-            android:foregroundServiceType="location"/>
+            android:foregroundServiceType="location" />
 
         <receiver android:name=".SmallUVDisplay">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
 
             <meta-data
@@ -46,5 +46,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

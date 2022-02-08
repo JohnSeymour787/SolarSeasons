@@ -56,15 +56,15 @@ class SmallUVDisplay : AppWidgetProvider()
         // If not already observing something, start a new immediate request
         if (observer == null)
         {
-            initiateImmediateRequest(context)
+            initiateEarliestRequest(context)
         }
     }
 
-    private fun initiateImmediateRequest(context: Context)
+    private fun initiateEarliestRequest(context: Context)
     {
         observer = createObserver(context)
 
-        lastObserving = UVDataWorker.initiateWorker(context)
+        lastObserving = UVDataWorker.initiateWorker(context, true, Constants.SHORTEST_REFRESH_TIME)
 
         observer?.let { lastObserving?.observeForever(it) }
     }
@@ -123,11 +123,11 @@ class SmallUVDisplay : AppWidgetProvider()
         context ?: return
 
         // Send an immediate request on phone startup
-        if (intent?.action == Intent.ACTION_BOOT_COMPLETED)
+        if ((intent?.action == Intent.ACTION_BOOT_COMPLETED) && (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED))
         {
             observer?.let { lastObserving?.removeObserver(it) }
 
-            initiateImmediateRequest(context)
+            initiateEarliestRequest(context)
         }
 
         intent?.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
