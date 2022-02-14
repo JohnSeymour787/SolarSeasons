@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
@@ -17,24 +17,38 @@
 
     <TextView
         android:id="@+id/skinType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Nadir"
-        android:textStyle="bold"
-        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginStart="@dimen/list_view_cell_spacing"
+        tools:text="Skin Type 1"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:lines="1"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMaxTextSize="@dimen/text_default"
+        android:autoSizeMinTextSize="@dimen/text_very_small"
+        android:autoSizeStepGranularity="@dimen/cell_skin_exposure_text_auto_size_granularity"
+        app:layout_constrainedWidth="true"
         app:layout_constraintStart_toEndOf="@id/skinIcon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <TextView
         android:id="@+id/exposureTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="09:31"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginStart="@dimen/list_view_cell_spacing"
+        tools:text="53 mins"
+        android:gravity="center_vertical"
+        android:lines="1"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMaxTextSize="@dimen/text_default"
+        android:autoSizeMinTextSize="@dimen/text_very_small"
+        android:autoSizeStepGranularity="@dimen/cell_skin_exposure_text_auto_size_granularity"
+        app:layout_constrainedWidth="true"
         app:layout_constraintStart_toEndOf="@id/skinType"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-</merge>
+</androidx.constraintlayout.widget.ConstraintLayout>

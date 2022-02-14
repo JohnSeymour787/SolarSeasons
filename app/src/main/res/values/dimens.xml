@@ -14,7 +14,9 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="margin_very_large">36dp</dimen>
     <dimen name="widget_horizontal_margin">10dp</dimen>
     <dimen name="widget_vertical_margin">4dp</dimen>
+    <dimen name="text_very_small">10sp</dimen>
     <dimen name="widget_text_small">12sp</dimen>
+    <dimen name="text_default">14sp</dimen>
     <dimen name="widget_text_medium">18sp</dimen>
     <dimen name="widget_text_large">26sp</dimen>
     <dimen name="widget_text_very_large">72sp</dimen>
@@ -25,5 +27,6 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="list_view_cell_spacing">6dp</dimen>
     <dimen name="activity_swipe_refresh_offset_start">20dp</dimen>
     <dimen name="activity_swipe_refresh_offset_end">70dp</dimen>
+    <dimen name="cell_skin_exposure_text_auto_size_granularity">2sp</dimen>
     <dimen name="cell_skin_type_diameter">25dp</dimen>
 </resources>
