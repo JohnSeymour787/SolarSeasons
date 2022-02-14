@@ -2,6 +2,7 @@
     <string name="app_name">Solar Seasons</string>
     <string name="appwidget_uv_text_description">UV value</string>
     <string name="appwidget_uv_text_default">0.0</string>
+    <string name="app_widget_time_text_default">00:00</string>
     <string name="add_widget">Add widget</string>
     <string name="uv_value">%1$.1f</string>
     <string name="latest_update">Last updated: %1$s</string>

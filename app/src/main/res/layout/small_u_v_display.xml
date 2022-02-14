@@ -23,6 +23,7 @@
         android:textAlignment="center"
         android:textSize="@dimen/widget_text_small"
         tools:text="09:30"
+        android:text="@string/app_widget_time_text_default"
         android:textColor="@color/primary_text"
         android:fontFamily="@font/quicksand_medium"/>
 
