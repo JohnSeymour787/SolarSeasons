@@ -9,6 +9,7 @@
     <string name="max_uv">Expected max: %1$.1f</string>
     <string name="max_uv_time">Time of max: %1$s</string>
     <string name="sun_progress_label">Sun Progress In Sky (Sunrise to Sunset)</string>
+    <string name="sun_progress_label_shortened">Sun Progress In Sky</string>
     <string name="sun_info_list_title_label">Solar Times Today</string>
     <string name="sun_info_list_title_sub_label">(Tap each time for more info)</string>
     <string name="skin_exposure_label">Max Exposure Times</string>

@@ -281,6 +281,11 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
         sunProgressLabel.visibility = View.VISIBLE
         sunProgressLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+        sunProgressLabel.setText(R.string.sun_progress_label)
+        if (sunProgressLabel.lineCount > 1)
+        {
+            sunProgressLabel.setText(R.string.sun_progress_label_shortened)
+        }
 
         sunProgress.progress = lUVData.sunProgressPercent
         sunProgress.visibility = View.VISIBLE
