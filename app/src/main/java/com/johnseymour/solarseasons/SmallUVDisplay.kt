@@ -184,7 +184,6 @@ class SmallUVDisplay : AppWidgetProvider()
             {
                 views.setTextViewText(R.id.uvValue, context.getString(R.string.widget_error))
                 views.setTextColor(R.id.uvValue, context.resources.getColor(R.color.primary_text, context.theme))
-                views.setTextViewTextSize(R.id.uvValue, TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.widget_text_small))
 
                 views.setViewVisibility(R.id.widgetSunProgress, View.INVISIBLE)
                 views.setViewVisibility(R.id.updatedTime, View.INVISIBLE)
@@ -200,7 +199,6 @@ class SmallUVDisplay : AppWidgetProvider()
 
                 views.setTextViewText(R.id.uvValue, uvString)
                 views.setTextColor(R.id.uvValue, context.resources.getColor(luvData.textColorInt, context.theme))
-                views.setTextViewTextSize(R.id.uvValue, TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.widget_text_large))
 
                 views.setTextViewText(R.id.updatedTime, timeString)
                 views.setTextColor(R.id.updatedTime, context.resources.getColor(luvData.textColorInt, context.theme))
@@ -215,8 +213,12 @@ class SmallUVDisplay : AppWidgetProvider()
             else -> // Default values on startup
             {
                 views.setTextViewText(R.id.uvValue, "0.0")
+
                 views.setTextViewText(R.id.updatedTime, "00:00")
+                views.setViewVisibility(R.id.updatedTime, View.VISIBLE)
+
                 views.setInt(R.id.widgetSunProgress, "setProgress", 0)
+                views.setViewVisibility(R.id.widgetSunProgress, View.VISIBLE)
             }
         }
 

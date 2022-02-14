@@ -30,19 +30,18 @@
     <TextView
         android:id="@+id/uvValue"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/widget_uv_text_height"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:contentDescription="@string/appwidget_uv_text_description"
         tools:text="2.9"
         android:text="@string/appwidget_uv_text_default"
-        android:textAlignment="center"
+        android:gravity="center"
         android:elegantTextHeight="true"
         android:fontFamily="@font/quicksand_bold"
         android:textColor="@color/primary_text"
-        android:textSize="@dimen/widget_text_large"
-        android:autoSizeMaxTextSize="@dimen/widget_text_large"
-        android:autoSizeMinTextSize="@dimen/widget_text_medium"
+        android:autoSizePresetSizes="@array/widget_uv_text_auto_size_sizes"
+        android:autoSizeTextType="uniform"
         android:textStyle="bold" />
 
     <ProgressBar
