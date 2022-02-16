@@ -149,10 +149,10 @@ data class UVData(
         const val UV_DATA_UPDATED = "com.johnseymour.solarseasons.UVDATA_CHANGED"
         const val UV_DATA_KEY = "uv_data_key"
 
-        private const val UV_LOW = 3.0
-        private const val UV_MODERATE = 6.0
-        private const val UV_HIGH = 8.0
-        private const val UV_VERY_HIGH = 11.0
+        private const val UV_LOW = 3.0F
+        private const val UV_MODERATE = 6.0F
+        private const val UV_HIGH = 8.0F
+        private const val UV_VERY_HIGH = 11.0F
 
         fun skinTypeColorInt(skinTypeString: String): Int
         {
