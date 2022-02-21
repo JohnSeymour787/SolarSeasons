@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">太阳季节</string>
+    <string name="appwidget_uv_text_description">UV value</string>
+    <string name="appwidget_uv_text_default">0.0</string>
+    <string name="app_widget_time_text_default">00:00</string>
+    <string name="add_widget">Add widget</string>
+    <string name="uv_value">%1$.1f</string>
+    <string name="latest_update">最近更新时间: %1$s</string>
+    <string name="max_uv">预期最大指数: %1$.1f</string>
+    <string name="max_uv_time">最高指数时间: %1$s</string>
+    <string name="sun_progress_label">天空中太阳行程 (日出到日落)</string>
+    <string name="sun_progress_label_shortened">天空中太阳行程</string>
+    <string name="sun_info_list_title_label">今天的日照时间</string>
+    <string name="sun_info_list_title_sub_label">（触碰每个时间点获取更多的信息）</string>
+    <string name="skin_exposure_label">最多暴露时间</string>
+    <string name="widget_background_image_description">基于紫外强度水平的背景颜色</string>
+    <string name="sun_info_cell_image_description">代表太阳时间的图片</string>
+    <string name="activity_settings_button_image_description">Image representing the app settings button</string>
+    <string name="service_notification_title">更新紫外强度信息</string>
+    <string name="service_notification_description">获取定位和新的紫外信息</string>
+    <string name="skin_type_cell_image_description">代表皮肤颜色的图片</string>
+    <string name="exposure_time_hours_and_minutes">%1$s %2$s</string>
+    <string name="exposure_time_max_hours">>24小时</string>
+    <string name="exposure_time_hours">%d小时</string>
+    <string name="exposure_time_short_minutes">%d分钟</string>
+    <string name="close_window">关闭</string>
+    <string name="description_not_found">描述未被找到</string>
+    <string name="location_service_terminated">定位服务被破坏</string>
+    <string name="location_not_found">Could not find your location</string>
+    <string name="location_permission_any_denied">Location permission not granted</string>
+    <string name="location_disabled_error">Location is disabled. Turn it on then try again</string>
+    <string name="location_permission_fine_error">There is no previous location data on the device. A precise location permission is required to update this, otherwise use a different app that has such permission (such as a maps app)</string>
+    <string name="location_permission_generic_rationale">Location permission is required in order to get the UV information at your position</string>
+    <string name="location_permission_background_rationale">%1$s\n\nBackground location required for widget background updates. Go to location permissions in app settings and select the %2$s option</string>
+    <string name="default_background_permission_option_label">relevant</string>
+    <string name="activity_open_app_settings_text">Open App Settings</string>
+    <string name="no_network_connection">Can\'t connect to the network</string>
+    <string name="unknown_error">An unexpected error occurred, please try again</string>
+    <string name="widget_error">UV data update had an error</string>
+    <string name="activity_status_information_swipe_hint">Pull down to start a new request</string>
+
+    <string name="uv_level_low">低的紫外等级</string>
+    <string name="uv_level_moderate">中等的紫外等级</string>
+    <string name="uv_level_high">高的紫外等级</string>
+    <string name="uv_level_very_high">非常高的紫外等级</string>
+    <string name="uv_level_extreme">极其高的紫外等级</string>
+
+    <string name="sun_info_solar_noon">Solar Noon</string>
+    <string name="sun_info_solar_noon_description">During the solar noon, the sun is at its highest position in the daytime sky, resulting in the maximum UV exposure.</string>
+    <string name="sun_info_nadir">Nadir</string>
+    <string name="sun_info_nadir_description">During the nadir, the sun is at its lowest position below the earth, making it the darkest moment in the night.</string>
+    <string name="sun_info_sunrise">Sunrise</string>
+    <string name="sun_info_sunrise_description">Sunrise marks the moment when the top edge of sun is just visible on the horizon.</string>
+    <string name="sun_info_sunset">Sunset</string>
+    <string name="sun_info_sunset_description">Sunset marks the moment when the bottom edge of the sun begins to go below the horizon. At this point, the sun is slightly lower than Sunset Start time.</string>
+    <string name="sun_info_sunrise_end">Sunrise Ends</string>
+    <string name="sun_info_sunrise_end_description">The sunrise officially ends once the bottom edge of the sun touches the horizon, as the sun is going up.</string>
+    <string name="sun_info_sunset_start">Sunset Starts</string>
+    <string name="sun_info_sunset_start_description">Sunset technically starts the moment that the bottom edge of the sun touches the horizon, as it is going down.</string>
+    <string name="sun_info_dawn">Dawn</string>
+    <string name="sun_info_dawn_description">Dawn is the time from which the appearance of indirect sunlight can be observed.</string>
+    <string name="sun_info_dusk">Dusk</string>
+    <string name="sun_info_dusk_description">Dusk is the time when the sunset is ending just before night, with only indirect sunlight still visible.</string>
+    <string name="sun_info_nautical_dawn">Nautical Dawn</string>
+    <string name="sun_info_nautical_dawn_description">Nautical Dawn refers to the original definition observation of dawn by sailors. Whereas astronomical dawn occurs when the sun is 18 degrees below the horizon in the morning, nautical dawn is defined as the sun being 12 degrees below the horizon.</string>
+    <string name="sun_info_nautical_dusk">Nautical Dusk</string>
+    <string name="sun_info_nautical_dusk_description">Nautical Dusk refers to the original definition observation of dusk by sailors. Whereas astronomical dusk occurs when the sun is 18 degrees below the horizon in the evening, nautical dusk is defined as the sun being 12 degrees below the horizon.</string>
+    <string name="sun_info_night_end">Night Ends</string>
+    <string name="sun_info_night_end_description">This is the time when night officially ends, just before the dawn appears.</string>
+    <string name="sun_info_night">Night</string>
+    <string name="sun_info_night_description">The is the official time when the night starts and dusk has completely ended.</string>
+    <string name="sun_info_golden_hour_end">Golden Hr Ends</string>
+    <string name="sun_info_golden_hour_end_description">This is the time when the morning golden hour ends. Between dawn and this time is the best time for photography.</string>
+    <string name="sun_info_golden_hour">Golden Hr Starts</string>
+    <string name="sun_info_golden_hour_description">This is the time when the evening golden hour starts. After this time is the best for photography.</string>
+
+    <string name="skin_type_1">皮肤类型1</string>
+    <string name="skin_type_2">皮肤类型2</string>
+    <string name="skin_type_3">皮肤类型3</string>
+    <string name="skin_type_4">皮肤类型4</string>
+    <string name="skin_type_5">皮肤类型5</string>
+    <string name="skin_type_6">皮肤类型6</string>
+
+    <plurals name="exposure_time_minutes">
+        <item quantity="other">%d分钟</item>
+    </plurals>
+</resources>

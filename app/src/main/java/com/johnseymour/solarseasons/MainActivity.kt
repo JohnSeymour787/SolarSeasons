@@ -8,6 +8,7 @@ import android.Manifest
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.*
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.provider.Settings
 import android.view.View
@@ -259,6 +260,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
     {
         layout.setBackgroundColor(resources.getColor(lUVData.backgroundColorInt, theme))
 
+        settingsIcon.imageTintList = ColorStateList.valueOf(resources.getColor(lUVData.textColorInt, theme))
+
         uvValue.visibility = View.VISIBLE
         uvValue.text = resources.getString(R.string.uv_value, lUVData.uv)
         uvValue.setTextColor(resources.getColor(lUVData.textColorInt, theme))
@@ -281,6 +284,11 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
         sunProgressLabel.visibility = View.VISIBLE
         sunProgressLabel.setTextColor(resources.getColor(lUVData.textColorInt, theme))
+        sunProgressLabel.setText(R.string.sun_progress_label)
+        if (sunProgressLabel.lineCount > 1)
+        {
+            sunProgressLabel.setText(R.string.sun_progress_label_shortened)
+        }
 
         sunProgress.progress = lUVData.sunProgressPercent
         sunProgress.visibility = View.VISIBLE

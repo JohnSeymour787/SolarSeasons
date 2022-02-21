@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="widget_uv_text_auto_size_sizes">
+        <item>@dimen/widget_text_small</item>
+        <item>@dimen/widget_text_large</item>
+        <item>@dimen/widget_text_very_large</item>
+    </array>
+</resources>
