@@ -18,6 +18,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ImageButton
+                android:id="@+id/settingsIcon"
+                android:layout_width="@dimen/activity_settings_button_size"
+                android:layout_height="@dimen/activity_settings_button_size"
+                android:scaleType="fitCenter"
+                android:contentDescription="@string/activity_settings_button_image_description"
+                android:src="@drawable/settings_icon"
+                app:tint="@color/primary_text"
+                android:background="?android:selectableItemBackground"
+                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginEnd="@dimen/margin_small"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
             <TextView
                 android:id="@+id/uvValue"
                 android:layout_width="wrap_content"

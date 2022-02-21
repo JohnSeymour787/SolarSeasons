@@ -8,6 +8,7 @@ import android.Manifest
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.*
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.provider.Settings
 import android.view.View
@@ -258,6 +259,8 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
     private fun displayNewUVData(lUVData: UVData)
     {
         layout.setBackgroundColor(resources.getColor(lUVData.backgroundColorInt, theme))
+
+        settingsIcon.imageTintList = ColorStateList.valueOf(resources.getColor(lUVData.textColorInt, theme))
 
         uvValue.visibility = View.VISIBLE
         uvValue.text = resources.getString(R.string.uv_value, lUVData.uv)

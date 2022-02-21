@@ -15,6 +15,7 @@
     <string name="skin_exposure_label">Max Exposure Times</string>
     <string name="widget_background_image_description">Background colour based on UV level</string>
     <string name="sun_info_cell_image_description">Image representing the sun time</string>
+    <string name="activity_settings_button_image_description">Image representing the app settings button</string>
     <string name="service_notification_title">Updating UV Information</string>
     <string name="service_notification_description">Getting location and retrieving new UV information</string>
     <string name="skin_type_cell_image_description">Image representing the skin color</string>
