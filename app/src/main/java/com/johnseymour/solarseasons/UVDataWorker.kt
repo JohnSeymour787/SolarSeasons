@@ -74,7 +74,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         }
 
 
-        fun initiatePeriodicWorker(context: Context, timeInterval: Long = Constants.DEFAULT_REFRESH_TIME, startDelay: Long? = null): LiveData<List<WorkInfo>>
+        fun initiatePeriodicWorker(context: Context, startDelay: Long? = null, timeInterval: Long = Constants.DEFAULT_REFRESH_TIME): LiveData<List<WorkInfo>>
         {
             val workManager = WorkManager.getInstance(context)
             workManager.cancelUniqueWork(WORK_NAME)
