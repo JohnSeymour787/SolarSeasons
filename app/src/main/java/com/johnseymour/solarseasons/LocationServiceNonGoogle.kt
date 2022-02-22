@@ -11,7 +11,6 @@ import android.os.Build
 import android.os.CancellationSignal
 import androidx.core.app.ActivityCompat
 import com.johnseymour.solarseasons.api.NetworkRepository
-import nl.komponents.kovenant.deferred
 import java.util.function.Consumer
 
 class LocationServiceNonGoogle: LocationService(), Consumer<Location?>, LocationListener
@@ -32,8 +31,6 @@ class LocationServiceNonGoogle: LocationService(), Consumer<Location?>, Location
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int
     {
-        uvDataDeferred = deferred()
-
         if (!locationManager.isLocationEnabled)
         {
             uvDataDeferred?.reject(ErrorStatus.LocationDisabledError)

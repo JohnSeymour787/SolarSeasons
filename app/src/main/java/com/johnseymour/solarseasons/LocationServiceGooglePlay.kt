@@ -10,7 +10,6 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.johnseymour.solarseasons.api.NetworkRepository
-import nl.komponents.kovenant.deferred
 import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
@@ -23,8 +22,6 @@ class LocationServiceGooglePlay: LocationService(), OnSuccessListener<Location>,
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int
     {
-        uvDataDeferred = deferred()
-
         // Widget is responsible for additionally checking the background permission
         if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {

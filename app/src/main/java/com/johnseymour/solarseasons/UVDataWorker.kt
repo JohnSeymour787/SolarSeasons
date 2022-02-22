@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.work.*
+import nl.komponents.kovenant.deferred
 import java.util.concurrent.TimeUnit
 
 class UVDataWorker(applicationContext: Context, workerParameters: WorkerParameters): Worker(applicationContext, workerParameters)
@@ -13,7 +14,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         private const val WORK_NAME = "UV_DATA_WORK"
 
         private val workConstraints = Constraints.Builder().setRequiresBatteryNotLow(true).build()
-        private var uvDataRequest: OneTimeWorkRequest? = null
+        private var uvDataRequest: WorkRequest? = null
         private var previousSetting = false // Previous setting of initialDelay for the work or not
 
         var ignoreWorkRequest: Boolean = false
@@ -57,8 +58,11 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 previousSetting = delayedStart
             }
 
-            // Start a unique work, but if one is already going, then keep that one (shouldn't need to occur because removed the work before)
-            uvDataRequest?.let { workManager.enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.KEEP, it) }
+            // Need to initialise this here before the work is enqueued as some clients will immediately subscribe to it
+            LocationService.uvDataDeferred = deferred()
+
+            // Start a unique work, but if one is already going, then replace that one (shouldn't need to occur because removed the work before)
+            (uvDataRequest as? OneTimeWorkRequest)?.let { workManager.enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.REPLACE, it) }
 
             return workManager.getWorkInfosForUniqueWorkLiveData(WORK_NAME)
         }
