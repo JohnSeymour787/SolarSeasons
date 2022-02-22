@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
 
     private fun prepareUVDataRequest()
     {
-        viewModel.lastObserving = UVDataWorker.initiateWorker(this)
+        viewModel.lastObserving = UVDataWorker.initiateOneTimeWorker(this)
         viewModel.lastObserving?.observe(this, this)
     }
 
@@ -210,10 +210,11 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                         {
                             action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                             putExtra(UVData.UV_DATA_KEY, lUVData)
+                            putExtra(SmallUVDisplay.START_BACKGROUND_WORK_KEY, true) // Will result in background updates if the relevant permission is granted
                             putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
                         }
 
-                        sendBroadcast(intent) // Will result in background updates if the relevant permission is granted
+                        sendBroadcast(intent)
                     }
                 }
             }?.fail()

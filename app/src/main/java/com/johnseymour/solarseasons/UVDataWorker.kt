@@ -12,10 +12,12 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
     companion object
     {
         private const val WORK_NAME = "UV_DATA_WORK"
+        private val MIN_PERIODIC_INTERVAL_MINUTES = TimeUnit.MILLISECONDS.toMinutes(PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS)
+        private val MAX_BACKOFF_MINUTES = TimeUnit.MILLISECONDS.toMinutes(PeriodicWorkRequest.MAX_BACKOFF_MILLIS)
 
         private val workConstraints = Constraints.Builder().setRequiresBatteryNotLow(true).build()
         private var uvDataRequest: WorkRequest? = null
-        private var previousSetting = false // Previous setting of initialDelay for the work or not
+        private var previousDelayStartSetting = false
 
         var ignoreWorkRequest: Boolean = false
             private set
@@ -40,7 +42,57 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
             }
         }
 
-        fun initiateWorker(context: Context, delayedStart: Boolean = false, delayTime: Long = Constants.DEFAULT_REFRESH_TIME): LiveData<List<WorkInfo>>
+        private fun createPeriodicRequest(timeInterval: Long, startDelay: Long): PeriodicWorkRequest
+        {
+            val lTimeInterval = if (timeInterval < MIN_PERIODIC_INTERVAL_MINUTES)
+            {
+                MIN_PERIODIC_INTERVAL_MINUTES
+            }
+            else
+            {
+                timeInterval
+            }
+
+            val lBackoffDelay = if (startDelay > MAX_BACKOFF_MINUTES)
+            {
+                MAX_BACKOFF_MINUTES
+            }
+            else
+            {
+                startDelay
+            }
+
+            return PeriodicWorkRequestBuilder<UVDataWorker>(lTimeInterval, TimeUnit.MINUTES).run()
+            {
+                ignoreWorkRequest = false
+
+                setInitialDelay(startDelay, TimeUnit.MINUTES)
+                setConstraints(workConstraints)
+                setBackoffCriteria(BackoffPolicy.LINEAR, lBackoffDelay, TimeUnit.MINUTES)
+                build()
+            }
+        }
+
+
+        fun initiatePeriodicWorker(context: Context, timeInterval: Long = Constants.DEFAULT_REFRESH_TIME, startDelay: Long? = null): LiveData<List<WorkInfo>>
+        {
+            val workManager = WorkManager.getInstance(context)
+            workManager.cancelUniqueWork(WORK_NAME)
+
+            val delay = startDelay ?: timeInterval
+
+            uvDataRequest = createPeriodicRequest(timeInterval, delay)
+
+            // Need to initialise this here before the work is enqueued as some clients will immediately subscribe to it
+            LocationService.uvDataDeferred = deferred()
+
+            // Start a unique work, but if one is already going, then replace that one (shouldn't need to occur because removed the work before)
+            (uvDataRequest as? PeriodicWorkRequest)?.let { workManager.enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.REPLACE, it) }
+
+            return workManager.getWorkInfosForUniqueWorkLiveData(WORK_NAME)
+        }
+
+        fun initiateOneTimeWorker(context: Context, delayedStart: Boolean = false, delayTime: Long = Constants.DEFAULT_REFRESH_TIME): LiveData<List<WorkInfo>>
         {
             val workManager = WorkManager.getInstance(context)
             workManager.cancelUniqueWork(WORK_NAME)
@@ -51,11 +103,11 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 uvDataRequest = createWorkRequest(delayedStart, delayTime)
             }
             // However, if the setting is different from last time, need to make a new request and update the remembered setting
-            else if (delayedStart != previousSetting)
+            else if (delayedStart != previousDelayStartSetting)
             {
                 uvDataRequest = createWorkRequest(delayedStart, delayTime)
 
-                previousSetting = delayedStart
+                previousDelayStartSetting = delayedStart
             }
 
             // Need to initialise this here before the work is enqueued as some clients will immediately subscribe to it
