@@ -29,7 +29,9 @@ class SmallUVDisplay : AppWidgetProvider()
         private var latestError: ErrorStatus? = null
         private var observer: Observer<List<WorkInfo>>? = null
         private var lastObserving: LiveData<List<WorkInfo>>? = null
+        private var previousReceivingScreenOnBroadcastSetting = false
         const val START_BACKGROUND_WORK_KEY = "start_background_work_key"
+        const val SET_RECEIVING_SCREEN_UNLOCK_KEY = "set_receiving_screen_unlock_key"
     }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray)
@@ -126,6 +128,11 @@ class SmallUVDisplay : AppWidgetProvider()
                     }
                 }
 
+                WorkInfo.State.CANCELLED ->
+                {
+                    observer?.let { lastObserving?.removeObserver(it) }
+                }
+
                 else -> {}
             }
         }
@@ -149,8 +156,6 @@ class SmallUVDisplay : AppWidgetProvider()
 
                 prepareEarliestRequest(context)
             }
-
-            context.applicationContext.unregisterReceiver(this)
         }
     }
 
@@ -167,6 +172,22 @@ class SmallUVDisplay : AppWidgetProvider()
         if (intent?.action == Intent.ACTION_BOOT_COMPLETED)
         {
             prepareEarliestRequest(context)
+        }
+
+        (intent?.getSerializableExtra(SET_RECEIVING_SCREEN_UNLOCK_KEY) as? Boolean)?.let()
+        { receiveScreenUnlockSetting ->
+            if (receiveScreenUnlockSetting != previousReceivingScreenOnBroadcastSetting)
+            {
+                if (receiveScreenUnlockSetting)
+                {
+                    context.applicationContext.registerReceiver(userPresentReceiver, userPresentFilter)
+                }
+                else
+                {
+                    context.applicationContext.unregisterReceiver(userPresentReceiver)
+                }
+                previousReceivingScreenOnBroadcastSetting = receiveScreenUnlockSetting
+            }
         }
 
         intent?.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
