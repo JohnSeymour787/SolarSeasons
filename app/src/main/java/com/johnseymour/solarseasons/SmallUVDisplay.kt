@@ -30,8 +30,10 @@ class SmallUVDisplay : AppWidgetProvider()
         private var observer: Observer<List<WorkInfo>>? = null
         private var lastObserving: LiveData<List<WorkInfo>>? = null
         private var previousReceivingScreenOnBroadcastSetting = false
-        const val START_BACKGROUND_WORK_KEY = "start_background_work_key"
+        private var usePeriodicWork = true
+        const val SET_USE_PERIODIC_WORK_KEY = "set_use_periodic_work_key"
         const val SET_RECEIVING_SCREEN_UNLOCK_KEY = "set_receiving_screen_unlock_key"
+        const val START_BACKGROUND_WORK_KEY = "start_background_work_key"
     }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray)
@@ -68,7 +70,7 @@ class SmallUVDisplay : AppWidgetProvider()
 
         observer?.let { lastObserving?.removeObserver(it) } ?: run { observer = createObserver(context) }
 
-        lastObserving = if (Constants.USE_PERIODIC_WORK)
+        lastObserving = if (usePeriodicWork)
         {
             UVDataWorker.initiatePeriodicWorker(context, startDelay = Constants.SHORTEST_REFRESH_TIME)
         }
@@ -97,7 +99,7 @@ class SmallUVDisplay : AppWidgetProvider()
                         .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
                         // This widget's onReceive() is not responsible for starting periodic work except for
                             // special situations
-                        .putExtra(START_BACKGROUND_WORK_KEY, !Constants.USE_PERIODIC_WORK)
+                        .putExtra(START_BACKGROUND_WORK_KEY, !usePeriodicWork)
 
                     val activityIntent = Intent(context, MainActivity::class.java)
                         .setAction(UVData.UV_DATA_UPDATED)
@@ -152,8 +154,6 @@ class SmallUVDisplay : AppWidgetProvider()
             // Compare uvData time with current time, if difference is greater than 30 minutes then make a new request
             if (ChronoUnit.MINUTES.between(luvData.uvTime, ZonedDateTime.now()).absoluteValue > Constants.DEFAULT_REFRESH_TIME)
             {
-                observer?.let { lastObserving?.removeObserver(it) }
-
                 prepareEarliestRequest(context)
             }
         }
@@ -190,6 +190,15 @@ class SmallUVDisplay : AppWidgetProvider()
             }
         }
 
+        (intent?.getSerializableExtra(SET_USE_PERIODIC_WORK_KEY) as? Boolean)?.let()
+        {
+            if (it != usePeriodicWork)
+            {
+                prepareEarliestRequest(context)
+            }
+            usePeriodicWork = it
+        }
+
         intent?.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
         { luvData ->
             uvData = luvData
@@ -203,7 +212,7 @@ class SmallUVDisplay : AppWidgetProvider()
                 return@let
             }
 
-            if ((Constants.USE_PERIODIC_WORK) && (!luvData.sunInSky()))
+            if ((usePeriodicWork) && (!luvData.sunInSky()))
             {
                 observer?.let { lastObserving?.removeObserver(it) }
 
@@ -220,7 +229,7 @@ class SmallUVDisplay : AppWidgetProvider()
                 // Stop observing any other work
                 observer?.let { lastObserving?.removeObserver(it) } ?: run { observer = createObserver(context) }
 
-                lastObserving = if (Constants.USE_PERIODIC_WORK)
+                lastObserving = if (usePeriodicWork)
                 {
                     UVDataWorker.initiatePeriodicWorker(context)
                 }

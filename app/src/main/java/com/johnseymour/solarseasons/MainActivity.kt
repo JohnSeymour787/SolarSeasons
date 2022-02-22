@@ -213,6 +213,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener, 
                             putExtra(SmallUVDisplay.START_BACKGROUND_WORK_KEY, true) // Will result in background updates if the relevant permission is granted
                             putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
                             putExtra(SmallUVDisplay.SET_RECEIVING_SCREEN_UNLOCK_KEY, true) //TODO() To be sent from an intent from a settings screen
+                            putExtra(SmallUVDisplay.SET_USE_PERIODIC_WORK_KEY, false) //TODO() To be sent from an intent from a settings screen
                         }
 
                         sendBroadcast(intent)
