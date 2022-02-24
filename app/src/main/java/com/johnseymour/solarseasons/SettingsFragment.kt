@@ -1,7 +1,9 @@
 package com.johnseymour.solarseasons
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceFragmentCompat
@@ -18,6 +20,15 @@ class SettingsFragment : PreferenceFragmentCompat()
         savedInstanceState?.containsKey("cae")
 
         savedInstanceState?.isEmpty
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    {
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+
+        view?.setBackgroundColor(resources.getColor(R.color.uv_low, requireContext().theme))
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
