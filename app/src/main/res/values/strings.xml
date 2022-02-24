@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Solar Seasons</string>
     <string name="appwidget_uv_text_description">UV value</string>
@@ -81,24 +82,14 @@
     <string name="skin_type_5">Skin Type 5</string>
     <string name="skin_type_6">Skin Type 6</string>
 
+    <string name="preference_work_type_title">Background work type used</string>
+    <string name="preference_subscribe_screen_unlock_title">Retrieve UV data on screen unlock</string>
+    <string name="preference_subscribe_screen_unlock_summary">Immediately updates UV data when the device is unlocked</string>
+    <string name="preference_background_refresh_rate_title">Background refresh rate</string>
+    <string name="preferences_screen_background_processing_explanation">Some versions of the Android operating system kill background processes after a while, meaning that the app widget might not always refresh consistently. Adjusting the settings on this screen may improve the reliability of the background data synchronisation.</string>
+
     <plurals name="exposure_time_minutes">
         <item quantity="one">%d min</item>
         <item quantity="other">%d mins</item>
     </plurals>
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
