@@ -29,5 +29,6 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="activity_swipe_refresh_offset_end">70dp</dimen>
     <dimen name="cell_skin_exposure_text_auto_size_granularity">2sp</dimen>
     <dimen name="cell_skin_type_diameter">25dp</dimen>
-    <dimen name="activity_settings_button_size">25dp</dimen>
+    <dimen name="activity_settings_button_size">45dp</dimen>
+    <dimen name="activity_settings_button_padding">10dp</dimen>
 </resources>

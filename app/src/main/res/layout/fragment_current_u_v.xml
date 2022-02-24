@@ -27,7 +27,8 @@
                 android:src="@drawable/settings_icon"
                 app:tint="@color/primary_text"
                 android:background="?android:selectableItemBackground"
-                android:layout_marginTop="@dimen/margin_large"
+                android:padding="@dimen/activity_settings_button_padding"
+                android:layout_marginTop="@dimen/margin_small"
                 android:layout_marginEnd="@dimen/margin_small"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
