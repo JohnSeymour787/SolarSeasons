@@ -19,6 +19,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -126,7 +127,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
         settingsButton.setOnClickListener()
         {
-
+            parentFragmentManager.setFragmentResult(SettingsFragment.LAUNCH_SETTINGS_FRAGMENT_KEY, bundleOf())
         }
     }
 

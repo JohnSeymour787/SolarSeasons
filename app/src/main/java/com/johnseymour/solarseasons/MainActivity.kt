@@ -10,6 +10,14 @@ class MainActivity : AppCompatActivity()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        supportFragmentManager.setFragmentResultListener(SettingsFragment.LAUNCH_SETTINGS_FRAGMENT_KEY, this)
+        { _, _ ->
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragmentContainer, SettingsFragment())
+                .addToBackStack("")
+                .commit()
+        }
+
         // In case coming from a clicked widget
         val uvFragment = CurrentUVFragment.newInstance(intent.extras)
 
