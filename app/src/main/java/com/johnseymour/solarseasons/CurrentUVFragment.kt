@@ -147,6 +147,15 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
         // Actively update UI when background requests come in when activity is in foreground
         localBroadcastManager.registerReceiver(uvDataForegroundBroadcastReceiver, viewModel.uvDataChangedIntentFilter)
+
+        if (getWidgetIDs().isEmpty())
+        {
+            settingsButton.visibility = View.INVISIBLE
+        }
+        else
+        {
+            settingsButton.visibility = View.VISIBLE
+        }
     }
 
     override fun onPause()
