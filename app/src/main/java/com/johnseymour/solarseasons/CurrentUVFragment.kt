@@ -129,6 +129,22 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         {
             parentFragmentManager.setFragmentResult(SettingsFragment.LAUNCH_SETTINGS_FRAGMENT_KEY, bundleOf())
         }
+
+        parentFragmentManager.setFragmentResultListener(SettingsFragment.SETTINGS_UPDATED_FRAGMENT_RESULT_KEY, this)
+        { _, bundle ->
+            if (!bundle.isEmpty)
+            {
+                // Update widgets with new settings
+                val intent = Intent(requireContext(), SmallUVDisplay::class.java).apply()
+                {
+                    action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, getWidgetIDs())
+                    putExtras(bundle)
+                }
+
+                requireContext().sendBroadcast(intent)
+            }
+        }
     }
 
     override fun onResume()

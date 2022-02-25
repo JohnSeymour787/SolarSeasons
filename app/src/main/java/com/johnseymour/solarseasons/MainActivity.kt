@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity()
         { _, _ ->
             supportFragmentManager.beginTransaction()
                 .add(R.id.fragmentContainer, SettingsFragment())
-                .addToBackStack("")
+                .addToBackStack(null)
                 .commit()
         }
 

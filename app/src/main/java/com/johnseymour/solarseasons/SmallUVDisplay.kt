@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.PreferenceManager
 import androidx.work.*
 import java.io.FileNotFoundException
 import java.time.ZonedDateTime
@@ -27,13 +28,113 @@ class SmallUVDisplay : AppWidgetProvider()
     {
         private var uvData: UVData? = null
         private var latestError: ErrorStatus? = null
-        private var observer: Observer<List<WorkInfo>>? = null
+        private lateinit var observer: Observer<List<WorkInfo>>
         private var lastObserving: LiveData<List<WorkInfo>>? = null
         private var previousReceivingScreenOnBroadcastSetting = false
         private var usePeriodicWork = true
-        const val SET_USE_PERIODIC_WORK_KEY = "set_use_periodic_work_key"
+        private var backgroundRefreshRate = Constants.DEFAULT_REFRESH_TIME
+        private var companionFieldsInitialised = false
         const val SET_RECEIVING_SCREEN_UNLOCK_KEY = "set_receiving_screen_unlock_key"
+        const val SET_USE_PERIODIC_WORK_KEY = "set_use_periodic_work_key"
+        const val SET_BACKGROUND_REFRESH_RATE_KEY = "set_background_refresh_rate_key"
         const val START_BACKGROUND_WORK_KEY = "start_background_work_key"
+
+        private val userPresentFilter = IntentFilter(Intent.ACTION_USER_PRESENT)
+        private val userPresentReceiver = object: BroadcastReceiver()
+        {
+            override fun onReceive(context: Context?, intent: Intent?)
+            {
+                context ?: return
+                val luvData = uvData ?: return
+
+                if (!luvData.sunInSky()) { return }
+
+                // Compare uvData time with current time, if difference is greater than 30 minutes then make a new request
+                if (ChronoUnit.MINUTES.between(luvData.uvTime, ZonedDateTime.now()).absoluteValue > backgroundRefreshRate)
+                {
+                    prepareEarliestRequest(context)
+                }
+            }
+        }
+
+        private fun prepareEarliestRequest(context: Context)
+        {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_DENIED)
+            {
+                return
+            }
+
+            lastObserving?.removeObserver(observer)
+
+            lastObserving = if (usePeriodicWork)
+            {
+                UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = Constants.SHORTEST_REFRESH_TIME)
+            }
+            else
+            {
+                UVDataWorker.initiateOneTimeWorker(context, true, Constants.SHORTEST_REFRESH_TIME)
+            }
+
+            lastObserving?.observeForever(observer)
+        }
+
+        private fun createObserver(context: Context): Observer<List<WorkInfo>>
+        {
+            return Observer<List<WorkInfo>>
+            { workInfo ->
+                when (workInfo.firstOrNull()?.state)
+                {
+                    WorkInfo.State.ENQUEUED ->
+                    {
+                        val widgetIds = AppWidgetManager.getInstance(context)
+                            .getAppWidgetIds(ComponentName(context, SmallUVDisplay::class.java))
+
+                        // Update intents
+                        val widgetIntent = Intent(context, SmallUVDisplay::class.java)
+                            .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
+                            .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
+                            // This widget's onReceive() is not responsible for starting periodic work except for
+                            // special situations
+                            .putExtra(START_BACKGROUND_WORK_KEY, !usePeriodicWork)
+
+                        val activityIntent = Intent(context, MainActivity::class.java)
+                            .setAction(UVData.UV_DATA_UPDATED)
+
+                        LocationService.uvDataPromise?.success()
+                        {
+                            if (!UVDataWorker.ignoreWorkRequest)
+                            {
+                                uvData = it
+                                latestError = null
+
+                                DiskRepository.writeLatestUV(it, context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
+
+                                widgetIntent.putExtra(UVData.UV_DATA_KEY, it)
+                                activityIntent.putExtra(UVData.UV_DATA_KEY, it)
+
+                                context.sendBroadcast(widgetIntent)
+                                LocalBroadcastManager.getInstance(context).sendBroadcast(activityIntent)
+                            }
+                        }?.fail()
+                        {
+                            latestError = it
+
+                            activityIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
+
+                            context.sendBroadcast(widgetIntent)
+                            LocalBroadcastManager.getInstance(context).sendBroadcast(activityIntent)
+                        }
+                    }
+
+                    WorkInfo.State.CANCELLED ->
+                    {
+                        lastObserving?.removeObserver(observer)
+                    }
+
+                    else -> {}
+                }
+            }
+        }
     }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray)
@@ -58,105 +159,12 @@ class SmallUVDisplay : AppWidgetProvider()
     // First widget is created
     override fun onEnabled(context: Context)
     {
+        if (!companionFieldsInitialised)
+        {
+            configureWidgetCompanion(context)
+        }
+
         prepareEarliestRequest(context)
-    }
-
-    private fun prepareEarliestRequest(context: Context)
-    {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_DENIED)
-        {
-            return
-        }
-
-        observer?.let { lastObserving?.removeObserver(it) } ?: run { observer = createObserver(context) }
-
-        lastObserving = if (usePeriodicWork)
-        {
-            UVDataWorker.initiatePeriodicWorker(context, startDelay = Constants.SHORTEST_REFRESH_TIME)
-        }
-        else
-        {
-            UVDataWorker.initiateOneTimeWorker(context, true, Constants.SHORTEST_REFRESH_TIME)
-        }
-
-        observer?.let { lastObserving?.observeForever(it) }
-    }
-
-    private fun createObserver(context: Context): Observer<List<WorkInfo>>
-    {
-        return Observer<List<WorkInfo>>
-        { workInfo ->
-            when (workInfo.firstOrNull()?.state)
-            {
-                WorkInfo.State.ENQUEUED ->
-                {
-                    val widgetIds = AppWidgetManager.getInstance(context)
-                        .getAppWidgetIds(ComponentName(context, SmallUVDisplay::class.java))
-
-                    // Update intents
-                    val widgetIntent = Intent(context, SmallUVDisplay::class.java)
-                        .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
-                        .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
-                        // This widget's onReceive() is not responsible for starting periodic work except for
-                            // special situations
-                        .putExtra(START_BACKGROUND_WORK_KEY, !usePeriodicWork)
-
-                    val activityIntent = Intent(context, MainActivity::class.java)
-                        .setAction(UVData.UV_DATA_UPDATED)
-
-                    LocationService.uvDataPromise?.success()
-                    {
-                        if (!UVDataWorker.ignoreWorkRequest)
-                        {
-                            uvData = it
-                            latestError = null
-
-                            DiskRepository.writeLatestUV(it, context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
-
-                            widgetIntent.putExtra(UVData.UV_DATA_KEY, it)
-                            activityIntent.putExtra(UVData.UV_DATA_KEY, it)
-
-                            context.sendBroadcast(widgetIntent)
-                            LocalBroadcastManager.getInstance(context).sendBroadcast(activityIntent)
-                        }
-                    }?.fail()
-                    {
-                        latestError = it
-
-                        activityIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
-
-                        context.sendBroadcast(widgetIntent)
-                        LocalBroadcastManager.getInstance(context).sendBroadcast(activityIntent)
-                    }
-                }
-
-                WorkInfo.State.CANCELLED ->
-                {
-                    observer?.let { lastObserving?.removeObserver(it) }
-                }
-
-                else -> {}
-            }
-        }
-    }
-
-    private val userPresentFilter = IntentFilter(Intent.ACTION_USER_PRESENT)
-
-    private val userPresentReceiver = object: BroadcastReceiver()
-    {
-        override fun onReceive(context: Context?, intent: Intent?)
-        {
-            context ?: return
-            val luvData = uvData ?: return
-
-            if (!luvData.sunInSky()) { return }
-
-            // Compare uvData time with current time, if difference is greater than 30 minutes then make a new request
-            if (ChronoUnit.MINUTES.between(luvData.uvTime, ZonedDateTime.now()).absoluteValue > Constants.DEFAULT_REFRESH_TIME)
-            {
-                prepareEarliestRequest(context)
-            }
-        }
     }
 
     override fun onDisabled(context: Context)
@@ -164,9 +172,39 @@ class SmallUVDisplay : AppWidgetProvider()
         UVDataWorker.cancelWorker(context)
     }
 
+    /**
+     * Initialises companion object lateinit vars as well as reading the shared preferences for the widget and making
+     *  necessary configuration based on their values.
+     */
+    private fun configureWidgetCompanion(context: Context)
+    {
+        observer = createObserver(context)
+
+        PreferenceManager.getDefaultSharedPreferences(context.applicationContext).apply()
+        {
+            previousReceivingScreenOnBroadcastSetting = getBoolean(Constants.SharedPreferences.SUBSCRIBE_SCREEN_UNLOCK_KEY, previousReceivingScreenOnBroadcastSetting)
+
+            if (previousReceivingScreenOnBroadcastSetting)
+            {
+                context.applicationContext.registerReceiver(userPresentReceiver, userPresentFilter)
+            }
+
+            usePeriodicWork = getString(Constants.SharedPreferences.WORK_TYPE_KEY, Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE) == Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE
+
+            backgroundRefreshRate = getString(Constants.SharedPreferences.BACKGROUND_REFRESH_RATE_KEY, null)?.toLongOrNull() ?: backgroundRefreshRate
+        }
+
+        companionFieldsInitialised = true
+    }
+
     override fun onReceive(context: Context?, intent: Intent?)
     {
         context ?: return
+
+        if (!companionFieldsInitialised)
+        {
+            configureWidgetCompanion(context)
+        }
 
         // Send an immediate request on phone startup
         if (intent?.action == Intent.ACTION_BOOT_COMPLETED)
@@ -194,9 +232,18 @@ class SmallUVDisplay : AppWidgetProvider()
         {
             if (it != usePeriodicWork)
             {
+                usePeriodicWork = it
                 prepareEarliestRequest(context)
             }
-            usePeriodicWork = it
+        }
+
+        (intent?.getSerializableExtra(SET_BACKGROUND_REFRESH_RATE_KEY) as? Long)?.let()
+        {
+            if (it != backgroundRefreshRate)
+            {
+                backgroundRefreshRate = it
+                prepareEarliestRequest(context)
+            }
         }
 
         intent?.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
@@ -207,19 +254,18 @@ class SmallUVDisplay : AppWidgetProvider()
             // Don't initiate a background request if that permission isn't given
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED)
             {
-                observer?.let { lastObserving?.removeObserver(it) }
-
+                lastObserving?.removeObserver(observer)
                 return@let
             }
 
             if ((usePeriodicWork) && (!luvData.sunInSky()))
             {
-                observer?.let { lastObserving?.removeObserver(it) }
+                lastObserving?.removeObserver(observer)
 
                 // Delay the next automatic worker until the sunrise of the next day
-                lastObserving = UVDataWorker.initiatePeriodicWorker(context, startDelay = luvData.minutesUntilSunrise)
+                lastObserving = UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = luvData.minutesUntilSunrise)
 
-                observer?.let { lastObserving?.observeForever(it) }
+                lastObserving?.observeForever(observer)
 
                 return@let
             }
@@ -227,17 +273,17 @@ class SmallUVDisplay : AppWidgetProvider()
             if (intent.getBooleanExtra(START_BACKGROUND_WORK_KEY, false))
             {
                 // Stop observing any other work
-                observer?.let { lastObserving?.removeObserver(it) } ?: run { observer = createObserver(context) }
+                lastObserving?.removeObserver(observer)
 
                 lastObserving = if (usePeriodicWork)
                 {
-                    UVDataWorker.initiatePeriodicWorker(context)
+                    UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate)
                 }
                 else
                 {
                     if (luvData.sunInSky())
                     {
-                        UVDataWorker.initiateOneTimeWorker(context, true)
+                        UVDataWorker.initiateOneTimeWorker(context, true, backgroundRefreshRate)
                     }
                     else
                     {
@@ -247,7 +293,7 @@ class SmallUVDisplay : AppWidgetProvider()
                 }
 
                 // Begin observing new work
-                observer?.let { lastObserving?.observeForever(it) }
+                lastObserving?.observeForever(observer)
             }
         }
 
