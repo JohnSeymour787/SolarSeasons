@@ -1,0 +1,25 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SwitchPreferenceCompat
+        app:key="subscribe_screen_unlock"
+        app:title="@string/preference_subscribe_screen_unlock_title"
+        app:summary="@string/preference_subscribe_screen_unlock_summary"
+        app:defaultValue="true"/>
+
+    <ListPreference
+        app:key="work_type"
+        app:title="@string/preference_work_type_title"
+        app:entries="@array/preferences_work_type_entries"
+        app:entryValues="@array/preferences_work_type_values"
+        app:defaultValue="periodic_work"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
+        app:key="background_refresh_rate"
+        app:title="@string/preference_background_refresh_rate_title"
+        app:entries="@array/preferences_background_refresh_rate_entries"
+        app:entryValues="@array/preferences_background_refresh_rate_values"
+        app:defaultValue="30"
+        app:useSimpleSummaryProvider="true" />
+
+</PreferenceScreen>

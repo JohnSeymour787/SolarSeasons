@@ -74,7 +74,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         }
 
 
-        fun initiatePeriodicWorker(context: Context, startDelay: Long? = null, timeInterval: Long = Constants.DEFAULT_REFRESH_TIME): LiveData<List<WorkInfo>>
+        fun initiatePeriodicWorker(context: Context, startDelay: Long? = null, timeInterval: Long): LiveData<List<WorkInfo>>
         {
             val workManager = WorkManager.getInstance(context)
             workManager.cancelUniqueWork(WORK_NAME)
@@ -119,25 +119,33 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
             return workManager.getWorkInfosForUniqueWorkLiveData(WORK_NAME)
         }
 
+        fun locationServiceIntent(applicationContext: Context): Intent
+        {
+            return if (Constants.USE_GOOGLE_PLAY_LOCATION)
+            {
+                Intent(applicationContext, LocationServiceGooglePlay::class.java)
+            }
+            else
+            {
+                Intent(applicationContext, LocationServiceNonGoogle::class.java)
+            }
+        }
+
         fun cancelWorker(context: Context)
         {
             val workManager = WorkManager.getInstance(context)
             workManager.cancelUniqueWork(WORK_NAME)
         }
+
+        fun stopLocationService(applicationContext: Context)
+        {
+            applicationContext.stopService(locationServiceIntent(applicationContext))
+        }
     }
 
     override fun doWork(): Result
     {
-        val intent = if (Constants.USE_GOOGLE_PLAY_LOCATION)
-        {
-           Intent(applicationContext, LocationServiceGooglePlay::class.java)
-        }
-        else
-        {
-           Intent(applicationContext, LocationServiceNonGoogle::class.java)
-        }
-
-        applicationContext.startForegroundService(intent)
+        applicationContext.startForegroundService(locationServiceIntent(applicationContext))
 
         return Result.success()
     }

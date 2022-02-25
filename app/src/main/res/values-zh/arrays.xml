@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="preferences_work_type_entries">
+        <item>Periodic Work</item>
+        <item>Repeated One-Time Work</item>
+    </string-array>
+
+    <string-array name="preferences_background_refresh_rate_entries">
+        <item>15分钟</item>
+        <item>30分钟</item>
+        <item>1小时</item>
+        <item>2小时</item>
+        <item>4小时</item>
+    </string-array>
+</resources>

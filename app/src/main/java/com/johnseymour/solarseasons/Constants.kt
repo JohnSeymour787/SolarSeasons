@@ -21,4 +21,12 @@ object Constants
     const val MINUTES_PER_DAY = 1440
 
     const val USE_GOOGLE_PLAY_LOCATION = false
+
+    object SharedPreferences
+    {
+        const val SUBSCRIBE_SCREEN_UNLOCK_KEY = "subscribe_screen_unlock"
+        const val WORK_TYPE_KEY = "work_type"
+        const val DEFAULT_WORK_TYPE_VALUE = "periodic_work"
+        const val BACKGROUND_REFRESH_RATE_KEY = "background_refresh_rate"
+    }
 }
