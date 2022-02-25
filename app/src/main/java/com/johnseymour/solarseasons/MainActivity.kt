@@ -18,11 +18,14 @@ class MainActivity : AppCompatActivity()
                 .commit()
         }
 
-        // In case coming from a clicked widget
-        val uvFragment = CurrentUVFragment.newInstance(intent.extras)
+        if (savedInstanceState == null)
+        {
+            // In case coming from a clicked widget
+            val uvFragment = CurrentUVFragment.newInstance(intent.extras)
 
-        supportFragmentManager.beginTransaction()
-            .add(R.id.fragmentContainer, uvFragment)
-            .commit()
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragmentContainer, uvFragment)
+                .commit()
+        }
     }
 }
