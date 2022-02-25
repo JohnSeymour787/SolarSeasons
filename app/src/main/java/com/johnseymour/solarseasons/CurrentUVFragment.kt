@@ -127,10 +127,10 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
         settingsButton.setOnClickListener()
         {
-            parentFragmentManager.setFragmentResult(SettingsFragment.LAUNCH_SETTINGS_FRAGMENT_KEY, bundleOf())
+            parentFragmentManager.setFragmentResult(PreferenceScreenFragment.LAUNCH_SETTINGS_FRAGMENT_KEY, bundleOf())
         }
 
-        parentFragmentManager.setFragmentResultListener(SettingsFragment.SETTINGS_UPDATED_FRAGMENT_RESULT_KEY, this)
+        parentFragmentManager.setFragmentResultListener(PreferenceScreenFragment.SETTINGS_UPDATED_FRAGMENT_RESULT_KEY, this)
         { _, bundle ->
             if (!bundle.isEmpty)
             {

@@ -9,7 +9,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.preference.PreferenceFragmentCompat
 import androidx.core.os.bundleOf
 
-class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener
+class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener
 {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?)
     {
