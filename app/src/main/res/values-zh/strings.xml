@@ -91,4 +91,6 @@
     <plurals name="exposure_time_minutes">
         <item quantity="other">%d分钟</item>
     </plurals>
+
+    <string name="settings_fragment_title">Widget Settings</string>
 </resources>

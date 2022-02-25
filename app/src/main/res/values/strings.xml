@@ -92,4 +92,6 @@
         <item quantity="one">%d min</item>
         <item quantity="other">%d mins</item>
     </plurals>
+
+    <string name="settings_fragment_title">Widget Settings</string>
 </resources>

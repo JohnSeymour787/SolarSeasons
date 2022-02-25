@@ -10,10 +10,10 @@ class MainActivity : AppCompatActivity()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        supportFragmentManager.setFragmentResultListener(PreferenceScreenFragment.LAUNCH_SETTINGS_FRAGMENT_KEY, this)
+        supportFragmentManager.setFragmentResultListener(SettingsFragment.LAUNCH_SETTINGS_FRAGMENT_KEY, this)
         { _, _ ->
             supportFragmentManager.beginTransaction()
-                .add(R.id.fragmentContainer, PreferenceScreenFragment())
+                .add(R.id.fragmentContainer, SettingsFragment.newInstance())
                 .addToBackStack(null)
                 .commit()
         }
