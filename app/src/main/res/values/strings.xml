@@ -86,7 +86,7 @@
     <string name="preference_subscribe_screen_unlock_title">Retrieve UV data on screen unlock</string>
     <string name="preference_subscribe_screen_unlock_summary">Immediately updates UV data when the device is unlocked</string>
     <string name="preference_background_refresh_rate_title">Background refresh rate</string>
-    <string name="preferences_screen_background_processing_explanation">Some versions of the Android operating system kill background processes after a while, meaning that the app widget might not always refresh consistently. Adjusting the settings on this screen may improve the reliability of the background data synchronisation.</string>
+    <string name="preferences_screen_background_processing_explanation">Some versions of the Android operating system kill background processes after a while, meaning that the app widget might not always refresh consistently.\n\nAdjusting the settings on this screen may improve the reliability of the background data synchronisation.</string>
 
     <plurals name="exposure_time_minutes">
         <item quantity="one">%d min</item>
@@ -94,4 +94,6 @@
     </plurals>
 
     <string name="settings_fragment_title">Widget Settings</string>
+    <string name="settings_fragment_stop_background_button_text">Force Stop App Background Work</string>
+    <string name="settings_fragment_stop_background_success">App Background Processes Stopped</string>
 </resources>
