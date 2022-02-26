@@ -49,8 +49,8 @@ class SmallUVDisplay : AppWidgetProvider()
 
                 if (!luvData.sunInSky()) { return }
 
-                // Compare uvData time with current time, if difference is greater than 30 minutes then make a new request
-                if (ChronoUnit.MINUTES.between(luvData.uvTime, ZonedDateTime.now()).absoluteValue > backgroundRefreshRate)
+                // Compare uvData time with current time, if difference is greater than the backgroundRefreshRate then make a new request
+                if (ChronoUnit.MINUTES.between(luvData.uvTime, ZonedDateTime.now()).absoluteValue > (backgroundRefreshRate + Constants.WORK_EXECUTION_SLACK_TIME))
                 {
                     prepareEarliestRequest(context)
                 }

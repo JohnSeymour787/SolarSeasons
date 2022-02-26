@@ -17,6 +17,9 @@ object Constants
     /** Shortest time interval to call the API, in minutes **/
     const val SHORTEST_REFRESH_TIME = 1L
 
+    /** Slight buffer time to allow for work to be executed and completed, as it is not an exact job **/
+    const val WORK_EXECUTION_SLACK_TIME = 5L
+
     const val MINUTES_PER_HOUR = 60
     const val MINUTES_PER_DAY = 1440
 
