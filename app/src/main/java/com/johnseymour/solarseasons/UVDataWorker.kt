@@ -76,7 +76,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
         fun initiatePeriodicWorker(context: Context, startDelay: Long? = null, timeInterval: Long): LiveData<List<WorkInfo>>
         {
-            val workManager = WorkManager.getInstance(context)
+            val workManager = WorkManager.getInstance(context.applicationContext)
             workManager.cancelUniqueWork(WORK_NAME)
 
             val delay = startDelay ?: timeInterval
@@ -94,7 +94,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
         fun initiateOneTimeWorker(context: Context, delayedStart: Boolean = false, delayTime: Long = Constants.DEFAULT_REFRESH_TIME): LiveData<List<WorkInfo>>
         {
-            val workManager = WorkManager.getInstance(context)
+            val workManager = WorkManager.getInstance(context.applicationContext)
             workManager.cancelUniqueWork(WORK_NAME)
 
             // First time creating, to avoid making the same thing
