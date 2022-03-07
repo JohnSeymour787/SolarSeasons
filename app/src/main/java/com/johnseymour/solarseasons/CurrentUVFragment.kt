@@ -278,6 +278,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         appStatusInformation.text = errorStatus.statusString(resources)
         appStatusInformation.visibility = View.VISIBLE
         layout.setBackgroundColor(resources.getColor(R.color.uv_low, requireContext().theme))
+        settingsButton.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.dark_text, requireContext().theme))
 
         uvValue.visibility = View.INVISIBLE
         uvText.visibility = View.INVISIBLE
