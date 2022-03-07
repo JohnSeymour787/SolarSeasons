@@ -314,7 +314,7 @@ class SmallUVDisplay : AppWidgetProvider()
             latestError != null -> // Error has occurred
             {
                 views.setTextViewText(R.id.uvValue, context.getString(R.string.widget_error))
-                views.setTextColor(R.id.uvValue, context.resources.getColor(R.color.primary_text, context.theme))
+                views.setTextColor(R.id.uvValue, context.resources.getColor(R.color.dark_text, context.theme))
 
                 views.setViewVisibility(R.id.widgetSunProgress, View.INVISIBLE)
                 views.setViewVisibility(R.id.updatedTime, View.INVISIBLE)

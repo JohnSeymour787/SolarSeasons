@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/uv_low"
+    android:background="?android:windowBackground"
     android:clickable="true"
     android:fitsSystemWindows="true"
     tools:context=".SettingsFragment">
@@ -20,10 +20,10 @@
             android:layout_height="wrap_content"
             android:text="@string/settings_fragment_title"
             android:textSize="@dimen/widget_text_large"
-            android:textColor="@color/primary_text"
+            android:textColor="?android:colorPrimary"
             android:textStyle="bold"
             android:layout_marginTop="@dimen/margin_medium"
-            android:layout_marginHorizontal="@dimen/margin_small"
+            android:layout_marginHorizontal="@dimen/margin_medium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,11 +31,11 @@
             android:id="@+id/backgroundIssuesText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/primary_text"
+            android:textColor="?android:textColorSecondary"
             android:textSize="@dimen/text_default"
             android:text="@string/preferences_screen_background_processing_explanation"
             android:layout_marginTop="@dimen/margin_medium"
-            android:layout_marginHorizontal="@dimen/margin_small"
+            android:layout_marginHorizontal="@dimen/margin_medium"
             app:layout_constraintTop_toBottomOf="@id/titleLabel"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -53,6 +53,8 @@
             android:layout_height="wrap_content"
             android:text="@string/settings_fragment_stop_background_button_text"
             android:layout_marginTop="@dimen/margin_medium"
+            android:textColor="@color/dark_text"
+            android:background="@drawable/widget_background_shape"
             app:layout_constraintTop_toBottomOf="@id/preferencesFragmentContainer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

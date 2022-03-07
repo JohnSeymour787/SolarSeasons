@@ -2,13 +2,13 @@
     <!-- Base application theme. -->
     <style name="Theme.SolarSeasons" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/green</item>
+        <item name="colorPrimary">@color/uv_low</item>
         <item name="colorPrimaryVariant">@color/uv_low</item>
-        <item name="colorOnPrimary">@color/secondary_text</item>
+        <item name="colorOnPrimary">@color/light_text</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/uv_moderate</item>
         <item name="colorSecondaryVariant">@color/uv_moderate</item>
-        <item name="colorOnSecondary">@color/primary_text</item>
+        <item name="colorOnSecondary">@color/dark_text</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">@android:color/transparent</item>
         <!-- Customize your theme here. -->
@@ -16,10 +16,11 @@
 
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">true</item>
+        <item name="colorAccent">@color/uv_low</item>
     </style>
 
     <style name="ThemeOverlay.SolarSeasons.AppWidgetContainer" parent="">
-        <item name="appWidgetBackgroundColor">@color/light_blue_600</item>
-        <item name="appWidgetTextColor">@color/light_blue_50</item>
+        <item name="appWidgetBackgroundColor">?android:colorPrimary</item>
+        <item name="appWidgetTextColor">?android:textColorPrimary</item>
     </style>
 </resources>
