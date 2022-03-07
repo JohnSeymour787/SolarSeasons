@@ -54,6 +54,7 @@
             android:text="@string/settings_fragment_stop_background_button_text"
             android:layout_marginTop="@dimen/margin_medium"
             android:textColor="@color/dark_text"
+            android:textStyle="bold"
             android:background="@drawable/widget_background_shape"
             app:layout_constraintTop_toBottomOf="@id/preferencesFragmentContainer"
             app:layout_constraintStart_toStartOf="parent"
