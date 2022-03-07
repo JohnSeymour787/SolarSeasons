@@ -17,8 +17,7 @@
         <item name="preferenceTheme">@style/Theme.App.Preferences</item>
 
         <item name="colorAccent">@color/uv_low</item>
-
-        <item name="android:windowBackground">@color/light_window_background</item>W
+        <item name="android:windowBackground">@color/light_window_background</item>
     </style>
 
     <style name="ThemeOverlay.SolarSeasons.AppWidgetContainer" parent="">
