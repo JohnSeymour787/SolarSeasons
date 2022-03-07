@@ -29,4 +29,6 @@
     <style name="Theme.App.Preferences" parent="PreferenceThemeOverlay">
         <item name="android:textColor">@color/dark_text</item>
     </style>
+
+    <color name="section_background_transparent_colour">@color/black</color>
 </resources>
