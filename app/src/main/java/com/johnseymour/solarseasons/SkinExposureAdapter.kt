@@ -25,8 +25,12 @@ class SkinExposureAdapter(private val exposureTimes: List<Map.Entry<String, Int>
         val cell = SkinExposureViewCell(parent.context).apply()
         {
             layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
-            skinType.setTextColor(resources.getColor(textColorInt, context.theme))
-            exposureTime.setTextColor(resources.getColor(textColorInt, context.theme))
+
+            if (Constants.USE_COLOURED_UV_BACKGROUND)
+            {
+                skinType.setTextColor(resources.getColor(textColorInt, context.theme))
+                exposureTime.setTextColor(resources.getColor(textColorInt, context.theme))
+            }
         }
 
         return SkinExposureViewHolder(cell)

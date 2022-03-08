@@ -27,8 +27,12 @@ class SunInfoAdapter(private val sunTimes: List<SunInfo.SunTimeData>, private va
         val cell = SunInfoViewCell(parent.context).apply()
         {
             layoutParams = ConstraintLayout.LayoutParams(resources.getDimensionPixelSize(R.dimen.cell_sun_info_width), resources.getDimensionPixelSize(R.dimen.cell_sun_info_height))
-            infoTitle.setTextColor(resources.getColor(textColorInt, context.theme))
-            infoTime.setTextColor(resources.getColor(textColorInt, context.theme))
+
+            if (Constants.USE_COLOURED_UV_BACKGROUND)
+            {
+                infoTitle.setTextColor(resources.getColor(textColorInt, context.theme))
+                infoTime.setTextColor(resources.getColor(textColorInt, context.theme))
+            }
         }
 
         return SunInfoViewHolder(cell)

@@ -299,32 +299,22 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
     private fun displayNewUVData(lUVData: UVData)
     {
-        layout.setBackgroundColor(resources.getColor(lUVData.backgroundColorInt, requireContext().theme))
-
-        settingsButton.imageTintList = ColorStateList.valueOf(resources.getColor(lUVData.textColorInt, requireContext().theme))
-
         uvValue.visibility = View.VISIBLE
         uvValue.text = resources.getString(R.string.uv_value, lUVData.uv)
-        uvValue.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
 
         uvText.visibility = View.VISIBLE
         uvText.text = resources.getText(lUVData.uvLevelTextInt)
-        uvText.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
 
         maxUV.visibility = View.VISIBLE
         maxUV.text = resources.getString(R.string.max_uv, lUVData.uvMax)
-        maxUV.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
 
         maxUVTime.visibility = View.VISIBLE
         maxUVTime.text = resources.getString(R.string.max_uv_time, preferredTimeString(requireContext(), lUVData.uvMaxTime))
-        maxUVTime.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
 
         lastUpdated.visibility = View.VISIBLE
         lastUpdated.text = resources.getString(R.string.latest_update, preferredTimeString(requireContext(), lUVData.uvTime))
-        lastUpdated.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
 
         sunProgressLabel.visibility = View.VISIBLE
-        sunProgressLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         sunProgressLabel.setText(R.string.sun_progress_label)
         if (sunProgressLabel.lineCount > 1)
         {
@@ -338,12 +328,9 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         sunInfoListBackground.visibility = View.VISIBLE
 
         sunInfoListTitleLabel.visibility = View.VISIBLE
-        sunInfoListTitleLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
 
         sunInfoListSubLabel.visibility = View.VISIBLE
-        sunInfoListSubLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
 
-        skinExposureLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         lUVData.safeExposure?.entries?.toList()?.let()
         {
             skinExposureList.adapter = SkinExposureAdapter(it, lUVData.textColorInt)
@@ -374,6 +361,39 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
         appStatusInformation.visibility = View.INVISIBLE
         launchAppDetailsButton.visibility = View.INVISIBLE
+
+        if (Constants.USE_COLOURED_UV_BACKGROUND)
+        {
+            updateDynamicColours(lUVData)
+        }
+        else
+        {
+            // If using the default app theme, only apply colours to the UV value and the progress bar
+            uvValue.setTextColor(resources.getColor(lUVData.backgroundColorInt, requireContext().theme))
+            sunProgress.progressDrawable.setTint(resources.getColor(lUVData.backgroundColorInt, requireContext().theme))
+        }
+    }
+
+    private fun updateDynamicColours(lUVData: UVData)
+    {
+        layout.setBackgroundColor(resources.getColor(lUVData.backgroundColorInt, requireContext().theme))
+
+        settingsButton.imageTintList = ColorStateList.valueOf(resources.getColor(lUVData.textColorInt, requireContext().theme))
+
+        uvValue.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+
+        uvText.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        maxUV.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        maxUVTime.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        lastUpdated.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        sunProgressLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        sunInfoListTitleLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        sunInfoListSubLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        skinExposureLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+
+        skinExposureBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+        sunInfoListBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+        sunProgressLabelBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
     }
 
     private fun sunTimeOnClick(sunTimeData: SunInfo.SunTimeData)

@@ -25,6 +25,8 @@ object Constants
 
     const val USE_GOOGLE_PLAY_LOCATION = false
 
+    const val USE_COLOURED_UV_BACKGROUND = true
+
     object SharedPreferences
     {
         const val SUBSCRIBE_SCREEN_UNLOCK_KEY = "subscribe_screen_unlock"
