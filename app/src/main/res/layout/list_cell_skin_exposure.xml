@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
@@ -22,6 +22,7 @@
         android:layout_marginStart="@dimen/list_view_cell_spacing"
         tools:text="Skin Type 1"
         android:textStyle="bold"
+        android:textColor="?android:textColorPrimary"
         android:gravity="center"
         android:lines="1"
         android:autoSizeTextType="uniform"
@@ -39,6 +40,7 @@
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/list_view_cell_spacing"
         tools:text="53 mins"
+        android:textColor="?android:textColorSecondary"
         android:gravity="center_vertical"
         android:lines="1"
         android:autoSizeTextType="uniform"
@@ -51,4 +53,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</merge>
