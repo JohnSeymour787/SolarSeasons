@@ -6,6 +6,7 @@
     <color name="dark_window_background">#2E2E2E</color>
     <color name="dark_text">#3A3434</color>
     <color name="light_text">#FFFFFFFF</color>
+    <color name="progress_bar_tint">#C5C5C5</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#388E3C</color>
 
