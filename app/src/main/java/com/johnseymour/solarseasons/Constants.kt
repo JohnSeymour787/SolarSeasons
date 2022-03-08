@@ -33,5 +33,7 @@ object Constants
         const val WORK_TYPE_KEY = "work_type"
         const val DEFAULT_WORK_TYPE_VALUE = "periodic_work"
         const val BACKGROUND_REFRESH_RATE_KEY = "background_refresh_rate"
+        const val APP_THEME_KEY = "app_theme"
+        const val DEFAULT_APP_THEME_VALUE = "default_theme"
     }
 }

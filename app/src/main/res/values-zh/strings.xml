@@ -82,6 +82,7 @@
     <string name="skin_type_5">皮肤类型5</string>
     <string name="skin_type_6">皮肤类型6</string>
 
+    <string name="preference_app_theme_title">UV Screen Theme</string>
     <string name="preference_work_type_title">Background work type used</string>
     <string name="preference_subscribe_screen_unlock_title">Retrieve UV data on screen unlock</string>
     <string name="preference_subscribe_screen_unlock_summary">Updates UV data when the device is unlocked after the background refresh rate is exceeded</string>
@@ -92,7 +93,7 @@
         <item quantity="other">%d分钟</item>
     </plurals>
 
-    <string name="settings_fragment_title">Widget Settings</string>
+    <string name="settings_fragment_title">App Settings</string>
     <string name="settings_fragment_stop_background_button_text">Force Stop App Background Work</string>
     <string name="settings_fragment_stop_background_success">App Background Processes Stopped</string>
 </resources>

@@ -1,5 +1,14 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <ListPreference
+        app:key="app_theme"
+        app:title="@string/preference_app_theme_title"
+        app:iconSpaceReserved="false"
+        app:entries="@array/preferences_app_theme_entries"
+        app:entryValues="@array/preferences_app_theme_values"
+        app:useSimpleSummaryProvider="true"
+        app:defaultValue="default_theme"/>
+
     <SwitchPreferenceCompat
         app:key="subscribe_screen_unlock"
         app:title="@string/preference_subscribe_screen_unlock_title"

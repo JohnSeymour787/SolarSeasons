@@ -31,4 +31,14 @@
         <item>120</item>
         <item>240</item>
     </string-array>
+
+    <string-array name="preferences_app_theme_entries">
+        <item>Default - Follows Device Theme</item>
+        <item>Custom - Colour Depends on UV Level</item>
+    </string-array>
+
+    <string-array name="preferences_app_theme_values">
+        <item>default_theme</item>
+        <item>custom_theme</item>
+    </string-array>
 </resources>

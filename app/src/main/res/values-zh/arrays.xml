@@ -12,4 +12,9 @@
         <item>2小时</item>
         <item>4小时</item>
     </string-array>
+
+    <string-array name="preferences_app_theme_entries">
+        <item>Default - Follows Device Theme</item>
+        <item>Custom - Colour Depends on UV Level</item>
+    </string-array>
 </resources>
