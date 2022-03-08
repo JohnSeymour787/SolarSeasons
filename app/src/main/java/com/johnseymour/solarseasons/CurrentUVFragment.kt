@@ -145,6 +145,15 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
                 requireContext().sendBroadcast(intent)
             }
         }
+
+        if (Constants.USE_COLOURED_UV_BACKGROUND)
+        {
+            disableLightStatusBar(requireActivity().window.decorView)
+        }
+        else
+        {
+            enableLightStatusBar(requireActivity().window.decorView, resources.configuration)
+        }
     }
 
     override fun onResume()

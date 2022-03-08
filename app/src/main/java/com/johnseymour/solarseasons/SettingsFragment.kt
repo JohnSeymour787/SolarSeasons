@@ -32,22 +32,9 @@ class SettingsFragment : Fragment()
             Toast.makeText(lApplicationContext, R.string.settings_fragment_stop_background_success, Toast.LENGTH_LONG).show()
         }
 
-        // If not in dark mode, enable the light-mode status bar for this screen only
-        val lDecorView = requireActivity().window.decorView
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R)
+        if (Constants.USE_COLOURED_UV_BACKGROUND)
         {
-            if (!resources.configuration.isNightModeActive)
-            {
-                lDecorView.windowInsetsController?.setSystemBarsAppearance(WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-            }
-        }
-        else
-        {
-            if (resources.configuration.uiMode == Configuration.UI_MODE_NIGHT_NO)
-            {
-                @Suppress("DEPRECATION")
-                lDecorView.systemUiVisibility = lDecorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            }
+            enableLightStatusBar(requireActivity().window.decorView, resources.configuration)
         }
     }
 
@@ -55,22 +42,10 @@ class SettingsFragment : Fragment()
     {
         super.onDestroy()
 
-        // If wasn't in dark mode, disable the light-mode status bar when leave this screen
-        val lDecorView = requireActivity().window.decorView
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R)
+        if (Constants.USE_COLOURED_UV_BACKGROUND)
         {
-            if (!resources.configuration.isNightModeActive)
-            {
-                lDecorView.windowInsetsController?.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-            }
-        }
-        else
-        {
-            if (resources.configuration.uiMode != Configuration.UI_MODE_NIGHT_YES)
-            {
-                @Suppress("DEPRECATION")
-                lDecorView.systemUiVisibility = lDecorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-            }
+            // Disable the light-mode status bar when leaving this screen
+            disableLightStatusBar(requireActivity().window.decorView)
         }
     }
 
