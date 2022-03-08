@@ -29,5 +29,5 @@
         <item name="android:textColor">@color/dark_text</item>
     </style>
 
-    <color name="section_background_transparent_colour">@color/black</color>
+    <color name="section_background_transparent_colour">#ACACAC</color>
 </resources>
