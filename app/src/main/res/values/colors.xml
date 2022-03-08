@@ -5,7 +5,7 @@
     <color name="light_window_background">#F8F8F8</color>
     <color name="dark_window_background">#2E2E2E</color>
     <color name="dark_text">#3A3434</color>
-    <color name="light_text">#C5C5C5</color>
+    <color name="light_text">#FFFFFFFF</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#388E3C</color>
 
