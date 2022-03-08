@@ -1,5 +1,7 @@
 package com.johnseymour.solarseasons
 
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
@@ -147,3 +149,18 @@ fun Context.resolveThemeAttr(@AttrRes attrRes: Int): TypedValue
     theme.resolveAttribute(attrRes, typedValue, true)
     return typedValue
 }
+
+/**
+ * Gets all IDs for app widgets that exist on the user's home screen
+ *
+ * @return IntArray containing the integer IDs of all app widgets. Empty array if no widgets found
+ */
+fun Context.getWidgetIDs(): IntArray = AppWidgetManager.getInstance(this).getAppWidgetIds(ComponentName(this, SmallUVDisplay::class.java))
+
+/**
+ * Checks if there are any application widgets on the user's home screen
+ *
+ * @return - true if at least 1 widget
+ *         - false if no widgets
+ */
+fun Context.hasWidgets(): Boolean = this.getWidgetIDs().isNotEmpty()

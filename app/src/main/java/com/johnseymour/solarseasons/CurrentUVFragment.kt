@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.BroadcastReceiver
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -89,7 +88,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
             requireContext().checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED ->
             {
-                if (getWidgetIDs().isNotEmpty())
+                if (requireContext().hasWidgets())
                 {
                     val backgroundOptionLabel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                     {
@@ -156,7 +155,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
                 val intent = Intent(requireContext(), SmallUVDisplay::class.java).apply()
                 {
                     action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, getWidgetIDs())
+                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, requireContext().getWidgetIDs())
                     putExtras(bundle)
                 }
 
@@ -190,15 +189,6 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
         // Actively update UI when background requests come in when activity is in foreground
         localBroadcastManager.registerReceiver(uvDataForegroundBroadcastReceiver, viewModel.uvDataChangedIntentFilter)
-
-        if (getWidgetIDs().isEmpty())
-        {
-            settingsButton.visibility = View.INVISIBLE
-        }
-        else
-        {
-            settingsButton.visibility = View.VISIBLE
-        }
     }
 
     override fun onPause()
@@ -268,7 +258,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
                     DiskRepository.writeLatestUV(lUVData, requireContext().getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
 
-                    val ids = getWidgetIDs()
+                    val ids = requireContext().getWidgetIDs()
                     if (ids.isNotEmpty())
                     {
                         // Update all widgets
@@ -456,8 +446,6 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
         builder.create().show()
     }
-
-    private fun getWidgetIDs(): IntArray = AppWidgetManager.getInstance(requireContext()).getAppWidgetIds(ComponentName(requireContext(), SmallUVDisplay::class.java))
 
     private fun launchAppDetailsActivity()
     {
