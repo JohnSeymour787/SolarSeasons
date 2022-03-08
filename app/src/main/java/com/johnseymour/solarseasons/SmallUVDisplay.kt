@@ -49,8 +49,8 @@ class SmallUVDisplay : AppWidgetProvider()
 
                 if (!luvData.sunInSky()) { return }
 
-                // Compare uvData time with current time, if difference is greater than 30 minutes then make a new request
-                if (ChronoUnit.MINUTES.between(luvData.uvTime, ZonedDateTime.now()).absoluteValue > backgroundRefreshRate)
+                // Compare uvData time with current time, if difference is greater than the backgroundRefreshRate then make a new request
+                if (ChronoUnit.MINUTES.between(luvData.uvTime, ZonedDateTime.now()).absoluteValue > (backgroundRefreshRate + Constants.WORK_EXECUTION_SLACK_TIME))
                 {
                     prepareEarliestRequest(context)
                 }
@@ -314,7 +314,7 @@ class SmallUVDisplay : AppWidgetProvider()
             latestError != null -> // Error has occurred
             {
                 views.setTextViewText(R.id.uvValue, context.getString(R.string.widget_error))
-                views.setTextColor(R.id.uvValue, context.resources.getColor(R.color.primary_text, context.theme))
+                views.setTextColor(R.id.uvValue, context.resources.getColor(R.color.dark_text, context.theme))
 
                 views.setViewVisibility(R.id.widgetSunProgress, View.INVISIBLE)
                 views.setViewVisibility(R.id.updatedTime, View.INVISIBLE)

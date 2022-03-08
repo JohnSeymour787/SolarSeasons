@@ -45,7 +45,7 @@ data class UVData(
         get() =
             if (uv < UV_HIGH)
             {
-                R.color.primary_text
+                R.color.dark_text
             }
             else
             {

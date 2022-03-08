@@ -1,25 +1,33 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.SolarSeasons" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/green</item>
-        <item name="colorPrimaryVariant">@color/uv_low</item>
-        <item name="colorOnPrimary">@color/secondary_text</item>
-        <!-- Secondary brand color. -->
+        <!-- Primary brand colour -->
+        <item name="colorPrimary">@color/uv_low</item>
+        <item name="android:textColorPrimary">@color/light_text</item>
+        <!-- Secondary brand colour. -->
         <item name="colorSecondary">@color/uv_moderate</item>
-        <item name="colorSecondaryVariant">@color/uv_moderate</item>
-        <item name="colorOnSecondary">@color/primary_text</item>
-        <!-- Status bar color. -->
+        <item name="android:textColorSecondary">@color/dark_text</item>>
+        <!-- Status bar colour and style -->
         <item name="android:statusBarColor" tools:targetApi="l">@android:color/transparent</item>
-        <!-- Customize your theme here. -->
-        <item name="fontFamily">@font/quicksand_medium</item>
-
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">true</item>
+
+        <item name="fontFamily">@font/quicksand_medium</item>
+
+        <item name="preferenceTheme">@style/Theme.App.Preferences</item>
+
+        <item name="colorAccent">@color/uv_low</item>
+        <item name="android:windowBackground">@color/light_window_background</item>
     </style>
 
     <style name="ThemeOverlay.SolarSeasons.AppWidgetContainer" parent="">
-        <item name="appWidgetBackgroundColor">@color/light_blue_600</item>
-        <item name="appWidgetTextColor">@color/light_blue_50</item>
+        <item name="appWidgetBackgroundColor">?android:colorPrimary</item>
+        <item name="appWidgetTextColor">?android:textColorPrimary</item>
     </style>
+
+    <style name="Theme.App.Preferences" parent="PreferenceThemeOverlay">
+        <item name="android:textColor">@color/dark_text</item>
+    </style>
+
+    <color name="section_background_transparent_colour">@color/black</color>
 </resources>

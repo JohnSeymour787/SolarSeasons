@@ -251,8 +251,6 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
                             putExtra(UVData.UV_DATA_KEY, lUVData)
                             putExtra(SmallUVDisplay.START_BACKGROUND_WORK_KEY, true) // Will result in background updates if the relevant permission is granted
                             putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-                            putExtra(SmallUVDisplay.SET_RECEIVING_SCREEN_UNLOCK_KEY, true) //TODO() To be sent from an intent from a settings screen
-                            putExtra(SmallUVDisplay.SET_USE_PERIODIC_WORK_KEY, false) //TODO() To be sent from an intent from a settings screen
                         }
 
                         requireContext().sendBroadcast(intent)
@@ -280,6 +278,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         appStatusInformation.text = errorStatus.statusString(resources)
         appStatusInformation.visibility = View.VISIBLE
         layout.setBackgroundColor(resources.getColor(R.color.uv_low, requireContext().theme))
+        settingsButton.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.dark_text, requireContext().theme))
 
         uvValue.visibility = View.INVISIBLE
         uvText.visibility = View.INVISIBLE
