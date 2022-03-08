@@ -5,8 +5,11 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.text.format.DateFormat
+import android.util.TypedValue
 import android.view.View
 import android.view.WindowInsetsController
+import androidx.annotation.AttrRes
+import androidx.core.content.ContextCompat
 import com.google.gson.JsonElement
 import java.time.DateTimeException
 import java.time.Instant
@@ -119,4 +122,28 @@ fun disableLightStatusBar(decorView: View)
         @Suppress("DEPRECATION")
         decorView.systemUiVisibility = decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
     }
+}
+
+/**
+ * Retrieves a colour int for a given android.R.attr colour attribute
+ *
+ * @author https://stackoverflow.com/a/46477727/18054709
+ */
+fun Context.resolveColourAttr(@AttrRes colorAttr: Int): Int {
+    val resolvedAttr = resolveThemeAttr(colorAttr)
+    // resourceId is used if it's a ColorStateList, and data if it's a colour reference or a hex color
+    val colourRes = if (resolvedAttr.resourceId != 0) resolvedAttr.resourceId else resolvedAttr.data
+    return ContextCompat.getColor(this, colourRes)
+}
+
+/**
+ * Retrieves a theme's TypedValue for a given android.R.attr attribute
+ *
+ * @author https://stackoverflow.com/a/46477727/18054709
+ */
+fun Context.resolveThemeAttr(@AttrRes attrRes: Int): TypedValue
+{
+    val typedValue = TypedValue()
+    theme.resolveAttribute(attrRes, typedValue, true)
+    return typedValue
 }

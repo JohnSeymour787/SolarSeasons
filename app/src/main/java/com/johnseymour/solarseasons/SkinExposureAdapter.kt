@@ -26,7 +26,7 @@ class SkinExposureAdapter(private val exposureTimes: List<Map.Entry<String, Int>
         {
             layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
 
-            if (Constants.USE_COLOURED_UV_BACKGROUND)
+            if (CurrentUVFragment.CAKE)
             {
                 skinType.setTextColor(resources.getColor(textColorInt, context.theme))
                 exposureTime.setTextColor(resources.getColor(textColorInt, context.theme))

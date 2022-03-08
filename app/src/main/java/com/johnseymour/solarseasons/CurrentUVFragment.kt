@@ -127,6 +127,24 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
         settingsButton.setOnClickListener()
         {
+      //      CAKE = !CAKE
+
+            if (CAKE)
+            {
+                // Set one-time colours (all others are dynamically updated in #displayNewUVData())
+                sunProgress.progressDrawable.setTint(resources.getColor(R.color.progress_bar_tint, requireContext().theme))
+
+                skinExposureBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+                sunInfoListBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+                sunProgressLabelBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+            }
+            else
+            {
+                setStaticThemeColours()
+            }
+
+            viewModel.uvData?.let { displayNewUVData(it) }
+
             parentFragmentManager.setFragmentResult(SettingsFragment.LAUNCH_SETTINGS_FRAGMENT_KEY, bundleOf())
         }
 
@@ -146,7 +164,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
             }
         }
 
-        if (Constants.USE_COLOURED_UV_BACKGROUND)
+        if (CAKE)
         {
             disableLightStatusBar(requireActivity().window.decorView)
         }
@@ -371,7 +389,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         appStatusInformation.visibility = View.INVISIBLE
         launchAppDetailsButton.visibility = View.INVISIBLE
 
-        if (Constants.USE_COLOURED_UV_BACKGROUND)
+        if (CAKE)
         {
             updateDynamicColours(lUVData)
         }
@@ -381,6 +399,32 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
             uvValue.setTextColor(resources.getColor(lUVData.backgroundColorInt, requireContext().theme))
             sunProgress.progressDrawable.setTint(resources.getColor(lUVData.backgroundColorInt, requireContext().theme))
         }
+    }
+
+    /**
+     * One-time setting of text and background colours for when the non UV-based colour option is selected
+     */
+    private fun setStaticThemeColours()
+    {
+        layout.setBackgroundColor(requireContext().resolveColourAttr(android.R.attr.windowBackground))
+
+        val primaryTextColourInt = requireContext().resolveColourAttr(android.R.attr.textColorPrimary)
+        settingsButton.imageTintList = ColorStateList.valueOf(primaryTextColourInt)
+
+        uvText.setTextColor(primaryTextColourInt)
+        maxUV.setTextColor(primaryTextColourInt)
+        maxUVTime.setTextColor(primaryTextColourInt)
+        lastUpdated.setTextColor(primaryTextColourInt)
+        sunProgressLabel.setTextColor(primaryTextColourInt)
+        sunInfoListTitleLabel.setTextColor(primaryTextColourInt)
+        sunInfoListSubLabel.setTextColor(primaryTextColourInt)
+        skinExposureLabel.setTextColor(primaryTextColourInt)
+
+        enableLightStatusBar(requireActivity().window.decorView, resources.configuration)
+
+        skinExposureBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
+        sunInfoListBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
+        sunProgressLabelBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
     }
 
     private fun updateDynamicColours(lUVData: UVData)
@@ -399,11 +443,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         sunInfoListTitleLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         sunInfoListSubLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         skinExposureLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
-
-        skinExposureBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
-        sunInfoListBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
-        sunProgressLabelBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
-    }
+   }
 
     private fun sunTimeOnClick(sunTimeData: SunInfo.SunTimeData)
     {
@@ -431,6 +471,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
     companion object
     {
+        var CAKE = false
         fun newInstance(fragmentArguments: Bundle?) = CurrentUVFragment().apply { arguments = fragmentArguments }
     }
 }
