@@ -3,7 +3,7 @@
     <style name="Theme.SolarSeasons" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand colour -->
         <item name="colorPrimary">@color/uv_low</item>
-        <item name="android:textColorPrimary">@color/dark_text</item>
+        <item name="android:textColorPrimary">@color/light_text</item>
         <!-- Secondary brand colour. -->
         <item name="colorSecondary">@color/uv_moderate</item>
         <item name="android:textColorSecondary">@color/light_text</item>
