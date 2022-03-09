@@ -7,7 +7,7 @@
         app:entries="@array/preferences_app_theme_entries"
         app:entryValues="@array/preferences_app_theme_values"
         app:useSimpleSummaryProvider="true"
-        app:defaultValue="default_theme"/>
+        app:defaultValue="default_theme" />
 
     <SwitchPreferenceCompat
         app:key="app_launch_auto_request"
@@ -15,35 +15,42 @@
         app:singleLineTitle="false"
         app:iconSpaceReserved="false"
         app:summary="@string/preference_app_launch_auto_request_summary"
-        app:defaultValue="true"/>
+        app:defaultValue="true" />
 
-    <SwitchPreferenceCompat
-        app:key="subscribe_screen_unlock"
-        app:title="@string/preference_subscribe_screen_unlock_title"
+    <PreferenceCategory
+        app:key="background_work_settings"
+        app:title="@string/preference_background_category_title"
         app:singleLineTitle="false"
-        app:iconSpaceReserved="false"
         app:isPreferenceVisible="false"
-        app:summary="@string/preference_subscribe_screen_unlock_summary"
-        app:defaultValue="false"/>
+        app:allowDividerAbove="false"
+        app:iconSpaceReserved="false" >
 
-    <ListPreference
-        app:key="work_type"
-        app:title="@string/preference_work_type_title"
-        app:entries="@array/preferences_work_type_entries"
-        app:entryValues="@array/preferences_work_type_values"
-        app:defaultValue="periodic_work"
-        app:iconSpaceReserved="false"
-        app:isPreferenceVisible="false"
-        app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat
+            app:key="subscribe_screen_unlock"
+            app:title="@string/preference_subscribe_screen_unlock_title"
+            app:singleLineTitle="false"
+            app:iconSpaceReserved="false"
+            app:summary="@string/preference_subscribe_screen_unlock_summary"
+            app:defaultValue="false" />
 
-    <ListPreference
-        app:key="background_refresh_rate"
-        app:title="@string/preference_background_refresh_rate_title"
-        app:entries="@array/preferences_background_refresh_rate_entries"
-        app:entryValues="@array/preferences_background_refresh_rate_values"
-        app:defaultValue="30"
-        app:iconSpaceReserved="false"
-        app:isPreferenceVisible="false"
-        app:useSimpleSummaryProvider="true" />
+        <ListPreference
+            app:key="work_type"
+            app:title="@string/preference_work_type_title"
+            app:entries="@array/preferences_work_type_entries"
+            app:entryValues="@array/preferences_work_type_values"
+            app:defaultValue="periodic_work"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:key="background_refresh_rate"
+            app:title="@string/preference_background_refresh_rate_title"
+            app:entries="@array/preferences_background_refresh_rate_entries"
+            app:entryValues="@array/preferences_background_refresh_rate_values"
+            app:defaultValue="30"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

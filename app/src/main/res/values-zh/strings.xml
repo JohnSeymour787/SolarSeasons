@@ -84,6 +84,7 @@
 
     <string name="preference_app_theme_title">UV Screen Theme</string>
     <string name="preference_work_type_title">Background work type used</string>
+    <string name="preference_background_category_title">Background Processing Settings</string>
     <string name="preference_subscribe_screen_unlock_title">Retrieve UV data on screen unlock</string>
     <string name="preference_subscribe_screen_unlock_summary">Updates UV data when the device is unlocked after the background refresh rate is exceeded</string>
     <string name="preference_app_launch_auto_request_title">Automatically Retrieve UV Data</string>

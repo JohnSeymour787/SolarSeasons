@@ -5,22 +5,17 @@ import android.os.Bundle
 import androidx.fragment.app.setFragmentResult
 import androidx.preference.PreferenceFragmentCompat
 import androidx.core.os.bundleOf
-import androidx.preference.ListPreference
-import androidx.preference.SwitchPreferenceCompat
+import androidx.preference.PreferenceCategory
 
 class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener
 {
-    private lateinit var subscribeScreenUnlockPreference: SwitchPreferenceCompat
-    private lateinit var workTypePreference: ListPreference
-    private lateinit var backgroundRefreshRatePreference: ListPreference
+    private lateinit var backgroundWorkCategory: PreferenceCategory
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?)
     {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
-        subscribeScreenUnlockPreference = findPreference(Constants.SharedPreferences.SUBSCRIBE_SCREEN_UNLOCK_KEY)!!
-        workTypePreference = findPreference(Constants.SharedPreferences.WORK_TYPE_KEY)!!
-        backgroundRefreshRatePreference = findPreference(Constants.SharedPreferences.BACKGROUND_REFRESH_RATE_KEY)!!
+        backgroundWorkCategory = findPreference("background_work_settings")!!
 
         // Doing this here as well as onResume to ensure that the visibility is set quick enough to avoid a laggy appearance
         //  under most circumstances
@@ -29,18 +24,7 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
 
     private fun initialiseWidgetPreferences()
     {
-        if (requireContext().hasWidgets())
-        {
-            subscribeScreenUnlockPreference.isVisible = true
-            workTypePreference.isVisible = true
-            backgroundRefreshRatePreference.isVisible = true
-        }
-        else
-        {
-            subscribeScreenUnlockPreference.isVisible = false
-            workTypePreference.isVisible = false
-            backgroundRefreshRatePreference.isVisible = false
-        }
+        backgroundWorkCategory.isVisible = requireContext().hasWidgets()
     }
 
     override fun onResume()
