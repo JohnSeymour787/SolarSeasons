@@ -32,4 +32,6 @@ class MainViewModel: ViewModel()
     }
 
     val uvDataChangedIntentFilter = IntentFilter(UVData.UV_DATA_UPDATED)
+
+    var shouldRequestUVUpdateOnLaunch = true
 }

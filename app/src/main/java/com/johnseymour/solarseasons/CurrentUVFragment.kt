@@ -108,12 +108,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
             }
         }
 
-        val themePreferenceString = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString(Constants.SharedPreferences.APP_THEME_KEY, null)
-        if (themePreferenceString == Constants.SharedPreferences.CUSTOM_APP_THEME_VALUE)
-        {
-            PreferenceScreenFragment.useCustomTheme = true
-            setDynamicThemeColours()
-        }
+        initialiseMemoryPreferences()
 
         (arguments?.getSerializable(ErrorStatus.ERROR_STATUS_KEY) as? ErrorStatus)?.let()
         {
@@ -125,7 +120,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         {
             if (updateUVDataFromDisk())
             {
-                if ((viewModel.uvData?.minutesSinceDataRetrieved ?: 0) > Constants.MINIMUM_APP_FOREGROUND_REFRESH_TIME)
+                if ((viewModel.shouldRequestUVUpdateOnLaunch) && ((viewModel.uvData?.minutesSinceDataRetrieved ?: 0) > Constants.MINIMUM_APP_FOREGROUND_REFRESH_TIME))
                 {
                     onRefresh() // Manually simulate swiping down to start a new request
                     layout.isRefreshing = true
@@ -163,6 +158,11 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
                 viewModel.uvData?.let { displayNewUVData(it) }
             }
+
+            (bundle[Constants.SharedPreferences.APP_LAUNCH_AUTO_REQUEST_KEY] as? Boolean)?.let()
+            { autoRequestValue ->
+                viewModel.shouldRequestUVUpdateOnLaunch = autoRequestValue
+            }
         }
 
         parentFragmentManager.setFragmentResultListener(PreferenceScreenFragment.WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, this)
@@ -191,6 +191,24 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         }
 
         viewModel.lastObserving?.observe(viewLifecycleOwner, this) // In case of configuration change
+    }
+
+    /**
+     * Reads the shared preferences for settings used by this fragment and updates the relevant
+     *  memory variables with these values
+     */
+    private fun initialiseMemoryPreferences()
+    {
+        val preferenceManager = PreferenceManager.getDefaultSharedPreferences(requireContext())
+
+        viewModel.shouldRequestUVUpdateOnLaunch = preferenceManager.getBoolean(Constants.SharedPreferences.APP_LAUNCH_AUTO_REQUEST_KEY, true)
+
+        val themePreferenceString = preferenceManager.getString(Constants.SharedPreferences.APP_THEME_KEY, null)
+        if (themePreferenceString == Constants.SharedPreferences.CUSTOM_APP_THEME_VALUE)
+        {
+            PreferenceScreenFragment.useCustomTheme = true
+            setDynamicThemeColours()
+        }
     }
 
     override fun onResume()

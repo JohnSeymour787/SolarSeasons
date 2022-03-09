@@ -10,6 +10,14 @@
         app:defaultValue="default_theme"/>
 
     <SwitchPreferenceCompat
+        app:key="app_launch_auto_request"
+        app:title="@string/preference_app_launch_auto_request_title"
+        app:singleLineTitle="false"
+        app:iconSpaceReserved="false"
+        app:summary="@string/preference_app_launch_auto_request_summary"
+        app:defaultValue="true"/>
+
+    <SwitchPreferenceCompat
         app:key="subscribe_screen_unlock"
         app:title="@string/preference_subscribe_screen_unlock_title"
         app:singleLineTitle="false"

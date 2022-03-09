@@ -36,5 +36,6 @@ object Constants
         const val BACKGROUND_REFRESH_RATE_KEY = "background_refresh_rate"
         const val APP_THEME_KEY = "app_theme"
         const val CUSTOM_APP_THEME_VALUE = "custom_theme"
+        const val APP_LAUNCH_AUTO_REQUEST_KEY = "app_launch_auto_request"
     }
 }

@@ -71,6 +71,12 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
                 setFragmentResult(APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(key to updatedAppThemeValue))
             }
 
+            Constants.SharedPreferences.APP_LAUNCH_AUTO_REQUEST_KEY ->
+            {
+                val updatedAutoRequestValue = sharedPreferences.getBoolean(key, true)
+                setFragmentResult(APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(key to updatedAutoRequestValue))
+            }
+
             Constants.SharedPreferences.SUBSCRIBE_SCREEN_UNLOCK_KEY ->
             {
                 val updatedScreenUnlockSetting = sharedPreferences.getBoolean(key, false)
