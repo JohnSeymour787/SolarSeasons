@@ -126,25 +126,30 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
         settingsButton.setOnClickListener()
         {
-      //      CAKE = !CAKE
-
-            if (CAKE)
-            {
-                // Set one-time colours (all others are dynamically updated in #displayNewUVData())
-                sunProgress.progressDrawable.setTint(resources.getColor(R.color.progress_bar_tint, requireContext().theme))
-
-                skinExposureBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
-                sunInfoListBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
-                sunProgressLabelBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
-            }
-            else
-            {
-                setStaticThemeColours()
-            }
-
-            viewModel.uvData?.let { displayNewUVData(it) }
-
             parentFragmentManager.setFragmentResult(SettingsFragment.LAUNCH_SETTINGS_FRAGMENT_KEY, bundleOf())
+        }
+
+        parentFragmentManager.setFragmentResultListener(PreferenceScreenFragment.APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, this)
+        { _, bundle ->
+
+            if (bundle[Constants.SharedPreferences.APP_THEME_KEY] != null) // Indicates that the theme was changed
+            {
+                if (PreferenceScreenFragment.useCustomTheme)
+                {
+                    // Set one-time colours (all others are dynamically updated in #displayNewUVData())
+                    sunProgress.progressDrawable.setTint(resources.getColor(R.color.progress_bar_tint, requireContext().theme))
+
+                    skinExposureBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+                    sunInfoListBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+                    sunProgressLabelBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+                }
+                else
+                {
+                    setStaticThemeColours()
+                }
+
+                viewModel.uvData?.let { displayNewUVData(it) }
+            }
         }
 
         parentFragmentManager.setFragmentResultListener(PreferenceScreenFragment.WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, this)
@@ -163,7 +168,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
             }
         }
 
-        if (CAKE)
+        if (PreferenceScreenFragment.useCustomTheme)
         {
             disableLightStatusBar(requireActivity().window.decorView)
         }
@@ -379,7 +384,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         appStatusInformation.visibility = View.INVISIBLE
         launchAppDetailsButton.visibility = View.INVISIBLE
 
-        if (CAKE)
+        if (PreferenceScreenFragment.useCustomTheme)
         {
             updateDynamicColours(lUVData)
         }
@@ -459,7 +464,6 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
     companion object
     {
-        var CAKE = false
         fun newInstance(fragmentArguments: Bundle?) = CurrentUVFragment().apply { arguments = fragmentArguments }
     }
 }

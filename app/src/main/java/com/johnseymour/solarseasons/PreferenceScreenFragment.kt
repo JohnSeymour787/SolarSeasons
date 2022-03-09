@@ -64,6 +64,13 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
 
         when (key)
         {
+            Constants.SharedPreferences.APP_THEME_KEY ->
+            {
+                val updatedAppThemeValue = sharedPreferences.getString(key, null) ?: return
+                useCustomTheme = updatedAppThemeValue != Constants.SharedPreferences.DEFAULT_APP_THEME_VALUE
+                setFragmentResult(APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(key to updatedAppThemeValue))
+            }
+
             Constants.SharedPreferences.SUBSCRIBE_SCREEN_UNLOCK_KEY ->
             {
                 val updatedScreenUnlockSetting = sharedPreferences.getBoolean(key, false)
@@ -85,5 +92,8 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
     companion object
     {
         const val WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY = "widget_settings_updated_result_key"
+        const val APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY = "app_settings_updated_result_key"
+        var useCustomTheme = false
+            private set
     }
 }

@@ -28,7 +28,7 @@ class SunInfoAdapter(private val sunTimes: List<SunInfo.SunTimeData>, private va
         {
             layoutParams = ConstraintLayout.LayoutParams(resources.getDimensionPixelSize(R.dimen.cell_sun_info_width), resources.getDimensionPixelSize(R.dimen.cell_sun_info_height))
 
-            if (CurrentUVFragment.CAKE)
+            if (PreferenceScreenFragment.useCustomTheme)
             {
                 infoTitle.setTextColor(resources.getColor(textColorInt, context.theme))
                 infoTime.setTextColor(resources.getColor(textColorInt, context.theme))

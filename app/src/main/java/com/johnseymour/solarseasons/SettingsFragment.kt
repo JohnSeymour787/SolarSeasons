@@ -22,6 +22,11 @@ class SettingsFragment : Fragment()
             parentFragmentManager.setFragmentResult(PreferenceScreenFragment.WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundle)
         }
 
+        childFragmentManager.setFragmentResultListener(PreferenceScreenFragment.APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, this)
+        { _, bundle ->
+            parentFragmentManager.setFragmentResult(PreferenceScreenFragment.APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundle)
+        }
+
         stopBackgroundWorkButton.setOnClickListener()
         {
             val lApplicationContext = requireContext().applicationContext
@@ -31,7 +36,7 @@ class SettingsFragment : Fragment()
             Toast.makeText(lApplicationContext, R.string.settings_fragment_stop_background_success, Toast.LENGTH_LONG).show()
         }
 
-        if (Constants.USE_COLOURED_UV_BACKGROUND)
+        if (PreferenceScreenFragment.useCustomTheme)
         {
             enableLightStatusBar(requireActivity().window.decorView, resources.configuration)
         }
@@ -59,7 +64,7 @@ class SettingsFragment : Fragment()
     {
         super.onDestroy()
 
-        if (Constants.USE_COLOURED_UV_BACKGROUND)
+        if (PreferenceScreenFragment.useCustomTheme)
         {
             // Disable the light-mode status bar when leaving this screen
             disableLightStatusBar(requireActivity().window.decorView)
