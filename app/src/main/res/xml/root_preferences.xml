@@ -14,6 +14,7 @@
         app:title="@string/preference_subscribe_screen_unlock_title"
         app:singleLineTitle="false"
         app:iconSpaceReserved="false"
+        app:isPreferenceVisible="false"
         app:summary="@string/preference_subscribe_screen_unlock_summary"
         app:defaultValue="false"/>
 
@@ -24,6 +25,7 @@
         app:entryValues="@array/preferences_work_type_values"
         app:defaultValue="periodic_work"
         app:iconSpaceReserved="false"
+        app:isPreferenceVisible="false"
         app:useSimpleSummaryProvider="true" />
 
     <ListPreference
@@ -33,6 +35,7 @@
         app:entryValues="@array/preferences_background_refresh_rate_values"
         app:defaultValue="30"
         app:iconSpaceReserved="false"
+        app:isPreferenceVisible="false"
         app:useSimpleSummaryProvider="true" />
 
 </PreferenceScreen>

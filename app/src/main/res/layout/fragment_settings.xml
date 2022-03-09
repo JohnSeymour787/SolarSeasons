@@ -28,6 +28,31 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
+            android:id="@+id/preferencesFragmentBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/widget_background_shape"
+            android:backgroundTint="@color/section_background_transparent_colour"
+            android:alpha="@fraction/activity_background_alpha"
+            app:layout_constrainedHeight="true"
+            android:layout_marginHorizontal="@dimen/widget_horizontal_margin"
+            app:layout_constraintTop_toTopOf="@id/preferencesFragmentContainer"
+            app:layout_constraintBottom_toBottomOf="@id/preferencesFragmentContainer"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/preferencesFragmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            android:layout_marginHorizontal="@dimen/margin_medium"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titleLabel"
+            android:name="com.johnseymour.solarseasons.PreferenceScreenFragment" />
+
+        <View
             android:id="@+id/backgroundIssuesTextBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -51,34 +76,9 @@
             android:layout_marginTop="@dimen/margin_large"
             android:layout_marginHorizontal="@dimen/margin_medium"
             android:paddingVertical="@dimen/margin_small"
-            app:layout_constraintTop_toBottomOf="@id/titleLabel"
+            app:layout_constraintTop_toBottomOf="@id/preferencesFragmentContainer"
             app:layout_constraintStart_toStartOf="@id/backgroundIssuesTextBackground"
             app:layout_constraintEnd_toEndOf="@id/backgroundIssuesTextBackground"/>
-
-        <View
-            android:id="@+id/preferencesFragmentBackground"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/widget_background_shape"
-            android:backgroundTint="@color/section_background_transparent_colour"
-            android:alpha="@fraction/activity_background_alpha"
-            app:layout_constrainedHeight="true"
-            android:layout_marginHorizontal="@dimen/widget_horizontal_margin"
-            app:layout_constraintTop_toTopOf="@id/preferencesFragmentContainer"
-            app:layout_constraintBottom_toBottomOf="@id/preferencesFragmentContainer"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/preferencesFragmentContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:layout_marginHorizontal="@dimen/margin_medium"
-            app:layout_constrainedWidth="true"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/backgroundIssuesText"
-            android:name="com.johnseymour.solarseasons.PreferenceScreenFragment" />
 
         <Button
             android:id="@+id/stopBackgroundWorkButton"
@@ -89,7 +89,7 @@
             android:textColor="@color/dark_text"
             android:textStyle="bold"
             android:background="@drawable/widget_background_shape"
-            app:layout_constraintTop_toBottomOf="@id/preferencesFragmentContainer"
+            app:layout_constraintTop_toBottomOf="@id/backgroundIssuesText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

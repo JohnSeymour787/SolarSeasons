@@ -87,7 +87,7 @@
     <string name="preference_subscribe_screen_unlock_title">Retrieve UV data on screen unlock</string>
     <string name="preference_subscribe_screen_unlock_summary">Updates UV data when the device is unlocked after the background refresh rate is exceeded</string>
     <string name="preference_background_refresh_rate_title" translatable="false">Background refresh rate</string>
-    <string name="preferences_screen_background_processing_explanation">Some versions of the Android operating system kill background processes after a while, meaning that the app widget might not always refresh consistently.\n\nAdjusting the settings on this screen may improve the reliability of the background data synchronisation.</string>
+    <string name="preferences_screen_background_processing_explanation">Note: Some versions of the Android operating system kill background processes after a while, meaning that the app widget might not always refresh consistently.\n\nAdjusting some of the above settings may improve the reliability of the background data synchronisation.</string>
 
     <plurals name="exposure_time_minutes">
         <item quantity="other">%d分钟</item>
