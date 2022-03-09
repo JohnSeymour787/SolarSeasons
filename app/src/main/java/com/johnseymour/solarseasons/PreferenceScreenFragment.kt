@@ -67,23 +67,23 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
             Constants.SharedPreferences.SUBSCRIBE_SCREEN_UNLOCK_KEY ->
             {
                 val updatedScreenUnlockSetting = sharedPreferences.getBoolean(key, false)
-                setFragmentResult(PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(SmallUVDisplay.SET_RECEIVING_SCREEN_UNLOCK_KEY to updatedScreenUnlockSetting))
+                setFragmentResult(WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(SmallUVDisplay.SET_RECEIVING_SCREEN_UNLOCK_KEY to updatedScreenUnlockSetting))
             }
             Constants.SharedPreferences.WORK_TYPE_KEY ->
             {
                 val updatedWorkTypeValue = sharedPreferences.getString(key, null) ?: return
-                setFragmentResult(PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(SmallUVDisplay.SET_USE_PERIODIC_WORK_KEY to (updatedWorkTypeValue == Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE)))
+                setFragmentResult(WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(SmallUVDisplay.SET_USE_PERIODIC_WORK_KEY to (updatedWorkTypeValue == Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE)))
             }
             Constants.SharedPreferences.BACKGROUND_REFRESH_RATE_KEY ->
             {
                 val updatedRefreshRateValue = sharedPreferences.getString(key, null)?.toLongOrNull() ?: return
-                setFragmentResult(PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(SmallUVDisplay.SET_BACKGROUND_REFRESH_RATE_KEY to updatedRefreshRateValue))
+                setFragmentResult(WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(SmallUVDisplay.SET_BACKGROUND_REFRESH_RATE_KEY to updatedRefreshRateValue))
             }
         }
     }
 
     companion object
     {
-        const val PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY = "settings_updated_result_key"
+        const val WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY = "widget_settings_updated_result_key"
     }
 }

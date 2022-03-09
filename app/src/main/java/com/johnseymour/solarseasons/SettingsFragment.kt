@@ -17,9 +17,9 @@ class SettingsFragment : Fragment()
     {
         super.onViewCreated(view, savedInstanceState)
 
-        childFragmentManager.setFragmentResultListener(PreferenceScreenFragment.PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, this)
+        childFragmentManager.setFragmentResultListener(PreferenceScreenFragment.WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, this)
         { _, bundle ->
-            parentFragmentManager.setFragmentResult(PreferenceScreenFragment.PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundle)
+            parentFragmentManager.setFragmentResult(PreferenceScreenFragment.WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundle)
         }
 
         stopBackgroundWorkButton.setOnClickListener()

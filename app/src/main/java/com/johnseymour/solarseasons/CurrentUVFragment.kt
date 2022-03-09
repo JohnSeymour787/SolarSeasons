@@ -147,7 +147,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
             parentFragmentManager.setFragmentResult(SettingsFragment.LAUNCH_SETTINGS_FRAGMENT_KEY, bundleOf())
         }
 
-        parentFragmentManager.setFragmentResultListener(PreferenceScreenFragment.PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, this)
+        parentFragmentManager.setFragmentResultListener(PreferenceScreenFragment.WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, this)
         { _, bundle ->
             if (!bundle.isEmpty)
             {
