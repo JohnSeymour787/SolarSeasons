@@ -179,6 +179,8 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         {
             enableLightStatusBar(requireActivity().window.decorView, resources.configuration)
         }
+
+        viewModel.lastObserving?.observe(viewLifecycleOwner, this) // In case of configuration change
     }
 
     override fun onResume()
@@ -230,7 +232,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
     private fun prepareUVDataRequest()
     {
         viewModel.lastObserving = UVDataWorker.initiateOneTimeWorker(requireContext())
-        viewModel.lastObserving?.observe(this, this)
+        viewModel.lastObserving?.observe(viewLifecycleOwner, this)
     }
 
     override fun onRefresh()
