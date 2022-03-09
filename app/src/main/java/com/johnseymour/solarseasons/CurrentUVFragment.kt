@@ -30,8 +30,6 @@ import androidx.work.WorkInfo
 import kotlinx.android.synthetic.main.fragment_current_u_v.*
 import java.io.FileNotFoundException
 import java.time.ZonedDateTime
-import java.time.temporal.ChronoUnit
-import kotlin.math.absoluteValue
 
 class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Observer<List<WorkInfo>>
 {
@@ -127,7 +125,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         {
             if (updateUVDataFromDisk())
             {
-                if (ChronoUnit.MINUTES.between(viewModel.uvData?.uvTime ?: ZonedDateTime.now(), ZonedDateTime.now()).absoluteValue > Constants.MINIMUM_APP_FOREGROUND_REFRESH_TIME)
+                if ((viewModel.uvData?.minutesSinceDataRetrieved ?: 0) > Constants.MINIMUM_APP_FOREGROUND_REFRESH_TIME)
                 {
                     onRefresh() // Manually simulate swiping down to start a new request
                     layout.isRefreshing = true

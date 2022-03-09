@@ -15,9 +15,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import androidx.work.*
 import java.io.FileNotFoundException
-import java.time.ZonedDateTime
-import java.time.temporal.ChronoUnit
-import kotlin.math.absoluteValue
 
 /**
  * Implementation of App Widget functionality.
@@ -50,7 +47,7 @@ class SmallUVDisplay : AppWidgetProvider()
                 if (!luvData.sunInSky()) { return }
 
                 // Compare uvData time with current time, if difference is greater than the backgroundRefreshRate then make a new request
-                if (ChronoUnit.MINUTES.between(luvData.uvTime ?: ZonedDateTime.now(), ZonedDateTime.now()).absoluteValue > (backgroundRefreshRate + Constants.WORK_EXECUTION_SLACK_TIME))
+                if (luvData.minutesSinceDataRetrieved > (backgroundRefreshRate + Constants.WORK_EXECUTION_SLACK_TIME))
                 {
                     prepareEarliestRequest(context)
                 }

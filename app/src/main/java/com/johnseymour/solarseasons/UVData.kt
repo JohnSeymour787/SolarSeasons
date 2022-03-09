@@ -128,6 +128,14 @@ data class UVData(
         }
 
     /**
+     * Calculates the minutes from this object's uvTime and ZonedDateTime.now()
+     *
+     * @return absolute Long value of time between the UV time and current time
+     */
+    val minutesSinceDataRetrieved: Long
+        get() = ChronoUnit.MINUTES.between(uvTime ?: ZonedDateTime.now(), ZonedDateTime.now()).absoluteValue
+
+    /**
      * Computes whether the uvTime is within the sunrise and sunset of this object's SunInfo field.
      *  Only checks the time values only, ignores dates.
      *
