@@ -20,6 +20,9 @@ object Constants
     /** Slight buffer time to allow for work to be executed and completed, as it is not an exact job **/
     const val WORK_EXECUTION_SLACK_TIME = 5L
 
+    /** Shortest time for app to auto refresh when it is launched into the foreground **/
+    const val MINIMUM_APP_FOREGROUND_REFRESH_TIME = 10L
+
     const val MINUTES_PER_HOUR = 60
     const val MINUTES_PER_DAY = 1440
 

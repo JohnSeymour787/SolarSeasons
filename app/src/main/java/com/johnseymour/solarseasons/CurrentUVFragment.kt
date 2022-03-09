@@ -30,6 +30,8 @@ import androidx.work.WorkInfo
 import kotlinx.android.synthetic.main.fragment_current_u_v.*
 import java.io.FileNotFoundException
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
+import kotlin.math.absoluteValue
 
 class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Observer<List<WorkInfo>>
 {
@@ -121,7 +123,17 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         } ?: arguments?.getParcelable<UVData>(UVData.UV_DATA_KEY)?.let()
         {
             newUVDataReceived(it)
-        } ?: updateUVDataFromDisk()
+        } ?: run()
+        {
+            if (updateUVDataFromDisk())
+            {
+                if (ChronoUnit.MINUTES.between(viewModel.uvData?.uvTime ?: ZonedDateTime.now(), ZonedDateTime.now()).absoluteValue > Constants.MINIMUM_APP_FOREGROUND_REFRESH_TIME)
+                {
+                    onRefresh() // Manually simulate swiping down to start a new request
+                    layout.isRefreshing = true
+                }
+            }
+        }
 
         layout.setOnRefreshListener(this)
         layout.setProgressViewOffset(true, resources.getDimensionPixelOffset(R.dimen.activity_swipe_refresh_offset_start), resources.getDimensionPixelOffset(R.dimen.activity_swipe_refresh_offset_end))
@@ -217,7 +229,13 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         displayNewUVData(uvData)
     }
 
-    private fun updateUVDataFromDisk()
+    /**
+     * Attempts to read last-saved UVData from persistent storage and update the display
+     *
+     * @return - true if successfully read data from storage and updated the display
+     *         - false if no data found or an I/O error occurred
+     */
+    private fun updateUVDataFromDisk(): Boolean
     {
         try
         {
@@ -225,8 +243,10 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
             {
                 viewModel.uvData = it
                 displayNewUVData(it)
+                return true
             }
-        } catch (e: FileNotFoundException){ }
+        } catch (e: FileNotFoundException){ return false }
+        return false
     }
 
     private fun prepareUVDataRequest()
