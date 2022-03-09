@@ -1,6 +1,5 @@
 package com.johnseymour.solarseasons
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -35,6 +34,24 @@ class SettingsFragment : Fragment()
         if (Constants.USE_COLOURED_UV_BACKGROUND)
         {
             enableLightStatusBar(requireActivity().window.decorView, resources.configuration)
+        }
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+
+        if (requireContext().hasWidgets())
+        {
+            backgroundIssuesTextBackground.visibility = View.VISIBLE
+            backgroundIssuesText.visibility = View.VISIBLE
+            stopBackgroundWorkButton.visibility = View.VISIBLE
+        }
+        else
+        {
+            backgroundIssuesTextBackground.visibility = View.INVISIBLE
+            backgroundIssuesText.visibility = View.INVISIBLE
+            stopBackgroundWorkButton.visibility = View.INVISIBLE
         }
     }
 
