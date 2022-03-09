@@ -22,6 +22,7 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -107,6 +108,13 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
             }
         }
 
+        val themePreferenceString = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString(Constants.SharedPreferences.APP_THEME_KEY, null)
+        if (themePreferenceString == Constants.SharedPreferences.CUSTOM_APP_THEME_VALUE)
+        {
+            PreferenceScreenFragment.useCustomTheme = true
+            setDynamicThemeColours()
+        }
+
         (arguments?.getSerializable(ErrorStatus.ERROR_STATUS_KEY) as? ErrorStatus)?.let()
         {
             displayError(it)
@@ -136,12 +144,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
             {
                 if (PreferenceScreenFragment.useCustomTheme)
                 {
-                    // Set one-time colours (all others are dynamically updated in #displayNewUVData())
-                    sunProgress.progressDrawable.setTint(resources.getColor(R.color.progress_bar_tint, requireContext().theme))
-
-                    skinExposureBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
-                    sunInfoListBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
-                    sunProgressLabelBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+                    setDynamicThemeColours()
                 }
                 else
                 {
@@ -420,6 +423,18 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         skinExposureBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
         sunInfoListBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
         sunProgressLabelBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
+    }
+
+    /**
+     * Sets all one-time colours for the dynamic theme (all others are dynamically updated in #updateDynamicColours())
+     */
+    private fun setDynamicThemeColours()
+    {
+        sunProgress.progressDrawable.setTint(resources.getColor(R.color.progress_bar_tint, requireContext().theme))
+
+        skinExposureBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+        sunInfoListBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+        sunProgressLabelBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
     }
 
     private fun updateDynamicColours(lUVData: UVData)

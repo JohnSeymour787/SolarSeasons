@@ -67,7 +67,7 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
             Constants.SharedPreferences.APP_THEME_KEY ->
             {
                 val updatedAppThemeValue = sharedPreferences.getString(key, null) ?: return
-                useCustomTheme = updatedAppThemeValue != Constants.SharedPreferences.DEFAULT_APP_THEME_VALUE
+                useCustomTheme = updatedAppThemeValue == Constants.SharedPreferences.CUSTOM_APP_THEME_VALUE
                 setFragmentResult(APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(key to updatedAppThemeValue))
             }
 
@@ -94,6 +94,5 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
         const val WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY = "widget_settings_updated_result_key"
         const val APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY = "app_settings_updated_result_key"
         var useCustomTheme = false
-            private set
     }
 }
