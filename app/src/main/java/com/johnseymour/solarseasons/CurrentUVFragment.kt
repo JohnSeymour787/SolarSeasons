@@ -116,17 +116,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         } ?: arguments?.getParcelable<UVData>(UVData.UV_DATA_KEY)?.let()
         {
             newUVDataReceived(it)
-        } ?: run()
-        {
-            if (updateUVDataFromDisk())
-            {
-                if ((viewModel.shouldRequestUVUpdateOnLaunch) && ((viewModel.uvData?.minutesSinceDataRetrieved ?: 0) > Constants.MINIMUM_APP_FOREGROUND_REFRESH_TIME))
-                {
-                    onRefresh() // Manually simulate swiping down to start a new request
-                    layout.isRefreshing = true
-                }
-            }
-        }
+        } ?: updateUVDataFromDisk()
 
         layout.setOnRefreshListener(this)
         layout.setProgressViewOffset(true, resources.getDimensionPixelOffset(R.dimen.activity_swipe_refresh_offset_start), resources.getDimensionPixelOffset(R.dimen.activity_swipe_refresh_offset_end))
@@ -223,6 +213,14 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         } ?: run()
         {
             viewModel.uvData?.let { displayNewUVData(it) }
+
+            if (!viewModel.shouldRequestUVUpdateOnLaunch) { return@run }
+
+            if ((viewModel.uvData?.minutesSinceDataRetrieved ?: 0) > Constants.MINIMUM_APP_FOREGROUND_REFRESH_TIME)
+            {
+                onRefresh() // Manually simulate swiping down to start a new request
+                layout.isRefreshing = true
+            }
         }
 
         // Actively update UI when background requests come in when activity is in foreground
@@ -246,12 +244,9 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
     }
 
     /**
-     * Attempts to read last-saved UVData from persistent storage and update the display
-     *
-     * @return - true if successfully read data from storage and updated the display
-     *         - false if no data found or an I/O error occurred
+     * Attempts to read the last saved UVData from persistent storage and updates the display if successful
      */
-    private fun updateUVDataFromDisk(): Boolean
+    private fun updateUVDataFromDisk()
     {
         try
         {
@@ -259,10 +254,8 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
             {
                 viewModel.uvData = it
                 displayNewUVData(it)
-                return true
             }
-        } catch (e: FileNotFoundException){ return false }
-        return false
+        } catch (e: FileNotFoundException){ }
     }
 
     private fun prepareUVDataRequest()
