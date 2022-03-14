@@ -21,7 +21,6 @@
         app:key="background_work_settings"
         app:title="@string/preference_background_category_title"
         app:singleLineTitle="false"
-        app:isPreferenceVisible="false"
         app:allowDividerAbove="false"
         app:iconSpaceReserved="false" >
 

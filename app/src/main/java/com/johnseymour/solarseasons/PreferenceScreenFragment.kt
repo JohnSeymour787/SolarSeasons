@@ -24,7 +24,7 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
 
     private fun initialiseWidgetPreferences()
     {
-        backgroundWorkCategory.isVisible = requireContext().hasWidgets()
+        backgroundWorkCategory.isEnabled = requireContext().hasWidgets()
     }
 
     override fun onResume()
