@@ -22,12 +22,16 @@
     </style>
 
     <style name="ThemeOverlay.SolarSeasons.AppWidgetContainer" parent="">
-        <item name="appWidgetBackgroundColor">?android:colorPrimary</item>
-        <item name="appWidgetTextColor">?android:textColorPrimary</item>
+        <item name="appWidgetBackgroundColor">@color/dark_window_background</item>
+        <item name="appWidgetTextColor">@color/light_text</item>
     </style>
 
     <style name="Theme.App.Preferences" parent="PreferenceThemeOverlay">
         <item name="android:textColor">@color/light_text</item>
+    </style>
+
+    <style name="SolarProgressBarDeviceTheme" parent="SolarProgressBar">
+        <item name="android:progressTint">@color/progress_bar_tint</item>
     </style>
 
     <color name="section_background_transparent_colour">@color/white</color>

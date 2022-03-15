@@ -300,8 +300,15 @@ class SmallUVDisplay : AppWidgetProvider()
 
     private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, intent: PendingIntent)
     {
-        // Construct the RemoteViews object
-        val views = RemoteViews(context.packageName, R.layout.small_u_v_display)
+        // Construct the RemoteViews object, custom theme set determines the layout used due mainly to the progressBar colour
+        val views = if (PreferenceScreenFragment.useCustomTheme)
+        {
+            RemoteViews(context.packageName, R.layout.small_u_v_display)
+        }
+        else
+        {
+            RemoteViews(context.packageName, R.layout.small_u_v_display_default_theme)
+        }
 
         // Read from disk if memory is null
         uvData ?: try { uvData = DiskRepository.readLatestUV(context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)) } catch (e: FileNotFoundException) {}
@@ -326,16 +333,23 @@ class SmallUVDisplay : AppWidgetProvider()
                 val timeString = preferredTimeString(context, luvData.uvTime)
 
                 views.setTextViewText(R.id.uvValue, uvString)
-                views.setTextColor(R.id.uvValue, context.resources.getColor(luvData.textColorInt, context.theme))
 
                 views.setTextViewText(R.id.updatedTime, timeString)
-                views.setTextColor(R.id.updatedTime, context.resources.getColor(luvData.textColorInt, context.theme))
                 views.setViewVisibility(R.id.updatedTime, View.VISIBLE)
 
                 views.setInt(R.id.widgetSunProgress, "setProgress", luvData.sunProgressPercent)
                 views.setViewVisibility(R.id.widgetSunProgress, View.VISIBLE)
 
-                views.setInt(R.id.backgroundView, "setColorFilter", context.resources.getColor(luvData.backgroundColorInt, context.theme))
+                if (PreferenceScreenFragment.useCustomTheme)
+                {
+                    views.setTextColor(R.id.uvValue, context.resources.getColor(luvData.textColorInt, context.theme))
+                    views.setTextColor(R.id.updatedTime, context.resources.getColor(luvData.textColorInt, context.theme))
+                    views.setInt(R.id.backgroundView, "setColorFilter", context.resources.getColor(luvData.backgroundColorInt, context.theme))
+                }
+                else
+                {
+                    views.setTextColor(R.id.uvValue, context.resources.getColor(luvData.backgroundColorInt, context.theme))
+                }
             }
 
             else -> // Default values on startup
