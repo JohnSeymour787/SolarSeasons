@@ -54,9 +54,9 @@ class SettingsFragment : Fragment()
         }
         else
         {
-            backgroundIssuesTextBackground.visibility = View.INVISIBLE
-            backgroundIssuesText.visibility = View.INVISIBLE
-            stopBackgroundWorkButton.visibility = View.INVISIBLE
+            backgroundIssuesTextBackground.visibility = View.GONE
+            backgroundIssuesText.visibility = View.GONE
+            stopBackgroundWorkButton.visibility = View.GONE
         }
     }
 

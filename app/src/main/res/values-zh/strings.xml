@@ -82,7 +82,7 @@
     <string name="skin_type_5">皮肤类型5</string>
     <string name="skin_type_6">皮肤类型6</string>
 
-    <string name="preference_app_theme_title">UV Screen Theme</string>
+    <string name="preference_app_theme_title">UV Display Theme</string>
     <string name="preference_work_type_title">Background work type used</string>
     <string name="preference_background_category_title">Widget Settings</string>
     <string name="preference_subscribe_screen_unlock_title">Retrieve UV data on screen unlock</string>
@@ -91,6 +91,7 @@
     <string name="preference_app_launch_auto_request_summary">App makes a new UV data request each time it is opened if it has been longer than 10 minutes from the last request</string>
     <string name="preference_background_refresh_rate_title" translatable="false">Background refresh rate</string>
     <string name="preferences_screen_background_processing_explanation">Note: Some versions of the Android operating system kill background processes after a while, meaning that the app widget might not always refresh consistently.\n\nAdjusting some of the above settings may improve the reliability of the background data synchronisation.</string>
+    <string name="preferences_screen_no_widgets">No widgets detected, widget settings disabled</string>
 
     <plurals name="exposure_time_minutes">
         <item quantity="other">%d分钟</item>

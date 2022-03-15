@@ -22,6 +22,7 @@
         app:title="@string/preference_background_category_title"
         app:singleLineTitle="false"
         app:allowDividerAbove="false"
+        app:summary="@string/preferences_screen_no_widgets"
         app:iconSpaceReserved="false" >
 
         <SwitchPreferenceCompat
