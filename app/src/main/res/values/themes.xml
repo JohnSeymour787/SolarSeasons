@@ -35,4 +35,5 @@
     </style>
 
     <color name="section_background_transparent_colour">#ACACAC</color>
+    <color name="uv_extreme_alternate">@color/uv_extreme</color>
 </resources>

@@ -35,4 +35,5 @@
     </style>
 
     <color name="section_background_transparent_colour">@color/white</color>
+    <color name="uv_extreme_alternate">#BF84E3</color>
 </resources>

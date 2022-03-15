@@ -36,9 +36,13 @@ data class UVData(
         {
             R.color.uv_very_high
         }
-        else
+        else if (PreferenceScreenFragment.useCustomTheme)
         {
             R.color.uv_extreme
+        }
+        else
+        {
+            R.color.uv_extreme_alternate
         }
 
     val textColorInt: Int
