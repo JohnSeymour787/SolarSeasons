@@ -322,7 +322,7 @@ class SmallUVDisplay : AppWidgetProvider()
 
                 views.setViewVisibility(R.id.widgetSunProgress, View.INVISIBLE)
                 views.setViewVisibility(R.id.updatedTime, View.INVISIBLE)
-                views.setInt(R.id.backgroundView, "setColorFilter", context.resources.getColor(R.color.uv_low, context.theme))
+                views.setInt(R.id.backgroundView, "setColorFilter", context.resources.getColor(R.color.light_window_background, context.theme))
             }
 
             uvData != null -> // Valid data
