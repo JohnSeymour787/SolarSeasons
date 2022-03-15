@@ -147,6 +147,9 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
                 }
 
                 viewModel.uvData?.let { displayNewUVData(it) }
+
+                // Update widgets to redraw
+                broadcastBundleToWidgets(bundleOf())
             }
 
             (bundle[Constants.SharedPreferences.APP_LAUNCH_AUTO_REQUEST_KEY] as? Boolean)?.let()
@@ -159,15 +162,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         { _, bundle ->
             if (!bundle.isEmpty)
             {
-                // Update widgets with new settings
-                val intent = Intent(requireContext(), SmallUVDisplay::class.java).apply()
-                {
-                    action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, requireContext().getWidgetIDs())
-                    putExtras(bundle)
-                }
-
-                requireContext().sendBroadcast(intent)
+                broadcastBundleToWidgets(bundle)
             }
         }
 
@@ -199,6 +194,19 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
             PreferenceScreenFragment.useCustomTheme = true
             setDynamicThemeColours()
         }
+    }
+
+    private fun broadcastBundleToWidgets(bundle: Bundle)
+    {
+        // Update widgets with new settings
+        val intent = Intent(requireContext(), SmallUVDisplay::class.java).apply()
+        {
+            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+            putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, requireContext().getWidgetIDs())
+            putExtras(bundle)
+        }
+
+        requireContext().sendBroadcast(intent)
     }
 
     override fun onResume()
