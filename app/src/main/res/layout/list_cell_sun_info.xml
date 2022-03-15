@@ -33,7 +33,7 @@
         android:id="@+id/infoImage"
         android:layout_width="@dimen/cell_sun_info_image_dimen"
         android:layout_height="@dimen/cell_sun_info_image_dimen"
-        android:src="@mipmap/ic_launcher_legacy"
+        android:src="@android:color/transparent"
         android:scaleType="fitCenter"
         android:contentDescription="@string/sun_info_cell_image_description"
         app:layout_constraintStart_toStartOf="parent"

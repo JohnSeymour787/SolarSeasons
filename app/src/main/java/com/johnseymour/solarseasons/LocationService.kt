@@ -71,7 +71,7 @@ open class LocationService: Service()
             .setContentTitle(getString(R.string.service_notification_title))
             .setTicker(getString(R.string.service_notification_title))
             .setContentText(getString(R.string.service_notification_description))
-            .setSmallIcon(R.mipmap.ic_launcher_legacy)
+            .setSmallIcon(R.mipmap.ic_launcher_adaptive_foreground)
             .setOngoing(true)
             .build()
     }
