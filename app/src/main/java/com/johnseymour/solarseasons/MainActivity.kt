@@ -12,10 +12,15 @@ class MainActivity : AppCompatActivity()
 
         supportFragmentManager.setFragmentResultListener(SettingsFragment.LAUNCH_SETTINGS_FRAGMENT_KEY, this)
         { _, _ ->
-            supportFragmentManager.beginTransaction()
-                .add(R.id.fragmentContainer, SettingsFragment.newInstance())
-                .addToBackStack(null)
-                .commit()
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer) ?: return@setFragmentResultListener
+
+            if (currentFragment::class.java != SettingsFragment::class.java)
+            {
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.fragmentContainer, SettingsFragment.newInstance())
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
 
         if (savedInstanceState == null)
@@ -24,7 +29,7 @@ class MainActivity : AppCompatActivity()
             val uvFragment = CurrentUVFragment.newInstance(intent.extras)
 
             supportFragmentManager.beginTransaction()
-                .add(R.id.fragmentContainer, uvFragment)
+                .replace(R.id.fragmentContainer, uvFragment)
                 .commit()
         }
     }
