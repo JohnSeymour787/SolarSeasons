@@ -28,7 +28,7 @@
     <string name="description_not_found">Description not found</string>
     <string name="location_service_terminated">Location service destroyed</string>
     <string name="location_not_found">Could not find your location</string>
-    <string name="location_manual_entry_error">Error using manual location values. Check that all values exist</string>
+    <string name="location_manual_entry_error">Error using manual location. Check that all values exist</string>
     <string name="location_permission_any_denied">Location permission not granted</string>
     <string name="location_disabled_error">Location is disabled. Turn it on then try again</string>
     <string name="location_permission_fine_error">There is no previous location data on the device. A precise location permission is required to update this, otherwise use a different app that has such permission (such as a maps app)</string>
