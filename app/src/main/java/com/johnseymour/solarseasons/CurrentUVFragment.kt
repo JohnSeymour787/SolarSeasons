@@ -180,7 +180,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
     /**
      * Reads the shared preferences for settings used by this fragment and updates the relevant
-     *  memory variables with these values
+     *  memory variables with these values for quicker access later
      */
     private fun initialiseMemoryPreferences()
     {
@@ -194,6 +194,8 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
             PreferenceScreenFragment.useCustomTheme = true
             setDynamicThemeColours()
         }
+
+        PreferenceScreenFragment.useManualLocation = preferenceManager.getBoolean(Constants.SharedPreferences.MANUAL_LOCATION_ENABLED_KEY, false)
     }
 
     private fun broadcastBundleToWidgets(bundle: Bundle)
