@@ -3,6 +3,7 @@ package com.johnseymour.solarseasons
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.InputType
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.setFragmentResult
@@ -42,6 +43,13 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
         // Doing this here as well as onResume to ensure that the visibility is set quick enough to avoid a laggy appearance
         //  under most circumstances
         initialiseWidgetPreferences()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
+        super.onViewCreated(view, savedInstanceState)
+
+        listView.overScrollMode = View.OVER_SCROLL_NEVER
     }
 
     private fun initialiseWidgetPreferences()
