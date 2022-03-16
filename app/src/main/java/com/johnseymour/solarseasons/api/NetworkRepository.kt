@@ -1,8 +1,5 @@
 package com.johnseymour.solarseasons.api
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
 import com.johnseymour.solarseasons.SunInfo
 import com.johnseymour.solarseasons.UVData
@@ -54,84 +51,7 @@ object NetworkRepository
         retrofit.create(OPENUVAPI::class.java)
     }
 
-    private var test = 10F
-
-    fun getRealTimeUV(latitude: Double = 51.50636369327448, longitude: Double = -0.15934363365078322, altitude: Double = 0.0): UVData?
-    {
-        val uvDataLive = MutableLiveData<UVData>()
-
-
-        //       uvDataLive.postValue(UVData(3F,4F))
-/*        GlobalScope.launch {
-            delay(2000)
-        }*/
-
-        test++
-
-     //   return null
-
-        val response: Response<UVData> = openUVAPI.getRealTimeUV(latitude, longitude, altitude).execute()
-
-        return if (response.isSuccessful)
-        {
-            response.body()
-        }
-        else
-        {
-            Log.d("UVAPI", response.message())
-            null
-        }
-
-
-/*        openUVAPI.getRealTimeUV(latitude, longitude, altitude).enqueue(object: Callback<UVData>
-        {
-            override fun onResponse(call: Call<UVData>, response: Response<UVData>)
-            {
-                response.body()?.let()
-                {
-                    uvDataLive.postValue(it)
-                }
-            }
-
-            override fun onFailure(call: Call<UVData>, t: Throwable)
-            {
-                TODO("Not yet implemented")
-            }
-        })*/
-    }
-
-    fun OLDgetRealTimeUV(latitude: Double = 51.50636369327448, longitude: Double = -0.15934363365078322, altitude: Double = 0.0): LiveData<UVData>
-    {
-        val uvDataLive = MutableLiveData<UVData>()
-
-
-        //       uvDataLive.postValue(UVData(3F,4F))
-/*        GlobalScope.launch {
-            delay(2000)
-        }*/
-
-
-        openUVAPI.getRealTimeUV(latitude, longitude, altitude).enqueue(object: Callback<UVData>
-        {
-            override fun onResponse(call: Call<UVData>, response: Response<UVData>)
-            {
-                response.body()?.let()
-                {
-                    uvDataLive.postValue(it)
-                }
-            }
-
-            override fun onFailure(call: Call<UVData>, t: Throwable)
-            {
-                val cake = 2
-                TODO("Not yet implemented")
-            }
-        })
-
-        return uvDataLive
-    }
-
-    fun Semi_OLDgetRealTimeUV(latitude: Double = 51.50636369327448, longitude: Double = -0.15934363365078322, altitude: Double = 0.0): Promise<UVData, ErrorStatus>
+    fun Semi_OLDgetRealTimeUV(latitude: Double, longitude: Double, altitude: Double): Promise<UVData, ErrorStatus>
     {
         val result = deferred<UVData, ErrorStatus>()
 
