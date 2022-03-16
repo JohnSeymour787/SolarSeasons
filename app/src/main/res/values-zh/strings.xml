@@ -25,7 +25,8 @@
     <string name="exposure_time_hours">%d小时</string>
     <string name="exposure_time_short_minutes">%d分钟</string>
     <string name="close_window">关闭</string>
-    <string name="description_not_found">描述未被找到</string>
+    <string name="sun_info_description_not_found">描述未被找到</string>
+    <string name="api_quota_exceeded_error">UV service quota exceeded. No more network requests available for today</string>
     <string name="location_service_terminated">定位服务被破坏</string>
     <string name="location_not_found">Could not find your location</string>
     <string name="location_manual_entry_error">Error using manual location. Check that all values exist</string>

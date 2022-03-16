@@ -142,7 +142,17 @@ object NetworkRepository
                 response.body()?.let()
                 {
                     result.resolve(it)
-                } ?: run { result.reject(ErrorStatus.GeneralError) }
+                    return
+                }
+
+                if (response.errorBody()?.string()?.contains("Daily API quota exceeded") == true)
+                {
+                    result.reject(ErrorStatus.APIQuotaExceeded)
+                }
+                else
+                {
+                    result.reject(ErrorStatus.GeneralError)
+                }
             }
 
             override fun onFailure(call: Call<UVData>, t: Throwable)

@@ -73,7 +73,7 @@ data class SunInfo(val solarNoon: ZonedDateTime?,
                 R.string.sun_info_golden_hour_end -> R.string.sun_info_golden_hour_end_description
                 R.string.sun_info_golden_hour -> R.string.sun_info_golden_hour_description
 
-                else -> R.string.description_not_found
+                else -> R.string.sun_info_description_not_found
             }
         }
     }

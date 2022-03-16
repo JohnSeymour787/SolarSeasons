@@ -25,7 +25,8 @@
     <string name="exposure_time_hours">%dh</string>
     <string name="exposure_time_short_minutes">%dm</string>
     <string name="close_window">Close</string>
-    <string name="description_not_found">Description not found</string>
+    <string name="sun_info_description_not_found">Description not found</string>
+    <string name="api_quota_exceeded_error">UV service quota exceeded. No more network requests available for today</string>
     <string name="location_service_terminated">Location service destroyed</string>
     <string name="location_not_found">Could not find your location</string>
     <string name="location_manual_entry_error">Error using manual location. Check that all values exist</string>
