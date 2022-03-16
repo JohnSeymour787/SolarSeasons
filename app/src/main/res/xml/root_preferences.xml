@@ -21,6 +21,7 @@
         app:key="manual_location_settings"
         app:title="@string/preference_manual_location_category_title"
         app:allowDividerAbove="false"
+        app:isPreferenceVisible="false"
         app:iconSpaceReserved="false">
 
         <SwitchPreferenceCompat

@@ -123,7 +123,10 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         {
             return when
             {
-                PreferenceScreenFragment.useManualLocation -> Intent(applicationContext, LocationServiceManual::class.java)
+                Constants.ENABLE_MANUAL_LOCATION_FEATURE && PreferenceScreenFragment.useManualLocation ->
+                {
+                    Intent(applicationContext, LocationServiceManual::class.java)
+                }
 
                 Constants.USE_GOOGLE_PLAY_LOCATION -> Intent(applicationContext, LocationServiceGooglePlay::class.java)
 

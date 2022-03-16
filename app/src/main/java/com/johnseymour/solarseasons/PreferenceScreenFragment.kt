@@ -40,6 +40,14 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
             bindEditText(editText, ::validateAltitude, R.string.preference_manual_location_altitude_error)
         }
 
+        if (Constants.ENABLE_MANUAL_LOCATION_FEATURE)
+        {
+            findPreference<PreferenceCategory>("manual_location_settings")?.let()
+            {
+                it.isVisible = true
+            }
+        }
+
         // Doing this here as well as onResume to ensure that the visibility is set quick enough to avoid a laggy appearance
         //  under most circumstances
         initialiseWidgetPreferences()
