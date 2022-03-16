@@ -2,9 +2,14 @@ package com.johnseymour.solarseasons
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.text.InputType
+import android.widget.Button
+import android.widget.EditText
 import androidx.fragment.app.setFragmentResult
 import androidx.preference.PreferenceFragmentCompat
 import androidx.core.os.bundleOf
+import androidx.core.widget.doAfterTextChanged
+import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceCategory
 
 class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener
@@ -16,6 +21,23 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
         backgroundWorkCategory = findPreference("background_work_settings")!!
+
+        findPreference<EditTextPreference>("manual_location_latitude")?.setOnBindEditTextListener()
+        { editText ->
+            bindEditText(editText, ::validateLatitude, R.string.preference_manual_location_latitude_error)
+            editText.inputType = editText.inputType or InputType.TYPE_NUMBER_FLAG_SIGNED
+        }
+
+        findPreference<EditTextPreference>("manual_location_longitude")?.setOnBindEditTextListener()
+        { editText ->
+            bindEditText(editText, ::validateLongitude, R.string.preference_manual_location_longitude_error)
+            editText.inputType = editText.inputType or InputType.TYPE_NUMBER_FLAG_SIGNED
+        }
+
+        findPreference<EditTextPreference>("manual_location_altitude")?.setOnBindEditTextListener()
+        { editText ->
+            bindEditText(editText, ::validateAltitude, R.string.preference_manual_location_altitude_error)
+        }
 
         // Doing this here as well as onResume to ensure that the visibility is set quick enough to avoid a laggy appearance
         //  under most circumstances
@@ -34,7 +56,6 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
             backgroundWorkCategory.isEnabled = false
             backgroundWorkCategory.setSummary(R.string.preferences_screen_no_widgets)
         }
-
     }
 
     override fun onResume()
@@ -86,7 +107,52 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
                 val updatedRefreshRateValue = sharedPreferences.getString(key, null)?.toLongOrNull() ?: return
                 setFragmentResult(WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(SmallUVDisplay.SET_BACKGROUND_REFRESH_RATE_KEY to updatedRefreshRateValue))
             }
+
+            Constants.SharedPreferences.MANUAL_LOCATION_ENABLED_KEY ->
+            {
+                useManualLocation = sharedPreferences.getBoolean(key, false)
+            }
         }
+    }
+
+    private fun bindEditText(editText: EditText, validationMethod: (Double) -> Boolean, errorMessageResourceID: Int)
+    {
+        editText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+
+        editText.setSelection(editText.length())
+
+        editText.doAfterTextChanged() // Validate field
+        { editable ->
+            editable ?: return@doAfterTextChanged
+
+            val acceptButton = editText.rootView.findViewById<Button>(android.R.id.button1)
+
+            if (validationMethod(editable.toString().toDoubleOrNull() ?: 0.0))
+            {
+                editText.error = null
+                acceptButton?.isEnabled = true
+            }
+            else
+            {
+                editText.error = resources.getText(errorMessageResourceID)
+                acceptButton?.isEnabled = false
+            }
+        }
+    }
+
+    private fun validateLatitude(latitude: Double): Boolean
+    {
+        return ((latitude >= -90.0) && (latitude <= 90.0))
+    }
+
+    private fun validateLongitude(longitude: Double): Boolean
+    {
+        return ((longitude >= -180.0) && (longitude <= 180.0))
+    }
+
+    private fun validateAltitude(altitude: Double): Boolean
+    {
+        return ((altitude >= 0.0) && (altitude <= Constants.MAXIMUM_EARTH_ALTITUDE))
     }
 
     companion object
@@ -94,5 +160,6 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
         const val WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY = "widget_settings_updated_result_key"
         const val APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY = "app_settings_updated_result_key"
         var useCustomTheme = false
+        var useManualLocation = false
     }
 }

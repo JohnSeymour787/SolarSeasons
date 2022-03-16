@@ -28,6 +28,7 @@
     <string name="description_not_found">Description not found</string>
     <string name="location_service_terminated">Location service destroyed</string>
     <string name="location_not_found">Could not find your location</string>
+    <string name="location_manual_entry_error">Error using manual location values. Check that all values exist</string>
     <string name="location_permission_any_denied">Location permission not granted</string>
     <string name="location_disabled_error">Location is disabled. Turn it on then try again</string>
     <string name="location_permission_fine_error">There is no previous location data on the device. A precise location permission is required to update this, otherwise use a different app that has such permission (such as a maps app)</string>
@@ -90,6 +91,14 @@
     <string name="preference_app_launch_auto_request_title">Automatically Retrieve UV Data</string>
     <string name="preference_app_launch_auto_request_summary">App makes a new UV data request each time it is opened if it has been longer than 10 minutes from the last request</string>
     <string name="preference_background_refresh_rate_title">Background refresh rate</string>
+    <string name="preference_manual_location_category_title">Manual Location Settings</string>
+    <string name="preference_enable_manual_location_title">Enable Manual Location</string>
+    <string name="preference_manual_location_latitude_title">Latitude (decimal degrees)</string>
+    <string name="preference_manual_location_longitude_title">Longitude (decimal degrees)</string>
+    <string name="preference_manual_location_altitude_title">Altitude (metres)</string>
+    <string name="preference_manual_location_latitude_error">Latitude value must be within -90.0 and +90.0</string>
+    <string name="preference_manual_location_longitude_error">Longitude value must be within -180.0 and +180.0</string>
+    <string name="preference_manual_location_altitude_error">Altitude value must be within 0 and 30000</string>
     <string name="preferences_screen_background_processing_explanation">Note: Some versions of the Android operating system kill background processes after a while, meaning that the app widget might not always refresh consistently.\n\nAdjusting some of the above settings may improve the reliability of the background data synchronisation.</string>
     <string name="preferences_screen_no_widgets">No widgets detected, widget settings disabled</string>
 

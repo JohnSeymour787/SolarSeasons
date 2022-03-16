@@ -25,6 +25,8 @@ object Constants
 
     const val MINUTES_PER_HOUR = 60
     const val MINUTES_PER_DAY = 1440
+    /** Maximum altitude on earth to get UV data for **/
+    const val MAXIMUM_EARTH_ALTITUDE = 30000.0
 
     const val USE_GOOGLE_PLAY_LOCATION = false
 
@@ -37,5 +39,9 @@ object Constants
         const val APP_THEME_KEY = "app_theme"
         const val CUSTOM_APP_THEME_VALUE = "custom_theme"
         const val APP_LAUNCH_AUTO_REQUEST_KEY = "app_launch_auto_request"
+        const val MANUAL_LOCATION_ENABLED_KEY = "enable_manual_location"
+        const val MANUAL_LOCATION_LATITUDE_KEY = "manual_location_latitude"
+        const val MANUAL_LOCATION_LONGITUDE_KEY = "manual_location_longitude"
+        const val MANUAL_LOCATION_ALTITUDE_KEY = "manual_location_altitude"
     }
 }

@@ -121,13 +121,13 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
         fun locationServiceIntent(applicationContext: Context): Intent
         {
-            return if (Constants.USE_GOOGLE_PLAY_LOCATION)
+            return when
             {
-                Intent(applicationContext, LocationServiceGooglePlay::class.java)
-            }
-            else
-            {
-                Intent(applicationContext, LocationServiceNonGoogle::class.java)
+                PreferenceScreenFragment.useManualLocation -> Intent(applicationContext, LocationServiceManual::class.java)
+
+                Constants.USE_GOOGLE_PLAY_LOCATION -> Intent(applicationContext, LocationServiceGooglePlay::class.java)
+
+                else -> Intent(applicationContext, LocationServiceNonGoogle::class.java)
             }
         }
 

@@ -28,6 +28,9 @@
         <service android:name=".LocationServiceNonGoogle"
             android:foregroundServiceType="location" />
 
+        <service android:name=".LocationServiceManual"
+            android:foregroundServiceType="location" />
+
         <receiver android:name=".SmallUVDisplay">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
