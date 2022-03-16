@@ -21,7 +21,7 @@ class LocationServiceManual: LocationService()
             return START_STICKY
         }
 
-        NetworkRepository.Semi_OLDgetRealTimeUV(latitude, longitude, altitude).success()
+        NetworkRepository.getRealTimeUV(latitude, longitude, altitude).success()
         { uvData ->
             uvDataDeferred?.resolve(uvData)
             stopSelf()

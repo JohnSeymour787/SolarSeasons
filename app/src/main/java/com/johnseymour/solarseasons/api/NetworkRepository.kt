@@ -51,7 +51,7 @@ object NetworkRepository
         retrofit.create(OPENUVAPI::class.java)
     }
 
-    fun Semi_OLDgetRealTimeUV(latitude: Double, longitude: Double, altitude: Double): Promise<UVData, ErrorStatus>
+    fun getRealTimeUV(latitude: Double, longitude: Double, altitude: Double): Promise<UVData, ErrorStatus>
     {
         val result = deferred<UVData, ErrorStatus>()
 

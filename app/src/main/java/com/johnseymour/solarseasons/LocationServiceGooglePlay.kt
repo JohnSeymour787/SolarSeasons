@@ -67,9 +67,8 @@ class LocationServiceGooglePlay: LocationService(), OnSuccessListener<Location>,
                     }
                     else
                     {
-                        NetworkRepository.Semi_OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude)
+                        NetworkRepository.getRealTimeUV(it.latitude, it.longitude, it.altitude)
                             .success()
-                            //NetworkRepository.Semi_OLDgetRealTimeUV().success()
                             { data ->
                                 uvDataDeferred?.resolve(data)
                             }
@@ -94,7 +93,7 @@ class LocationServiceGooglePlay: LocationService(), OnSuccessListener<Location>,
             }
             else
             {
-                NetworkRepository.Semi_OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude).success()
+                NetworkRepository.getRealTimeUV(it.latitude, it.longitude, it.altitude).success()
                 { uvData ->
                     uvDataDeferred?.resolve(uvData)
                     stopSelf()

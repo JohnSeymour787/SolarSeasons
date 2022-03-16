@@ -82,6 +82,7 @@ class LocationServiceNonGoogle: LocationService(), Consumer<Location?>, Location
         }
         else
         {
+            @Suppress("DEPRECATION")
             locationManager.requestSingleUpdate(provider, this@LocationServiceNonGoogle, applicationContext.mainLooper)
         }
     }
@@ -104,7 +105,7 @@ class LocationServiceNonGoogle: LocationService(), Consumer<Location?>, Location
             }
             else
             {
-                NetworkRepository.Semi_OLDgetRealTimeUV(it.latitude, it.longitude, it.altitude).success()
+                NetworkRepository.getRealTimeUV(it.latitude, it.longitude, it.altitude).success()
                 { uvData ->
                     uvDataDeferred?.resolve(uvData)
                     stopSelf()
