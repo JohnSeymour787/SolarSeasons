@@ -300,8 +300,10 @@ class SmallUVDisplay : AppWidgetProvider()
 
     private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, intent: PendingIntent)
     {
+        val lUseCustomTheme = PreferenceManager.getDefaultSharedPreferences(context).getString(Constants.SharedPreferences.APP_THEME_KEY, null) == Constants.SharedPreferences.CUSTOM_APP_THEME_VALUE
+
         // Construct the RemoteViews object, custom theme set determines the layout used due mainly to the progressBar colour
-        val views = if (PreferenceScreenFragment.useCustomTheme)
+        val views = if (lUseCustomTheme)
         {
             RemoteViews(context.packageName, R.layout.small_u_v_display)
         }
@@ -340,7 +342,7 @@ class SmallUVDisplay : AppWidgetProvider()
                 views.setInt(R.id.widgetSunProgress, "setProgress", luvData.sunProgressPercent)
                 views.setViewVisibility(R.id.widgetSunProgress, View.VISIBLE)
 
-                if (PreferenceScreenFragment.useCustomTheme)
+                if (lUseCustomTheme)
                 {
                     views.setTextColor(R.id.uvValue, context.resources.getColor(luvData.textColorInt, context.theme))
                     views.setTextColor(R.id.updatedTime, context.resources.getColor(luvData.textColorInt, context.theme))
