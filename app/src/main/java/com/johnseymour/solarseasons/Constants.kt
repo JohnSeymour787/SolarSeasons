@@ -11,6 +11,9 @@ object Constants
         val HOUR_24: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     }
 
+    const val OPEN_UV_WEBSITE_BASE_URL = "https://www.openuv.io"
+    const val OPEN_UV_WEBSITE_CONSOLE_URL = "https://www.openuv.io/console"
+
     /** Default background refresh rate of calling the API in minutes **/
     const val DEFAULT_REFRESH_TIME = 30L
 

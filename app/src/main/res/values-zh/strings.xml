@@ -110,4 +110,16 @@
     <string name="settings_fragment_title">App Settings</string>
     <string name="settings_fragment_stop_background_button_text">Force Stop App Background Work</string>
     <string name="settings_fragment_stop_background_success">App Background Processes Stopped</string>
+
+    <string name="api_key_fragment_page_1_title">Welcome to Solar Seasons!</string>
+    <string name="api_key_fragment_page_1_explanation">In order to begin using this app, an API key is required to connect to the UV data service\n\nThe basic tier API key is free, however, it only has enough daily requests for 1 user so each person must provide their own key\n\nThe next few screens will guide you through the process of getting your own API key\n\nOnly a Google
+account is needed for authentication and you will not need to create a new password</string>
+    <string name="api_key_fragment_page_2_3_4_title">First Time Setup</string>
+    <string name="api_key_fragment_page_2_explanation">Below is the homepage of the UV data service this app uses, to get started, click the "<b>Get My API Key</b>" button which will open your web browser app for authentication.</string>
+    <string name="api_key_fragment_page_3_explanation">Get the API key by going to the \"API Key\" link and under the \"<b>Developer Account - API Key</b>\" title. The page should also be loaded below.\n\nCopy the key for the next step</string>
+    <string name="api_key_fragment_page_3_redirect_button_text">Open in browser app</string>
+
+    <string name="api_key_fragment_swipe_hint">Swipe right to continue -></string>
+    <string name="api_key_fragment_page_4_key_entry_placeholder">Enter your API key here</string>
+    <string name="api_key_fragment_page_4_button_text">Done</string>
 </resources>
