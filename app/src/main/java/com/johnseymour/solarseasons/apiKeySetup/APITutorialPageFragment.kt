@@ -4,6 +4,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import android.widget.RelativeLayout
 import com.johnseymour.solarseasons.R
@@ -24,7 +27,6 @@ class APITutorialPageFragment : Fragment()
         (arguments?.getSerializable(EXPLANATION_RESOURCE_KEY) as? Int)?.let { explanationTextView.setText(it) }
         arguments?.getString(WEB_VIEW_URL_KEY)?.let()
         { urlString ->
-            webView.loadUrl(urlString)
 
             // When showing the WebView, make it be centered and the explanation text immediately below the title
             val newExplainTextParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT).apply()
@@ -35,6 +37,23 @@ class APITutorialPageFragment : Fragment()
                 topMargin = resources.getDimensionPixelOffset(R.dimen.margin_small)
             }
             explanationTextView.layoutParams = newExplainTextParams
+
+            val originalWebViewClient = webView.webViewClient
+            webView.webViewClient = object : WebViewClient()
+            {
+                override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean
+                {
+                    return false // Preventing automatic opening of browser app when loading the web page
+                }
+
+                override fun onPageFinished(view: WebView?, url: String?)
+                {
+                    super.onPageFinished(view, url)
+                    webView.webViewClient = originalWebViewClient // Will open the browser app when a button on the web page is clicked
+                }
+            }
+
+            webView.loadUrl(urlString)
 
             webView.visibility = View.VISIBLE
 
