@@ -50,7 +50,7 @@ class APITutorialPageFragment : Fragment()
                 {
                     super.onPageFinished(view, url)
 
-                    if (webView != null)
+                    if (webView != null) // Can be null if configuration change occurs
                     {
                         webView.webViewClient = originalWebViewClient // Will open the browser app when a button on the web page is clicked
                     }
