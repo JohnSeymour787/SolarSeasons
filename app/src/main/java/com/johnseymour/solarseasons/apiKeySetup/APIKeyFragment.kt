@@ -24,6 +24,11 @@ class APIKeyFragment : Fragment()
         viewPager.adapter = APIKeyTutorialPagerAdapter(this)
 
         viewPager.reduceDragSensitivity()
+
+        childFragmentManager.setFragmentResultListener(APIKeyEntryFragment.LAUNCH_MAIN_APP_FRAGMENT_KEY, this)
+        { requestKey, bundle ->
+            parentFragmentManager.setFragmentResult(requestKey, bundle)
+        }
     }
 
     /**

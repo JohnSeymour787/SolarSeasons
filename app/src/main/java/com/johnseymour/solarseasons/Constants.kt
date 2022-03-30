@@ -44,9 +44,12 @@ object Constants
         const val APP_THEME_KEY = "app_theme"
         const val CUSTOM_APP_THEME_VALUE = "custom_theme"
         const val APP_LAUNCH_AUTO_REQUEST_KEY = "app_launch_auto_request"
+
         const val MANUAL_LOCATION_ENABLED_KEY = "enable_manual_location"
         const val MANUAL_LOCATION_LATITUDE_KEY = "manual_location_latitude"
         const val MANUAL_LOCATION_LONGITUDE_KEY = "manual_location_longitude"
         const val MANUAL_LOCATION_ALTITUDE_KEY = "manual_location_altitude"
+
+        const val API_KEY = "stored_api_key"
     }
 }

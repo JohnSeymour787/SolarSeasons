@@ -122,5 +122,10 @@ account is needed for authentication and you will not need to create a new passw
 
     <string name="api_key_fragment_swipe_hint">Swipe right to continue -></string>
     <string name="api_key_fragment_page_4_key_entry_placeholder">Enter your API key here</string>
-    <string name="api_key_fragment_page_4_button_text">Done</string>
+    <string name="api_key_fragment_page_4_store_key_button_text">Save Key</string>
+    <string name="api_key_fragment_page_4_empty_key_error">Cannot have an empty key</string>
+    <string name="api_key_fragment_page_4_spaces_in_key_error">Cannot have spaces in the key</string>
+    <string name="api_key_fragment_page_4_key_added_success_text">API key stored. You can change it in the settings later if desired\n\nThe app is now ready to be used</string>
+    <string name="api_key_fragment_page_4_key_added_success_toast">API key saved</string>
+    <string name="api_key_fragment_page_4_launch_main_app_button_text">Go to App</string>
 </resources>
