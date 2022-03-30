@@ -49,7 +49,11 @@ class APITutorialPageFragment : Fragment()
                 override fun onPageFinished(view: WebView?, url: String?)
                 {
                     super.onPageFinished(view, url)
-                    webView.webViewClient = originalWebViewClient // Will open the browser app when a button on the web page is clicked
+
+                    if (webView != null)
+                    {
+                        webView.webViewClient = originalWebViewClient // Will open the browser app when a button on the web page is clicked
+                    }
                 }
             }
 
