@@ -96,4 +96,19 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        app:key="api_key_category"
+        app:title="@string/preference_api_key_title"
+        app:isPreferenceVisible="false"
+        app:allowDividerAbove="false"
+        app:iconSpaceReserved="false" >
+
+        <EditTextPreference
+            app:key="stored_api_key"
+            app:title="@string/preference_api_key_title"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

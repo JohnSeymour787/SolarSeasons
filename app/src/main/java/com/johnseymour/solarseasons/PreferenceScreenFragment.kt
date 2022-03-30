@@ -12,6 +12,7 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceCategory
+import com.johnseymour.solarseasons.api.OPENUV_API_KEY
 
 class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener
 {
@@ -43,6 +44,14 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
         if (Constants.ENABLE_MANUAL_LOCATION_FEATURE)
         {
             findPreference<PreferenceCategory>("manual_location_settings")?.let()
+            {
+                it.isVisible = true
+            }
+        }
+
+        if (Constants.ENABLE_API_KEY_ENTRY_FEATURE)
+        {
+            findPreference<PreferenceCategory>("api_key_category")?.let()
             {
                 it.isVisible = true
             }
@@ -127,6 +136,11 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
             Constants.SharedPreferences.MANUAL_LOCATION_ENABLED_KEY ->
             {
                 useManualLocation = sharedPreferences.getBoolean(key, false)
+            }
+
+            Constants.SharedPreferences.API_KEY ->
+            {
+                OPENUV_API_KEY = sharedPreferences.getString(key, null) ?: ""
             }
         }
     }
