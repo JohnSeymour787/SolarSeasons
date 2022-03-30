@@ -2,6 +2,10 @@ package com.johnseymour.solarseasons
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.preference.PreferenceManager
+import com.johnseymour.solarseasons.api.OPENUV_API_KEY
+import com.johnseymour.solarseasons.apiKeySetup.APIKeyEntryFragment
+import com.johnseymour.solarseasons.apiKeySetup.APIKeyFragment
 
 class MainActivity : AppCompatActivity()
 {
@@ -31,6 +35,28 @@ class MainActivity : AppCompatActivity()
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, uvFragment)
                 .commit()
+        }
+
+        if (Constants.ENABLE_API_KEY_ENTRY_FEATURE)
+        {
+            supportFragmentManager.setFragmentResultListener(APIKeyEntryFragment.LAUNCH_MAIN_APP_FRAGMENT_KEY, this)
+            { _, _ ->
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, CurrentUVFragment.newInstance(intent.extras))
+                    .commit()
+            }
+
+            val apiKey = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.SharedPreferences.API_KEY, null)
+            if (apiKey == null)
+            {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, APIKeyFragment.newInstance())
+                    .commit()
+            }
+            else
+            {
+                OPENUV_API_KEY = apiKey
+            }
         }
     }
 }
