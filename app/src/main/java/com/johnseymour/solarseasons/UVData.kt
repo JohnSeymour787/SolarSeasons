@@ -156,6 +156,9 @@ data class UVData(
         return !timeNow.isBefore(startTime) && !timeNow.isAfter(endTime)
     }
 
+    /**
+     * Cloud cover as a decimal percentage, with 1.0 meaning 100% cloudy and 0.0 meaning clear skies
+     */
     var cloudCover: Double? = null
 
     val cloudFactoredUV: Float?
