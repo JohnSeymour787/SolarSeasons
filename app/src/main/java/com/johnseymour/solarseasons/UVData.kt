@@ -9,7 +9,7 @@ import kotlin.math.absoluteValue
 
 @Parcelize
 data class UVData(
-    val uv: Float,
+    var uv: Float,
     val uvTime: ZonedDateTime? = null,
     val uvMax: Float,
     val uvMaxTime: ZonedDateTime? = null,
@@ -156,6 +156,35 @@ data class UVData(
         return !timeNow.isBefore(startTime) && !timeNow.isAfter(endTime)
     }
 
+    var cloudCover: Double? = null
+
+    val cloudFactoredUV: Float?
+        get()
+        {
+            val lCloudCover = cloudCover ?: return null
+
+            return if (lCloudCover < LIGHT_CLOUD_COVER)
+            {
+                uv
+            }
+            else if ((lCloudCover >= LIGHT_CLOUD_COVER) && (lCloudCover < MODERATE_CLOUD_COVER))
+            {
+                uv * LIGHT_CLOUD_COVER_UV_REDUCTION_FACTOR
+            }
+            else if ((lCloudCover >= MODERATE_CLOUD_COVER) && (lCloudCover < HEAVY_CLOUD_COVER))
+            {
+                uv * MODERATE_CLOUD_COVER_UV_REDUCTION_FACTOR
+            }
+            else if (lCloudCover >= HEAVY_CLOUD_COVER)
+            {
+                uv * HEAVY_CLOUD_COVER_UV_REDUCTION_FACTOR
+            }
+            else
+            {
+                uv
+            }
+        }
+
     companion object
     {
         const val UV_DATA_UPDATED = "com.johnseymour.solarseasons.UVDATA_CHANGED"
@@ -165,6 +194,14 @@ data class UVData(
         private const val UV_MODERATE = 6.0F
         private const val UV_HIGH = 8.0F
         private const val UV_VERY_HIGH = 11.0F
+
+        private const val LIGHT_CLOUD_COVER_UV_REDUCTION_FACTOR = 0.89F
+        private const val MODERATE_CLOUD_COVER_UV_REDUCTION_FACTOR = 0.73F
+        private const val HEAVY_CLOUD_COVER_UV_REDUCTION_FACTOR = 0.31F
+
+        private const val LIGHT_CLOUD_COVER = 0.2
+        private const val MODERATE_CLOUD_COVER = 0.7
+        private const val HEAVY_CLOUD_COVER = 0.9
 
         fun skinTypeColorInt(skinTypeString: String): Int
         {
