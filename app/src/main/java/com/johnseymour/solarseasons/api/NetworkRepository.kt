@@ -1,5 +1,7 @@
 package com.johnseymour.solarseasons.api
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
 import com.johnseymour.solarseasons.SunInfo
 import com.johnseymour.solarseasons.UVData
@@ -16,7 +18,8 @@ import java.io.IOException
 
 object NetworkRepository
 {
-    private const val API_BASE_URL = "https://api.openuv.io/api/v1/"
+    private const val OPEN_UV_API_BASE_URL = "https://api.openuv.io/api/v1/"
+    private const val WEATHER_API_BASE_URL = "https://api.weatherapi.com/v1/"
 
     private val openUVAPI by lazy()
     {
@@ -29,7 +32,7 @@ object NetworkRepository
 
         val gsonConverter = GsonConverterFactory.create(gsonBuilder)
 
-        //Add API key header to all outgoing requests
+        // Add API key header to all outgoing requests
         val httpClient = OkHttpClient.Builder().apply()
         {
             addInterceptor()
@@ -43,12 +46,47 @@ object NetworkRepository
             }.build()
         }.build()
 
-        val retrofit = Retrofit.Builder().baseUrl(API_BASE_URL)
+        val retrofit = Retrofit.Builder().baseUrl(OPEN_UV_API_BASE_URL)
             .addConverterFactory(gsonConverter)
             .client(httpClient)
             .build()
 
         retrofit.create(OPENUVAPI::class.java)
+    }
+
+    private val weatherAPI by lazy()
+    {
+        val gsonBuilder = GsonBuilder().run()
+        {
+            registerTypeAdapter(Double::class.javaObjectType, RealtimeCloudCoverDeserialiser)
+            create()
+        }
+
+        val gsonConverter = GsonConverterFactory.create(gsonBuilder)
+
+        // Add API key query parameter to all outgoing requests
+        val httpClient = OkHttpClient.Builder().apply()
+        {
+            addInterceptor()
+            {
+                val newUrl = it.request().url().newBuilder()
+                    .addQueryParameter("key", WEATHER_API_KEY)
+                    .build()
+
+                val request = it.request().newBuilder()
+                    .url(newUrl)
+                    .build()
+
+                it.proceed(request)
+            }.build()
+        }.build()
+
+        val retrofit = Retrofit.Builder().baseUrl(WEATHER_API_BASE_URL)
+            .addConverterFactory(gsonConverter)
+            .client(httpClient)
+            .build()
+
+        retrofit.create(WeatherAPI::class.java)
     }
 
     fun getRealTimeUV(latitude: Double, longitude: Double, altitude: Double): Promise<UVData, ErrorStatus>
@@ -89,5 +127,34 @@ object NetworkRepository
         })
 
         return result.promise
+    }
+
+    /**
+     * Returns the current cloud cover at a location as a decimal percentage, with 1.0 meaning 100% cloudy
+     *  and 0.0 meaning clear skies.
+     */
+    fun getCurrentCloudCover(latitude: Double, longitude: Double): LiveData<Double>
+    {
+        val result = MutableLiveData<Double>()
+
+        val queryString = "$latitude,$longitude"
+
+        weatherAPI.getRealTimeCloudCover(queryString).enqueue(object: Callback<Double>
+        {
+            override fun onResponse(call: Call<Double>, response: Response<Double>)
+            {
+                response.body()?.let()
+                {
+                    result.postValue(it)
+                }
+            }
+
+            override fun onFailure(call: Call<Double>, t: Throwable)
+            {
+                val cake = 2
+            }
+        })
+
+        return result
     }
 }
