@@ -34,4 +34,15 @@ class MainViewModel: ViewModel()
     val uvDataChangedIntentFilter = IntentFilter(UVData.UV_DATA_UPDATED)
 
     var shouldRequestUVUpdateOnLaunch = true
+
+    /**
+     * Writes this object's uvData field into persistent storage
+     */
+    fun saveUVToDisk(context: Context)
+    {
+        uvData?.let()
+        {
+            DiskRepository.writeLatestUV(it, context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
+        }
+    }
 }

@@ -91,13 +91,15 @@
     <string name="skin_type_6">Skin Type 6</string>
 
     <string name="preference_app_theme_title">UV Display Theme</string>
-    <string name="preference_work_type_title">Background work type used</string>
+    <string name="preference_work_type_title">Background Work Type Used</string>
+    <string name="preference_cloud_cover_title">Calculate Cloud Effect on UV</string>
+    <string name="preference_cloud_cover_summary">The app gets local weather data and uses cloud cover information to calculate an estimated actual UV level</string>
     <string name="preference_background_category_title">Widget Settings</string>
-    <string name="preference_subscribe_screen_unlock_title">Retrieve UV data on screen unlock</string>
+    <string name="preference_subscribe_screen_unlock_title">Retrieve UV Data on Screen Unlock</string>
     <string name="preference_subscribe_screen_unlock_summary">Updates UV data when the device is unlocked after the background refresh rate is exceeded</string>
     <string name="preference_app_launch_auto_request_title">Automatically Retrieve UV Data</string>
-    <string name="preference_app_launch_auto_request_summary">App makes a new UV data request each time it is opened if it has been longer than 10 minutes from the last request</string>
-    <string name="preference_background_refresh_rate_title">Background refresh rate</string>
+    <string name="preference_app_launch_auto_request_summary">The app makes a new UV data request each time it is opened if it has been longer than 10 minutes from the last request</string>
+    <string name="preference_background_refresh_rate_title">Background Refresh Rate</string>
     <string name="preference_manual_location_category_title">Manual Location Settings</string>
     <string name="preference_enable_manual_location_title">Enable Manual Location</string>
     <string name="preference_manual_location_latitude_title">Latitude (decimal degrees)</string>

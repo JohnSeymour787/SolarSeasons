@@ -156,6 +156,19 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
             { autoRequestValue ->
                 viewModel.shouldRequestUVUpdateOnLaunch = autoRequestValue
             }
+
+            (bundle[Constants.SharedPreferences.CLOUD_COVER_FACTOR_KEY] as? Boolean)?.let()
+            { cloudCoverEnabled ->
+                if (!cloudCoverEnabled) // Remove the cloudCover data and refresh the UI
+                {
+                    viewModel.uvData?.cloudCover = null
+                    viewModel.uvData?.let()
+                    {
+                        displayNewUVData(it)
+                        viewModel.saveUVToDisk(requireContext())
+                    }
+                }
+            }
         }
 
         parentFragmentManager.setFragmentResultListener(PreferenceScreenFragment.WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, this)
@@ -305,7 +318,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
                     viewModel.lastObserving?.removeObserver(this)
 
-                    DiskRepository.writeLatestUV(lUVData, requireContext().getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
+                    viewModel.saveUVToDisk(requireContext())
 
                     val ids = requireContext().getWidgetIDs()
                     if (ids.isNotEmpty())
