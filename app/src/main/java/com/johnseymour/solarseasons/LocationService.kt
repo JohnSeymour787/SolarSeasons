@@ -9,6 +9,8 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.preference.PreferenceManager
+import com.johnseymour.solarseasons.api.NetworkRepository
 import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise
 import java.time.ZonedDateTime
@@ -19,6 +21,8 @@ open class LocationService: Service()
     {
         const val TEST_MODE = false
         var counter = 0F
+
+        private const val MAXIMUM_POSSIBLE_NETWORK_REQUESTS = 2
 
         private const val NOTIFICATION_CHANNEL_ID = "Solar.seasons.id"
         private const val NOTIFICATION_CHANNEL_NAME = "Solar.seasons.foreground_location_channel"
@@ -84,6 +88,67 @@ open class LocationService: Service()
     }
 
     override fun onBind(intent: Intent): IBinder? = null
+
+    private var uvData: UVData? = null
+    private var cloudCover: Double? = null
+    private var requestsMade: Int = 0
+
+    private fun networkRequestsComplete()
+    {
+        uvData?.let()
+        {
+            it.cloudCover = cloudCover
+            uvDataDeferred?.resolve(it)
+        }
+
+        stopSelf()
+    }
+
+    fun locationSuccess(latitude: Double, longitude: Double, altitude: Double)
+    {
+        val isCloudCoverEnabled = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+            .getBoolean(Constants.SharedPreferences.CLOUD_COVER_FACTOR_KEY, false)
+
+        if (isCloudCoverEnabled)
+        {
+            NetworkRepository.getCurrentCloudCover(latitude, longitude).success()
+            { lCloudCover ->
+                cloudCover = lCloudCover
+                requestsMade += 1
+
+                if (requestsMade == MAXIMUM_POSSIBLE_NETWORK_REQUESTS)
+                {
+                    networkRequestsComplete()
+                }
+            }.fail() // Failure of cloud cover data is non-critical
+            {
+                requestsMade += 1
+                if (requestsMade == MAXIMUM_POSSIBLE_NETWORK_REQUESTS)
+                {
+                    networkRequestsComplete()
+                }
+            }
+        }
+
+        NetworkRepository.getRealTimeUV(latitude, longitude, altitude).success()
+        { luvData ->
+            uvData = luvData
+            requestsMade += 1
+
+            if ((isCloudCoverEnabled) && (requestsMade == MAXIMUM_POSSIBLE_NETWORK_REQUESTS))
+            {
+                networkRequestsComplete()
+            }
+            else if (!isCloudCoverEnabled)
+            {
+                networkRequestsComplete()
+            }
+        }.fail()
+        { errorStatus ->
+            uvDataDeferred?.reject(errorStatus)
+            stopSelf()
+        }
+    }
 
     /**
      * Called when it is determined that the location cannot be determined anymore. Rejects the current

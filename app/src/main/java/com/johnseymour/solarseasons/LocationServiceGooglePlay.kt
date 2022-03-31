@@ -93,15 +93,7 @@ class LocationServiceGooglePlay: LocationService(), OnSuccessListener<Location>,
             }
             else
             {
-                NetworkRepository.getRealTimeUV(it.latitude, it.longitude, it.altitude).success()
-                { uvData ->
-                    uvDataDeferred?.resolve(uvData)
-                    stopSelf()
-                }.fail()
-                { errorStatus ->
-                    uvDataDeferred?.reject(errorStatus)
-                    stopSelf()
-                }
+                super.locationSuccess(it.latitude, it.longitude, it.altitude)
             }
 
         } ?: run() // Can be null if location was turned off or device restarted

@@ -52,5 +52,7 @@ object Constants
         const val MANUAL_LOCATION_ALTITUDE_KEY = "manual_location_altitude"
 
         const val API_KEY = "stored_api_key"
+
+        const val CLOUD_COVER_FACTOR_KEY = "cloud_cover_factor"
     }
 }

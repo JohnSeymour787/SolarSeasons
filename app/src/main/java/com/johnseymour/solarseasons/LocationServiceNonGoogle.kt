@@ -10,7 +10,6 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.CancellationSignal
 import androidx.core.app.ActivityCompat
-import com.johnseymour.solarseasons.api.NetworkRepository
 import java.util.function.Consumer
 
 class LocationServiceNonGoogle: LocationService(), Consumer<Location?>, LocationListener
@@ -105,15 +104,7 @@ class LocationServiceNonGoogle: LocationService(), Consumer<Location?>, Location
             }
             else
             {
-                NetworkRepository.getRealTimeUV(it.latitude, it.longitude, it.altitude).success()
-                { uvData ->
-                    uvDataDeferred?.resolve(uvData)
-                    stopSelf()
-                }.fail()
-                { errorStatus ->
-                    uvDataDeferred?.reject(errorStatus)
-                    stopSelf()
-                }
+                super.locationSuccess(it.latitude, it.longitude, it.altitude)
             }
         } ?: run()
         {

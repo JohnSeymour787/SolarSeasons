@@ -2,7 +2,6 @@ package com.johnseymour.solarseasons
 
 import android.content.Intent
 import androidx.preference.PreferenceManager
-import com.johnseymour.solarseasons.api.NetworkRepository
 
 class LocationServiceManual: LocationService()
 {
@@ -21,15 +20,7 @@ class LocationServiceManual: LocationService()
             return START_STICKY
         }
 
-        NetworkRepository.getRealTimeUV(latitude, longitude, altitude).success()
-        { uvData ->
-            uvDataDeferred?.resolve(uvData)
-            stopSelf()
-        }.fail()
-        { errorStatus ->
-            uvDataDeferred?.reject(errorStatus)
-            stopSelf()
-        }
+        super.locationSuccess(latitude, longitude, altitude)
 
         return START_STICKY
     }
