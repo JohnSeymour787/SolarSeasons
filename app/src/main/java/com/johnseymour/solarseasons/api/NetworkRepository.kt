@@ -133,9 +133,9 @@ object NetworkRepository
      * Returns the current cloud cover at a location as a decimal percentage, with 1.0 meaning 100% cloudy
      *  and 0.0 meaning clear skies.
      */
-    fun getCurrentCloudCover(latitude: Double, longitude: Double): LiveData<Double>
+    fun getCurrentCloudCover(latitude: Double, longitude: Double): Promise<Double, Unit>
     {
-        val result = MutableLiveData<Double>()
+        val result = deferred<Double, Unit>()
 
         val queryString = "$latitude,$longitude"
 
@@ -145,16 +145,13 @@ object NetworkRepository
             {
                 response.body()?.let()
                 {
-                    result.postValue(it)
+                    result.resolve(it)
                 }
             }
 
-            override fun onFailure(call: Call<Double>, t: Throwable)
-            {
-                val cake = 2
-            }
+            override fun onFailure(call: Call<Double>, t: Throwable) { }
         })
 
-        return result
+        return result.promise
     }
 }
