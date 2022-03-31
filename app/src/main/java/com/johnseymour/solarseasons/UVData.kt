@@ -16,7 +16,8 @@ data class UVData(
     val ozone: Float,
     val ozoneTime: ZonedDateTime? = null,
     val safeExposure: Map<String, Int>? = null,
-    val sunInfo: SunInfo): Parcelable
+    val sunInfo: SunInfo,
+    var cloudCover: Double? = null): Parcelable
 {
     val backgroundColorInt: Int
     get() =
@@ -156,14 +157,10 @@ data class UVData(
         return !timeNow.isBefore(startTime) && !timeNow.isAfter(endTime)
     }
 
-    /**
-     * Cloud cover as a decimal percentage, with 1.0 meaning 100% cloudy and 0.0 meaning clear skies
-     */
-    var cloudCover: Double? = null
-
     val cloudFactoredUV: Float?
         get()
         {
+            // Cloud cover is a decimal percentage, with 1.0 meaning 100% cloudy and 0.0 meaning clear skies
             val lCloudCover = cloudCover ?: return null
 
             return if (lCloudCover < LIGHT_CLOUD_COVER)
