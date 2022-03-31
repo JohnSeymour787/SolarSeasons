@@ -185,6 +185,33 @@ data class UVData(
             }
         }
 
+    val cloudCoverTextInt: Int?
+        get()
+        {
+            val lCloudCover = cloudCover ?: return null
+
+            return if (lCloudCover < MINIMAL_CLOUD_COVER)
+            {
+                R.string.cloud_cover_none
+            }
+            else if ((lCloudCover >= MINIMAL_CLOUD_COVER) && (lCloudCover < MODERATE_CLOUD_COVER))
+            {
+                R.string.cloud_cover_light
+            }
+            else if ((lCloudCover >= MODERATE_CLOUD_COVER) && (lCloudCover < HEAVY_CLOUD_COVER))
+            {
+                R.string.cloud_cover_moderate
+            }
+            else if (lCloudCover >= HEAVY_CLOUD_COVER)
+            {
+                R.string.cloud_cover_heavy
+            }
+            else
+            {
+                null
+            }
+        }
+
     companion object
     {
         const val UV_DATA_UPDATED = "com.johnseymour.solarseasons.UVDATA_CHANGED"
@@ -199,6 +226,7 @@ data class UVData(
         private const val MODERATE_CLOUD_COVER_UV_REDUCTION_FACTOR = 0.73F
         private const val HEAVY_CLOUD_COVER_UV_REDUCTION_FACTOR = 0.31F
 
+        private const val MINIMAL_CLOUD_COVER = 0.1
         private const val LIGHT_CLOUD_COVER = 0.2
         private const val MODERATE_CLOUD_COVER = 0.7
         private const val HEAVY_CLOUD_COVER = 0.9

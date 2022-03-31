@@ -353,6 +353,8 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         uvText.visibility = View.INVISIBLE
         maxUV.visibility = View.INVISIBLE
         maxUVTime.visibility = View.INVISIBLE
+        cloudFactoredUVText.visibility = View.INVISIBLE
+        cloudCoverLevelText.visibility = View.INVISIBLE
         lastUpdated.visibility = View.INVISIBLE
         sunProgressLabel.visibility = View.INVISIBLE
         sunProgress.visibility = View.INVISIBLE
@@ -373,6 +375,18 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
         uvText.visibility = View.VISIBLE
         uvText.text = resources.getText(lUVData.uvLevelTextInt)
+
+        lUVData.cloudFactoredUV?.let()
+        {
+            cloudFactoredUVText.visibility = View.VISIBLE
+            cloudFactoredUVText.text = resources.getString(R.string.estimated_uv_value, it)
+        } ?: run { cloudFactoredUVText.visibility = View.GONE }
+
+        lUVData.cloudCoverTextInt?.let()
+        {
+            cloudCoverLevelText.visibility = View.VISIBLE
+            cloudCoverLevelText.text = resources.getString(it)
+        } ?: run { cloudCoverLevelText.visibility = View.GONE }
 
         maxUV.visibility = View.VISIBLE
         maxUV.text = resources.getString(R.string.max_uv, lUVData.uvMax)
@@ -454,6 +468,8 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         settingsButton.imageTintList = ColorStateList.valueOf(primaryTextColourInt)
 
         uvText.setTextColor(primaryTextColourInt)
+        cloudFactoredUVText.setTextColor(primaryTextColourInt)
+        cloudCoverLevelText.setTextColor(primaryTextColourInt)
         maxUV.setTextColor(primaryTextColourInt)
         maxUVTime.setTextColor(primaryTextColourInt)
         lastUpdated.setTextColor(primaryTextColourInt)
@@ -491,6 +507,8 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
 
         uvText.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         maxUV.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        cloudFactoredUVText.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        cloudCoverLevelText.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         maxUVTime.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         lastUpdated.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         sunProgressLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))

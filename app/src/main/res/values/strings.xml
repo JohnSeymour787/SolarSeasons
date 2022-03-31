@@ -6,8 +6,9 @@
     <string name="app_widget_time_text_default">00:00</string>
     <string name="add_widget">Add widget</string>
     <string name="uv_value">%1$.1f</string>
+    <string name="estimated_uv_value">Estimated Actual: %1$.1f</string>
     <string name="latest_update">Last updated: %1$s</string>
-    <string name="max_uv">Expected max: %1$.1f</string>
+    <string name="max_uv">Expected Max: %1$.1f</string>
     <string name="max_uv_time">Time of max: %1$s</string>
     <string name="sun_progress_label">Sun Progress In Sky (Sunrise to Sunset)</string>
     <string name="sun_progress_label_shortened">Sun Progress In Sky</string>
@@ -47,6 +48,11 @@
     <string name="uv_level_high">High UV Rating</string>
     <string name="uv_level_very_high">Very High UV Rating</string>
     <string name="uv_level_extreme">Extreme UV Rating</string>
+
+    <string name="cloud_cover_none">No Clouds</string>
+    <string name="cloud_cover_light">Light Cloud Cover</string>
+    <string name="cloud_cover_moderate">Moderate Cloud Cover</string>
+    <string name="cloud_cover_heavy">Heavy Cloud Cover</string>
 
     <string name="sun_info_solar_noon">Solar Noon</string>
     <string name="sun_info_solar_noon_description">During the solar noon, the sun is at its highest position in the daytime sky, resulting in the maximum UV exposure.</string>
