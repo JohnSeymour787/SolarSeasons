@@ -3,6 +3,7 @@ package com.johnseymour.solarseasons
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.johnseymour.solarseasons.current_uv_screen.SkinExposureViewCell
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import kotlinx.android.synthetic.main.list_cell_skin_exposure.view.*
 

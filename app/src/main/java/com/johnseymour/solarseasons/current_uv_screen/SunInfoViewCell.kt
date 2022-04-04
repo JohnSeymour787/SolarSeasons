@@ -1,9 +1,10 @@
-package com.johnseymour.solarseasons
+package com.johnseymour.solarseasons.current_uv_screen
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.johnseymour.solarseasons.R
 
 class SunInfoViewCell(context: Context, attrs: AttributeSet? = null): ConstraintLayout(context, attrs)
 {

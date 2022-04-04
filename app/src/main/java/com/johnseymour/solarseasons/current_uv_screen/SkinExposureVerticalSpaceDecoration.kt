@@ -1,4 +1,4 @@
-package com.johnseymour.solarseasons
+package com.johnseymour.solarseasons.current_uv_screen
 
 import android.graphics.Rect
 import android.view.View
