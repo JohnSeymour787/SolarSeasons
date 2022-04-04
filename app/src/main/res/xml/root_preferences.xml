@@ -89,7 +89,7 @@
             app:title="@string/preference_work_type_title"
             app:entries="@array/preferences_work_type_entries"
             app:entryValues="@array/preferences_work_type_values"
-            app:defaultValue="periodic_work"
+            app:defaultValue="one_time_work"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
