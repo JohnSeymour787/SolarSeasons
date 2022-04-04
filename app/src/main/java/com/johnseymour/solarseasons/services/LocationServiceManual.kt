@@ -1,7 +1,9 @@
-package com.johnseymour.solarseasons
+package com.johnseymour.solarseasons.services
 
 import android.content.Intent
 import androidx.preference.PreferenceManager
+import com.johnseymour.solarseasons.Constants
+import com.johnseymour.solarseasons.ErrorStatus
 
 class LocationServiceManual: LocationService()
 {

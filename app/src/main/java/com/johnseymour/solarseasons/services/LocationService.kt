@@ -1,4 +1,4 @@
-package com.johnseymour.solarseasons
+package com.johnseymour.solarseasons.services
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -10,6 +10,7 @@ import android.content.pm.ServiceInfo
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.preference.PreferenceManager
+import com.johnseymour.solarseasons.*
 import com.johnseymour.solarseasons.api.NetworkRepository
 import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise

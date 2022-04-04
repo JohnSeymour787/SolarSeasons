@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.WorkInfo
+import com.johnseymour.solarseasons.services.LocationService
 import kotlinx.android.synthetic.main.fragment_current_u_v.*
 import java.io.FileNotFoundException
 import java.time.ZonedDateTime

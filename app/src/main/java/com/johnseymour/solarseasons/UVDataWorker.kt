@@ -4,6 +4,10 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.work.*
+import com.johnseymour.solarseasons.services.LocationService
+import com.johnseymour.solarseasons.services.LocationServiceGooglePlay
+import com.johnseymour.solarseasons.services.LocationServiceManual
+import com.johnseymour.solarseasons.services.LocationServiceNonGoogle
 import nl.komponents.kovenant.deferred
 import java.util.concurrent.TimeUnit
 

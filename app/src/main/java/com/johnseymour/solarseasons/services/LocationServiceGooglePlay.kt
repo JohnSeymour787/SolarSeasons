@@ -1,4 +1,4 @@
-package com.johnseymour.solarseasons
+package com.johnseymour.solarseasons.services
 
 import android.Manifest
 import android.content.Intent
@@ -9,6 +9,7 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
+import com.johnseymour.solarseasons.ErrorStatus
 import java.lang.Exception
 
 class LocationServiceGooglePlay: LocationService(), OnSuccessListener<Location>, OnFailureListener

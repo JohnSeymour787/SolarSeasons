@@ -1,4 +1,4 @@
-package com.johnseymour.solarseasons
+package com.johnseymour.solarseasons.services
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -10,6 +10,7 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.CancellationSignal
 import androidx.core.app.ActivityCompat
+import com.johnseymour.solarseasons.ErrorStatus
 import java.util.function.Consumer
 
 class LocationServiceNonGoogle: LocationService(), Consumer<Location?>, LocationListener
