@@ -9,9 +9,7 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
-import com.johnseymour.solarseasons.api.NetworkRepository
 import java.lang.Exception
-import java.util.concurrent.TimeUnit
 
 class LocationServiceGooglePlay: LocationService(), OnSuccessListener<Location>, OnFailureListener
 {
@@ -35,50 +33,6 @@ class LocationServiceGooglePlay: LocationService(), OnSuccessListener<Location>,
 
     // applicationContext not ready until after super.onCreate()
     private val locationClient: FusedLocationProviderClient by lazy { LocationServices.getFusedLocationProviderClient(applicationContext) }
-
-    private val locationRequest by lazy()
-    {
-        LocationRequest.create().apply()
-        {
-            interval = TimeUnit.MINUTES.toMillis(Constants.DEFAULT_REFRESH_TIME)
-            fastestInterval = TimeUnit.SECONDS.toMillis(30)
-            // fastestInterval = TimeUnit.MINUTES.toMillis(15)
-            expirationTime = TimeUnit.MINUTES.toMillis(Constants.DEFAULT_REFRESH_TIME*2)
-            priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-            numUpdates = 1
-        }
-    }
-
-    private val locationCallback: LocationCallback =
-        object : LocationCallback()
-        {
-            override fun onLocationResult(locationResult: LocationResult?)
-            {
-                locationResult ?: return
-                super.onLocationResult(locationResult)
-
-                locationResult.lastLocation.let()
-                {
-                    if (TEST_MODE)
-                    {
-                        counter++
-                        test.uv = counter
-                        uvDataDeferred?.resolve(test)
-                    }
-                    else
-                    {
-                        NetworkRepository.getRealTimeUV(it.latitude, it.longitude, it.altitude)
-                            .success()
-                            { data ->
-                                uvDataDeferred?.resolve(data)
-                            }
-
-                    }
-
-                    stopSelf()
-                }
-            }
-        }
 
     override fun onSuccess(location: Location?)
     {
