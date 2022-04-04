@@ -127,7 +127,7 @@ object NetworkRepository
                 }
                 else
                 {
-                    result.reject(ErrorStatus.GeneralError)
+                    result.reject(ErrorStatus.GeneralNoResponseError)
                 }
             }
         })

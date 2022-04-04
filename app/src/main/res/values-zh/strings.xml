@@ -41,6 +41,7 @@
     <string name="activity_open_app_settings_text">Open App Settings</string>
     <string name="no_network_connection">Can\'t connect to the network</string>
     <string name="unknown_error">An unexpected error occurred, please try again</string>
+    <string name="unknown_error_no_response">No response from the server, please try again</string>
     <string name="widget_error">UV data update had an error</string>
     <string name="activity_status_information_swipe_hint">Pull down to start a new request</string>
 

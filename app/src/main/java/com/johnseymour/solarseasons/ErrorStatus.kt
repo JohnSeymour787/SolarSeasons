@@ -5,6 +5,7 @@ import android.content.res.Resources
 enum class ErrorStatus
 {
     GeneralError,
+    GeneralNoResponseError,
     NetworkError,
     LocationServiceTerminated,
     APIQuotaExceeded,
@@ -20,6 +21,7 @@ enum class ErrorStatus
         return when (this)
         {
             GeneralError -> resources.getString(R.string.unknown_error)
+            GeneralNoResponseError -> resources.getString(R.string.unknown_error_no_response)
             NetworkError -> resources.getString(R.string.no_network_connection)
             LocationServiceTerminated -> resources.getString(R.string.location_service_terminated)
             APIQuotaExceeded -> resources.getString(R.string.api_quota_exceeded_error)
