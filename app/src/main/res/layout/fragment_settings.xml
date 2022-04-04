@@ -51,7 +51,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/titleLabel"
-            android:name="com.johnseymour.solarseasons.PreferenceScreenFragment" />
+            android:name="com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment" />
 
         <View
             android:id="@+id/backgroundIssuesTextBackground"
