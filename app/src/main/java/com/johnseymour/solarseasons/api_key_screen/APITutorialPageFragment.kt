@@ -1,4 +1,4 @@
-package com.johnseymour.solarseasons.apiKeySetup
+package com.johnseymour.solarseasons.api_key_screen
 
 import android.content.Intent
 import android.net.Uri

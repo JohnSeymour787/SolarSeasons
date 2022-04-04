@@ -4,8 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.preference.PreferenceManager
 import com.johnseymour.solarseasons.api.OPENUV_API_KEY
-import com.johnseymour.solarseasons.apiKeySetup.APIKeyEntryFragment
-import com.johnseymour.solarseasons.apiKeySetup.APIKeyFragment
+import com.johnseymour.solarseasons.api_key_screen.APIKeyEntryFragment
+import com.johnseymour.solarseasons.api_key_screen.APIKeyFragment
 import com.johnseymour.solarseasons.current_uv_screen.CurrentUVFragment
 import com.johnseymour.solarseasons.settings_screen.SettingsFragment
 

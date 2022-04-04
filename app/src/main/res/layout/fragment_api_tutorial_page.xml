@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:background="?android:windowBackground"
-    tools:context=".apiKeySetup.APITutorialPageFragment">
+    tools:context=".api_key_screen.APITutorialPageFragment">
 
     <TextView
         android:id="@+id/titleTextView"

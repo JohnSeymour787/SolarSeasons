@@ -1,4 +1,4 @@
-package com.johnseymour.solarseasons.apiKeySetup
+package com.johnseymour.solarseasons.api_key_screen
 
 import androidx.lifecycle.ViewModel
 import com.johnseymour.solarseasons.R

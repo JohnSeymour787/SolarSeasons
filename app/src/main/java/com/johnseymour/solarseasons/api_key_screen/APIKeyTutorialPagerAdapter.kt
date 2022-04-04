@@ -1,4 +1,4 @@
-package com.johnseymour.solarseasons.apiKeySetup
+package com.johnseymour.solarseasons.api_key_screen
 
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
