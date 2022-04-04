@@ -1,9 +1,8 @@
 package com.johnseymour.solarseasons.api
 
-import com.google.android.gms.common.util.ArrayUtils
 import com.google.gson.GsonBuilder
-import com.johnseymour.solarseasons.SunInfo
-import com.johnseymour.solarseasons.UVData
+import com.johnseymour.solarseasons.models.SunInfo
+import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.ErrorStatus
 import nl.komponents.kovenant.deferred
 import nl.komponents.kovenant.Promise

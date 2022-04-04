@@ -4,6 +4,8 @@ import android.content.SharedPreferences
 import com.google.gson.GsonBuilder
 import com.johnseymour.solarseasons.api.SunInfoGsonAdapter
 import com.johnseymour.solarseasons.api.UVDataGsonAdapter
+import com.johnseymour.solarseasons.models.SunInfo
+import com.johnseymour.solarseasons.models.UVData
 
 object DiskRepository
 {

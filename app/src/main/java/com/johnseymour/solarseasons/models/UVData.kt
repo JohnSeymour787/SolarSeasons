@@ -1,6 +1,7 @@
-package com.johnseymour.solarseasons
+package com.johnseymour.solarseasons.models
 
 import android.os.Parcelable
+import com.johnseymour.solarseasons.R
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import kotlinx.android.parcel.Parcelize
 import java.time.LocalTime

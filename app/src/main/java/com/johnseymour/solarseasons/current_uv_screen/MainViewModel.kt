@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.work.WorkInfo
 import com.johnseymour.solarseasons.DiskRepository
 import com.johnseymour.solarseasons.ErrorStatus
-import com.johnseymour.solarseasons.UVData
+import com.johnseymour.solarseasons.models.UVData
 
 class MainViewModel: ViewModel()
 {

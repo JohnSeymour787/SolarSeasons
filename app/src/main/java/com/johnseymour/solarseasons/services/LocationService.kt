@@ -12,6 +12,8 @@ import androidx.core.app.NotificationCompat
 import androidx.preference.PreferenceManager
 import com.johnseymour.solarseasons.*
 import com.johnseymour.solarseasons.api.NetworkRepository
+import com.johnseymour.solarseasons.models.SunInfo
+import com.johnseymour.solarseasons.models.UVData
 import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise
 import java.time.ZonedDateTime

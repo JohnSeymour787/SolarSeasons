@@ -1,6 +1,6 @@
 package com.johnseymour.solarseasons.api
 
-import com.johnseymour.solarseasons.UVData
+import com.johnseymour.solarseasons.models.UVData
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

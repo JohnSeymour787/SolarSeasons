@@ -1,7 +1,7 @@
 package com.johnseymour.solarseasons.api
 
 import com.google.gson.*
-import com.johnseymour.solarseasons.SunInfo
+import com.johnseymour.solarseasons.models.SunInfo
 import com.johnseymour.solarseasons.toZonedDateTime
 import java.lang.reflect.Type
 import java.time.ZoneId

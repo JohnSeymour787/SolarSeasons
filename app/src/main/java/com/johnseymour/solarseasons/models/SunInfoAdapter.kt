@@ -1,9 +1,11 @@
-package com.johnseymour.solarseasons
+package com.johnseymour.solarseasons.models
 
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.johnseymour.solarseasons.R
 import com.johnseymour.solarseasons.current_uv_screen.SunInfoViewCell
+import com.johnseymour.solarseasons.preferredTimeString
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import kotlinx.android.synthetic.main.list_cell_sun_info.view.*
 

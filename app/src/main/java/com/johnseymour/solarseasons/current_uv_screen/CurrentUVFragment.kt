@@ -28,6 +28,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.work.WorkInfo
 import com.johnseymour.solarseasons.*
+import com.johnseymour.solarseasons.models.SkinExposureAdapter
+import com.johnseymour.solarseasons.models.SunInfo
+import com.johnseymour.solarseasons.models.SunInfoAdapter
+import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.services.LocationService
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import com.johnseymour.solarseasons.settings_screen.SettingsFragment

@@ -1,5 +1,7 @@
 package com.johnseymour.solarseasons
 
+import com.johnseymour.solarseasons.models.SunInfo
+import com.johnseymour.solarseasons.models.UVData
 import org.junit.Assert
 import org.junit.Test
 import java.time.ZonedDateTime
@@ -26,7 +28,8 @@ class UVDataUnitTests
             goldenHourEnd = ZonedDateTime.parse("2021-09-25T16:36:54.771+10:00[Australia/Sydney]"),
             goldenHour = ZonedDateTime.parse("2021-09-26T03:10:17.776+10:00[Australia/Sydney]"),
             azimuth = -1.48815118586359, altitude = 0.04749226792696052
-        ))
+        )
+    )
 
     @Test
     fun `uv background colour is correct`()
@@ -63,7 +66,8 @@ class UVDataUnitTests
                 goldenHourEnd = ZonedDateTime.parse("2021-09-25T20:36:54.771+10:00[Australia/Sydney]"),
                 goldenHour = ZonedDateTime.parse("2021-09-26T06:10:17.776+10:00[Australia/Sydney]"),
                 azimuth = -1.48815118586359, altitude = 0.04749226792696052
-            ))
+            )
+        )
 
         Assert.assertTrue(sunInSky.sunInSky())
 
@@ -87,7 +91,8 @@ class UVDataUnitTests
                 goldenHourEnd = ZonedDateTime.parse("2021-09-25T20:36:54.771+10:00[Australia/Sydney]"),
                 goldenHour = ZonedDateTime.parse("2021-09-26T06:10:17.776+10:00[Australia/Sydney]"),
                 azimuth = -1.48815118586359, altitude = 0.04749226792696052
-            ))
+            )
+        )
 
         Assert.assertTrue(sunJustBeforeSunset.sunInSky())
 
@@ -111,7 +116,8 @@ class UVDataUnitTests
                 goldenHourEnd = ZonedDateTime.parse("2021-09-25T20:36:54.771+10:00[Australia/Sydney]"),
                 goldenHour = ZonedDateTime.parse("2021-09-26T06:10:17.776+10:00[Australia/Sydney]"),
                 azimuth = -1.48815118586359, altitude = 0.04749226792696052
-            ))
+            )
+        )
 
         Assert.assertFalse(sunJustAfterSunset.sunInSky())
 
@@ -135,7 +141,8 @@ class UVDataUnitTests
                 goldenHourEnd = ZonedDateTime.parse("2021-09-25T20:36:54.771+10:00[Australia/Sydney]"),
                 goldenHour = ZonedDateTime.parse("2021-09-26T06:10:17.776+10:00[Australia/Sydney]"),
                 azimuth = -1.48815118586359, altitude = 0.04749226792696052
-            ))
+            )
+        )
 
         Assert.assertFalse(sunAtNight.sunInSky())
     }
