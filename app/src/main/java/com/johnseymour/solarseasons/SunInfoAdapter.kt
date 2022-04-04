@@ -3,6 +3,7 @@ package com.johnseymour.solarseasons
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import kotlinx.android.synthetic.main.list_cell_sun_info.view.*
 
 class SunInfoAdapter(private val sunTimes: List<SunInfo.SunTimeData>, private val textColorInt: Int, private val onClick: (SunInfo.SunTimeData) -> Unit): RecyclerView.Adapter<SunInfoAdapter.SunInfoViewHolder>()

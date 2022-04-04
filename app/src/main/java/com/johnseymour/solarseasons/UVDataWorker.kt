@@ -8,6 +8,7 @@ import com.johnseymour.solarseasons.services.LocationService
 import com.johnseymour.solarseasons.services.LocationServiceGooglePlay
 import com.johnseymour.solarseasons.services.LocationServiceManual
 import com.johnseymour.solarseasons.services.LocationServiceNonGoogle
+import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import nl.komponents.kovenant.deferred
 import java.util.concurrent.TimeUnit
 

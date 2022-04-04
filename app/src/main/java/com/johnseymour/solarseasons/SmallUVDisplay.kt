@@ -14,6 +14,8 @@ import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import androidx.work.*
+import com.johnseymour.solarseasons.services.LocationService
+import nl.komponents.kovenant.android.startKovenant
 import java.io.FileNotFoundException
 
 /**

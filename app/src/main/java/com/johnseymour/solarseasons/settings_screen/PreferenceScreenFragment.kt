@@ -1,4 +1,4 @@
-package com.johnseymour.solarseasons
+package com.johnseymour.solarseasons.settings_screen
 
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -12,7 +12,11 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceCategory
+import com.johnseymour.solarseasons.Constants
+import com.johnseymour.solarseasons.R
+import com.johnseymour.solarseasons.SmallUVDisplay
 import com.johnseymour.solarseasons.api.OPENUV_API_KEY
+import com.johnseymour.solarseasons.hasWidgets
 
 class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener
 {

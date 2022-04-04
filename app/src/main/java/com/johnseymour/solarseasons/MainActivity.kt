@@ -6,6 +6,7 @@ import androidx.preference.PreferenceManager
 import com.johnseymour.solarseasons.api.OPENUV_API_KEY
 import com.johnseymour.solarseasons.apiKeySetup.APIKeyEntryFragment
 import com.johnseymour.solarseasons.apiKeySetup.APIKeyFragment
+import com.johnseymour.solarseasons.settings_screen.SettingsFragment
 
 class MainActivity : AppCompatActivity()
 {

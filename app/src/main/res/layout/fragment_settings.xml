@@ -8,7 +8,7 @@
     android:background="?android:windowBackground"
     android:clickable="true"
     android:fitsSystemWindows="true"
-    tools:context=".SettingsFragment">
+    tools:context=".settings_screen.SettingsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
