@@ -1,7 +1,6 @@
 package com.johnseymour.solarseasons.api
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.common.util.ArrayUtils
 import com.google.gson.GsonBuilder
 import com.johnseymour.solarseasons.SunInfo
 import com.johnseymour.solarseasons.UVData
@@ -103,14 +102,21 @@ object NetworkRepository
                     return
                 }
 
-                if (response.errorBody()?.string()?.contains("Daily API quota exceeded") == true)
-                {
-                    result.reject(ErrorStatus.APIQuotaExceeded)
-                }
-                else
+                val errorText = response.errorBody()?.string() ?: run()
                 {
                     result.reject(ErrorStatus.GeneralError)
+                    return
                 }
+
+                when
+                {
+                    errorText.contains("Daily API quota exceeded") -> result.reject(ErrorStatus.APIQuotaExceeded)
+
+                    errorText.contains("API Key not found") -> result.reject(ErrorStatus.APIKeyInvalid)
+
+                    else -> result.reject(ErrorStatus.GeneralError)
+                }
+
             }
 
             override fun onFailure(call: Call<UVData>, t: Throwable)

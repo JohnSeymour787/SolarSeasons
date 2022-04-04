@@ -8,6 +8,7 @@ enum class ErrorStatus
     NetworkError,
     LocationServiceTerminated,
     APIQuotaExceeded,
+    APIKeyInvalid,
     GeneralLocationError,
     ManualLocationError,
     LocationDisabledError,
@@ -22,6 +23,7 @@ enum class ErrorStatus
             NetworkError -> resources.getString(R.string.no_network_connection)
             LocationServiceTerminated -> resources.getString(R.string.location_service_terminated)
             APIQuotaExceeded -> resources.getString(R.string.api_quota_exceeded_error)
+            APIKeyInvalid -> resources.getString(R.string.api_key_invalid_error)
             GeneralLocationError -> resources.getString(R.string.location_not_found)
             ManualLocationError -> resources.getString(R.string.location_manual_entry_error)
             LocationDisabledError -> resources.getString(R.string.location_disabled_error)
