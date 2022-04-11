@@ -1,6 +1,7 @@
 package com.johnseymour.solarseasons.api
 
 import com.google.gson.GsonBuilder
+import com.johnseymour.solarseasons.Constants
 import com.johnseymour.solarseasons.models.SunInfo
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.ErrorStatus
@@ -87,11 +88,25 @@ object NetworkRepository
         retrofit.create(WeatherAPI::class.java)
     }
 
+    /**
+     * Constrains the altitude parameter to be within the bounds required by the UV API.
+     *  (Location services sometimes return altitude values out of this range)
+     */
+    private fun validateAltitude(altitude: Double): Double
+    {
+        return when
+        {
+            altitude > Constants.MAXIMUM_EARTH_ALTITUDE -> Constants.MAXIMUM_EARTH_ALTITUDE
+            altitude < Constants.MINIMUM_API_ACCEPTED_ALTITUDE -> Constants.MINIMUM_API_ACCEPTED_ALTITUDE
+            else -> altitude
+        }
+    }
+
     fun getRealTimeUV(latitude: Double, longitude: Double, altitude: Double): Promise<UVData, ErrorStatus>
     {
         val result = deferred<UVData, ErrorStatus>()
 
-        openUVAPI.getRealTimeUV(latitude, longitude, altitude).enqueue(object: Callback<UVData>
+        openUVAPI.getRealTimeUV(latitude, longitude, validateAltitude(altitude)).enqueue(object: Callback<UVData>
         {
             override fun onResponse(call: Call<UVData>, response: Response<UVData>)
             {
