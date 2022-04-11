@@ -449,6 +449,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         sunInfoListTitleLabel.setTextColor(primaryTextColourInt)
         sunInfoListSubLabel.setTextColor(primaryTextColourInt)
         skinExposureLabel.setTextColor(primaryTextColourInt)
+        appStatusInformation.setTextColor(primaryTextColourInt)
 
         enableLightStatusBar(requireActivity().window.decorView, resources.configuration)
 
@@ -467,6 +468,8 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         skinExposureBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
         sunInfoListBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
         sunProgressLabelBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+
+        appStatusInformation.setTextColor(resources.getColor(R.color.dark_text, requireContext().theme))
     }
 
     private fun updateDynamicColours(lUVData: UVData)
