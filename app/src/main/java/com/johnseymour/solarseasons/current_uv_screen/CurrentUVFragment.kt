@@ -470,6 +470,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         sunProgressLabelBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
 
         appStatusInformation.setTextColor(resources.getColor(R.color.dark_text, requireContext().theme))
+        settingsButton.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.uv_low, requireContext().theme))
     }
 
     private fun updateDynamicColours(lUVData: UVData)
