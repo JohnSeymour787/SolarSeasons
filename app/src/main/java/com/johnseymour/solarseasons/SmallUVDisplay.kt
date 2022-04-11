@@ -6,18 +6,27 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.*
 import android.content.pm.PackageManager
+import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.liveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import androidx.work.*
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.services.LocationService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import nl.komponents.kovenant.android.startKovenant
 import java.io.FileNotFoundException
+import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
 
 /**
  * Implementation of App Widget functionality.
@@ -28,10 +37,10 @@ class SmallUVDisplay : AppWidgetProvider()
     {
         private var uvData: UVData? = null
         private var latestError: ErrorStatus? = null
-        private lateinit var observer: Observer<List<WorkInfo>>
+        private var observer: Observer<List<WorkInfo>>? = null
         private var lastObserving: LiveData<List<WorkInfo>>? = null
         private var previousReceivingScreenOnBroadcastSetting = false
-        private var usePeriodicWork = true
+        var usePeriodicWork = false
         private var backgroundRefreshRate = Constants.DEFAULT_REFRESH_TIME
         private var companionFieldsInitialised = false
         const val SET_RECEIVING_SCREEN_UNLOCK_KEY = "set_receiving_screen_unlock_key"
@@ -39,12 +48,20 @@ class SmallUVDisplay : AppWidgetProvider()
         const val SET_BACKGROUND_REFRESH_RATE_KEY = "set_background_refresh_rate_key"
         const val START_BACKGROUND_WORK_KEY = "start_background_work_key"
 
-        private val userPresentFilter = IntentFilter(Intent.ACTION_USER_PRESENT)
+
+        const val START_IMMEDIATE_REQUEST = "start_immediate_request_key"
+
+        private val userPresentFilter = IntentFilter(Intent.ACTION_USER_PRESENT).apply()
+        {
+            priority = IntentFilter.SYSTEM_LOW_PRIORITY
+        }
         private val userPresentReceiver = object: BroadcastReceiver()
         {
             override fun onReceive(context: Context?, intent: Intent?)
             {
                 context ?: return
+
+                Log.d("TESTING_BOOT", "In smalluvdisplay onReceive programatic filter")
                 val luvData = uvData ?: return
 
                 if (!luvData.sunInSky()) { return }
@@ -64,7 +81,7 @@ class SmallUVDisplay : AppWidgetProvider()
                 return
             }
 
-            lastObserving?.removeObserver(observer)
+      //      lastObserving?.removeObserver(observer)
 
             lastObserving = if (usePeriodicWork)
             {
@@ -74,12 +91,13 @@ class SmallUVDisplay : AppWidgetProvider()
             {
                 UVDataWorker.initiateOneTimeWorker(context, true, Constants.SHORTEST_REFRESH_TIME)
             }
-
-            lastObserving?.observeForever(observer)
+            Log.d("TESTING_BOOT", "preparing earliest request")
+   //         lastObserving?.observeForever(observer)
         }
 
         private fun createObserver(context: Context): Observer<List<WorkInfo>>
         {
+            Log.d("TESTING_BOOT", "Create observer called")
             return Observer<List<WorkInfo>>
             { workInfo ->
                 when (workInfo.firstOrNull()?.state)
@@ -99,11 +117,14 @@ class SmallUVDisplay : AppWidgetProvider()
 
                         val activityIntent = Intent(context, MainActivity::class.java)
                             .setAction(UVData.UV_DATA_UPDATED)
-
-                        LocationService.uvDataPromise?.success()
+                        Log.d("TESTING_BOOT", "Observer work enqueued, observing LocationService uvDataPromise is null? ${LocationService.uvDataPromise == null}")
+                        val prmise = LocationService.uvDataPromise
+                        prmise?.success()
                         {
+                            Log.d("TESTING_BOOT", "Inside onSuccess, ignore work is ${UVDataWorker.ignoreWorkRequest}")
                             if (!UVDataWorker.ignoreWorkRequest)
                             {
+                                Log.d("TESTING_BOOT", "Inside dont ignore work request")
                                 uvData = it
                                 latestError = null
 
@@ -117,6 +138,7 @@ class SmallUVDisplay : AppWidgetProvider()
                             }
                         }?.fail()
                         {
+                            Log.d("TESTING_BOOT", "Inside on fail")
                             latestError = it
 
                             activityIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
@@ -128,7 +150,7 @@ class SmallUVDisplay : AppWidgetProvider()
 
                     WorkInfo.State.CANCELLED ->
                     {
-                        lastObserving?.removeObserver(observer)
+              //          lastObserving?.removeObserver(observer)
                     }
 
                     else -> {}
@@ -159,12 +181,12 @@ class SmallUVDisplay : AppWidgetProvider()
     // First widget is created
     override fun onEnabled(context: Context)
     {
+        Log.d("TESTING_BOOT", "In on enabled")
         if (!companionFieldsInitialised)
         {
             configureWidgetCompanion(context)
         }
-
-        prepareEarliestRequest(context)
+   //     prepareEarliestRequest(context)
     }
 
     override fun onDisabled(context: Context)
@@ -178,7 +200,17 @@ class SmallUVDisplay : AppWidgetProvider()
      */
     private fun configureWidgetCompanion(context: Context)
     {
-        observer = createObserver(context)
+        Log.d("TESTING_BOOT", "configureWidgetCompanion called")
+    //    startKovenant()
+
+
+        //TODO()notes:
+        // s
+        // screen on receiver seems to work sometimes even from cold boot
+        // but still not onbootcompleted (works but widget keeps re-initialising itself <- try to send a broadcast from another receiver)
+
+
+    //    observer = createObserver(context)
 
         PreferenceManager.getDefaultSharedPreferences(context.applicationContext).apply()
         {
@@ -187,10 +219,10 @@ class SmallUVDisplay : AppWidgetProvider()
             if (previousReceivingScreenOnBroadcastSetting)
             {
                 context.applicationContext.registerReceiver(userPresentReceiver, userPresentFilter)
+                Log.d("TESTING_BOOT", "Registering user present receiver")
             }
 
             usePeriodicWork = getString(Constants.SharedPreferences.WORK_TYPE_KEY, Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE) == Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE
-
             backgroundRefreshRate = getString(Constants.SharedPreferences.BACKGROUND_REFRESH_RATE_KEY, null)?.toLongOrNull() ?: backgroundRefreshRate
         }
 
@@ -203,13 +235,34 @@ class SmallUVDisplay : AppWidgetProvider()
 
         if (!companionFieldsInitialised)
         {
+            Log.d("TESTING_BOOT", "In about to initialise companion, cFields init? = $companionFieldsInitialised")
             configureWidgetCompanion(context)
+        }
+
+        if (intent?.getBooleanExtra(START_IMMEDIATE_REQUEST, false) == true)
+        {
+            prepareEarliestRequest(context)
+            return
         }
 
         // Send an immediate request on phone startup
         if (intent?.action == Intent.ACTION_BOOT_COMPLETED)
         {
-            prepareEarliestRequest(context)
+        //    Toast.makeText(context, "Boot received", Toast.LENGTH_LONG).show()
+            Log.d("TESTING_BOOT", "Boot received, preparing request, cFields init = $companionFieldsInitialised")
+   //         prepareEarliestRequest(context)
+            return
+//            CoroutineScope(Dispatchers.IO).launch()
+//            {
+//                Log.d("TESTING_BOOT", "Delaying")
+//                delay(10000)
+//                Log.d("TESTING_BOOT", "Delay done")
+//
+//                CoroutineScope(Dispatchers.Main).launch()
+//                {
+//                    prepareEarliestRequest(context)
+//                }
+//            }
         }
 
         (intent?.getSerializableExtra(SET_RECEIVING_SCREEN_UNLOCK_KEY) as? Boolean)?.let()
@@ -254,18 +307,18 @@ class SmallUVDisplay : AppWidgetProvider()
             // Don't initiate a background request if that permission isn't given
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED)
             {
-                lastObserving?.removeObserver(observer)
+    //            lastObserving?.removeObserver(observer)
                 return@let
             }
 
             if ((usePeriodicWork) && (!luvData.sunInSky()))
             {
-                lastObserving?.removeObserver(observer)
+            //    lastObserving?.removeObserver(observer)
 
                 // Delay the next automatic worker until the sunrise of the next day
                 lastObserving = UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = luvData.minutesUntilSunrise)
 
-                lastObserving?.observeForever(observer)
+        //        lastObserving?.observeForever(observer)
 
                 return@let
             }
@@ -273,7 +326,7 @@ class SmallUVDisplay : AppWidgetProvider()
             if (intent.getBooleanExtra(START_BACKGROUND_WORK_KEY, false))
             {
                 // Stop observing any other work
-                lastObserving?.removeObserver(observer)
+         //       lastObserving?.removeObserver(observer)
 
                 lastObserving = if (usePeriodicWork)
                 {
@@ -293,8 +346,13 @@ class SmallUVDisplay : AppWidgetProvider()
                 }
 
                 // Begin observing new work
-                lastObserving?.observeForever(observer)
+            //    lastObserving?.observeForever(observer)
             }
+        }
+
+        (intent?.getSerializableExtra(ErrorStatus.ERROR_STATUS_KEY) as? ErrorStatus)?.let()
+        {
+            latestError = it
         }
 
         // Will call onUpdate
