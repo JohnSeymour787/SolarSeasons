@@ -21,10 +21,8 @@
         <item name="android:windowBackground">@color/dark_window_background</item>
     </style>
 
-    <style name="ThemeOverlay.SolarSeasons.AppWidgetContainer" parent="">
-        <item name="appWidgetBackgroundColor">@color/dark_window_background</item>
-        <item name="appWidgetTextColor">@color/light_text</item>
-    </style>
+    <color name="appWidgetBackgroundColor">@color/dark_window_background</color>
+    <color name="appWidgetTextColor">@color/light_text</color>
 
     <style name="Theme.App.Preferences" parent="PreferenceThemeOverlay">
         <item name="android:textColor">@color/light_text</item>

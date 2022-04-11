@@ -340,11 +340,20 @@ class SmallUVDisplay : AppWidgetProvider()
             latestError != null -> // Error has occurred
             {
                 views.setTextViewText(R.id.uvValue, context.getString(R.string.widget_error))
-                views.setTextColor(R.id.uvValue, context.resources.getColor(R.color.dark_text, context.theme))
 
                 views.setViewVisibility(R.id.widgetSunProgress, View.INVISIBLE)
                 views.setViewVisibility(R.id.updatedTime, View.INVISIBLE)
-                views.setInt(R.id.backgroundView, "setColorFilter", context.resources.getColor(R.color.light_window_background, context.theme))
+
+                if (lUseCustomTheme)
+                {
+                    views.setTextColor(R.id.uvValue, context.resources.getColor(R.color.dark_text, context.theme))
+                    views.setInt(R.id.backgroundView, "setColorFilter", context.resources.getColor(R.color.uv_low, context.theme))
+                }
+                else
+                {
+                    views.setTextColor(R.id.uvValue, context.resources.getColor(R.color.appWidgetTextColor, context.theme))
+                    views.setInt(R.id.backgroundView, "setColorFilter", context.resources.getColor(R.color.appWidgetBackgroundColor, context.theme))
+                }
             }
 
             uvData != null -> // Valid data

@@ -3,8 +3,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/widget_margin"
-    android:theme="@style/ThemeOverlay.SolarSeasons.AppWidgetContainer">
+    android:padding="@dimen/widget_margin">
 
     <ImageView
         android:id="@+id/backgroundView"
