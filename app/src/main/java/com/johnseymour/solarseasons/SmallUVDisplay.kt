@@ -37,8 +37,6 @@ class SmallUVDisplay : AppWidgetProvider()
     {
         private var uvData: UVData? = null
         private var latestError: ErrorStatus? = null
-        private var observer: Observer<List<WorkInfo>>? = null
-        private var lastObserving: LiveData<List<WorkInfo>>? = null
         private var previousReceivingScreenOnBroadcastSetting = false
         var usePeriodicWork = false
         private var backgroundRefreshRate = Constants.DEFAULT_REFRESH_TIME
@@ -47,7 +45,6 @@ class SmallUVDisplay : AppWidgetProvider()
         const val SET_USE_PERIODIC_WORK_KEY = "set_use_periodic_work_key"
         const val SET_BACKGROUND_REFRESH_RATE_KEY = "set_background_refresh_rate_key"
         const val START_BACKGROUND_WORK_KEY = "start_background_work_key"
-
 
         const val START_IMMEDIATE_REQUEST = "start_immediate_request_key"
 
@@ -81,9 +78,7 @@ class SmallUVDisplay : AppWidgetProvider()
                 return
             }
 
-      //      lastObserving?.removeObserver(observer)
-
-            lastObserving = if (usePeriodicWork)
+            if (usePeriodicWork)
             {
                 UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = Constants.SHORTEST_REFRESH_TIME)
             }
@@ -92,7 +87,6 @@ class SmallUVDisplay : AppWidgetProvider()
                 UVDataWorker.initiateOneTimeWorker(context, true, Constants.SHORTEST_REFRESH_TIME)
             }
             Log.d("TESTING_BOOT", "preparing earliest request")
-   //         lastObserving?.observeForever(observer)
         }
 
         private fun createObserver(context: Context): Observer<List<WorkInfo>>
@@ -148,11 +142,6 @@ class SmallUVDisplay : AppWidgetProvider()
                         }
                     }
 
-                    WorkInfo.State.CANCELLED ->
-                    {
-              //          lastObserving?.removeObserver(observer)
-                    }
-
                     else -> {}
                 }
             }
@@ -186,7 +175,6 @@ class SmallUVDisplay : AppWidgetProvider()
         {
             configureWidgetCompanion(context)
         }
-   //     prepareEarliestRequest(context)
     }
 
     override fun onDisabled(context: Context)
@@ -201,16 +189,6 @@ class SmallUVDisplay : AppWidgetProvider()
     private fun configureWidgetCompanion(context: Context)
     {
         Log.d("TESTING_BOOT", "configureWidgetCompanion called")
-    //    startKovenant()
-
-
-        //TODO()notes:
-        // s
-        // screen on receiver seems to work sometimes even from cold boot
-        // but still not onbootcompleted (works but widget keeps re-initialising itself <- try to send a broadcast from another receiver)
-
-
-    //    observer = createObserver(context)
 
         PreferenceManager.getDefaultSharedPreferences(context.applicationContext).apply()
         {
@@ -307,46 +285,27 @@ class SmallUVDisplay : AppWidgetProvider()
             // Don't initiate a background request if that permission isn't given
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED)
             {
-    //            lastObserving?.removeObserver(observer)
                 return@let
             }
 
             if ((usePeriodicWork) && (!luvData.sunInSky()))
             {
-            //    lastObserving?.removeObserver(observer)
-
                 // Delay the next automatic worker until the sunrise of the next day
-                lastObserving = UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = luvData.minutesUntilSunrise)
-
-        //        lastObserving?.observeForever(observer)
-
+                UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = luvData.minutesUntilSunrise)
                 return@let
             }
 
             if (intent.getBooleanExtra(START_BACKGROUND_WORK_KEY, false))
             {
-                // Stop observing any other work
-         //       lastObserving?.removeObserver(observer)
-
-                lastObserving = if (usePeriodicWork)
+                when
                 {
-                    UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate)
-                }
-                else
-                {
-                    if (luvData.sunInSky())
-                    {
-                        UVDataWorker.initiateOneTimeWorker(context, true, backgroundRefreshRate)
-                    }
-                    else
-                    {
-                        // Delay the next automatic worker until the sunrise of the next day
-                        UVDataWorker.initiateOneTimeWorker(context, true, luvData.minutesUntilSunrise)
-                    }
-                }
+                    usePeriodicWork -> UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate)
 
-                // Begin observing new work
-            //    lastObserving?.observeForever(observer)
+                    luvData.sunInSky() -> UVDataWorker.initiateOneTimeWorker(context, true, backgroundRefreshRate)
+
+                    // Delay the next automatic worker until the sunrise of the next day
+                    else -> UVDataWorker.initiateOneTimeWorker(context, true, luvData.minutesUntilSunrise)
+                }
             }
         }
 

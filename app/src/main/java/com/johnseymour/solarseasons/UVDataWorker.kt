@@ -1,9 +1,9 @@
 package com.johnseymour.solarseasons
 
 import android.appwidget.AppWidgetManager
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.lifecycle.LiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
@@ -196,7 +196,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 result.set(Result.success())
             }?.fail()
             {
-                widgetIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it) // TODO() Widget check for this in onReceive
+                widgetIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
                 activityIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
 
                 applicationContext.sendBroadcast(widgetIntent)
