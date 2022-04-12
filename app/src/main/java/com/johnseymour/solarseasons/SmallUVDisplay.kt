@@ -12,6 +12,7 @@ import android.widget.RemoteViews
 import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager
 import androidx.work.*
+import com.johnseymour.solarseasons.api.OPENUV_API_KEY
 import com.johnseymour.solarseasons.models.UVData
 import java.io.FileNotFoundException
 
@@ -112,6 +113,8 @@ class SmallUVDisplay : AppWidgetProvider()
     {
         PreferenceManager.getDefaultSharedPreferences(context.applicationContext).apply()
         {
+            OPENUV_API_KEY = getString(Constants.SharedPreferences.API_KEY, null) ?: ""
+
             previousReceivingScreenOnBroadcastSetting = getBoolean(Constants.SharedPreferences.SUBSCRIBE_SCREEN_UNLOCK_KEY, previousReceivingScreenOnBroadcastSetting)
 
             if (previousReceivingScreenOnBroadcastSetting)
