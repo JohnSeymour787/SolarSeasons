@@ -11,6 +11,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.preference.EditTextPreference
+import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import com.johnseymour.solarseasons.Constants
 import com.johnseymour.solarseasons.R
@@ -59,6 +60,12 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
             {
                 it.isVisible = true
             }
+
+            findPreference<EditTextPreference>("stored_api_key")
+                ?.summaryProvider = Preference.SummaryProvider<EditTextPreference>()
+                {
+                    "*".repeat(it.text.length)
+                }
         }
 
         // Doing this here as well as onResume to ensure that the visibility is set quick enough to avoid a laggy appearance
