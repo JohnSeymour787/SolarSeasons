@@ -3,15 +3,14 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/widget_margin"
-    android:theme="@style/ThemeOverlay.SolarSeasons.AppWidgetContainer">
+    android:padding="@dimen/widget_margin">
 
     <ImageView
         android:id="@+id/backgroundView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/widget_background_shape"
-        android:tint="?attr/appWidgetBackgroundColor"
+        android:tint="@color/appWidgetBackgroundColor"
         android:tintMode="src_over"
         android:contentDescription="@string/widget_background_image_description"
         tools:ignore="UseAppTint" />
@@ -27,7 +26,7 @@
         android:textSize="@dimen/widget_text_small"
         tools:text="09:30"
         android:text="@string/app_widget_time_text_default"
-        android:textColor="?attr/appWidgetTextColor"
+        android:textColor="@color/appWidgetTextColor"
         android:fontFamily="@font/quicksand_medium"/>
 
     <TextView
@@ -42,7 +41,7 @@
         android:gravity="center"
         android:elegantTextHeight="true"
         android:fontFamily="@font/quicksand_bold"
-        android:textColor="?attr/appWidgetTextColor"
+        android:textColor="@color/appWidgetTextColor"
         android:autoSizePresetSizes="@array/widget_uv_text_auto_size_sizes"
         android:autoSizeTextType="uniform"
         android:textStyle="bold" />

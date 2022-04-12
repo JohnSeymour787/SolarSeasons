@@ -12,19 +12,22 @@ import androidx.core.app.NotificationCompat
 import androidx.preference.PreferenceManager
 import com.johnseymour.solarseasons.*
 import com.johnseymour.solarseasons.api.NetworkRepository
-import com.johnseymour.solarseasons.models.SunInfo
 import com.johnseymour.solarseasons.models.UVData
+import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise
-import java.time.ZonedDateTime
 
-open class LocationService: Service()
+/**
+ * Abstract class to implement custom location implementations using different location APIs.
+ *
+ * @note As this is an Android service, and thus all inheriting classes are, child classes
+ *        must also be registered as a service in the AndroidManifest.xml file or they will
+ *        not be started.
+ */
+abstract class LocationService: Service()
 {
     companion object
     {
-        const val TEST_MODE = false
-        var counter = 0F
-
         private const val MAXIMUM_POSSIBLE_NETWORK_REQUESTS = 2
 
         private const val NOTIFICATION_CHANNEL_ID = "Solar.seasons.id"
@@ -37,28 +40,28 @@ open class LocationService: Service()
                 return uvDataDeferred?.promise
             }
 
-        val test = UVData(
-            uv = 0.0399F, uvTime = ZonedDateTime.parse("2021-09-25T00:00:30.826+10:00[Australia/Sydney]"),
-            uvMax = 3.0005F, uvMaxTime = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"),
-            ozone = 332.5F, ozoneTime = ZonedDateTime.parse("2021-09-25T16:04:07.137+10:00[Australia/Sydney]"),
-            safeExposure = mapOf("st1" to 4180, "st2" to 5016, "st3" to 6688, "st4" to 8360, "st5" to 13376, "st6" to 25079),
-            sunInfo = SunInfo(
-                solarNoon = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"), nadir = ZonedDateTime.parse("2021-09-25T09:53:36.274+10:00[Australia/Sydney]"),
-                sunrise = ZonedDateTime.parse("2021-09-25T15:52:48.317+10:00[Australia/Sydney]"),
-                sunset = ZonedDateTime.parse("2021-09-26T03:54:24.230+10:00[Australia/Sydney]"),
-                sunriseEnd = ZonedDateTime.parse("2021-09-25T15:56:13.870+10:00[Australia/Sydney]"),
-                sunsetStart = ZonedDateTime.parse("2021-09-26T03:50:58.677+10:00[Australia/Sydney]"),
-                dawn = ZonedDateTime.parse("2021-09-25T15:19:32.279+10:00[Australia/Sydney]"),
-                dusk = ZonedDateTime.parse("2021-09-26T04:27:40.269+10:00[Australia/Sydney]"),
-                nauticalDawn = ZonedDateTime.parse("2021-09-25T14:40:20.870+10:00[Australia/Sydney]"),
-                nauticalDusk = ZonedDateTime.parse("2021-09-26T05:06:51.678+10:00[Australia/Sydney]"),
-                nightEnd = ZonedDateTime.parse("2021-09-25T13:59:43.486+10:00[Australia/Sydney]"),
-                night = ZonedDateTime.parse("2021-09-26T05:47:29.061+10:00[Australia/Sydney]"),
-                goldenHourEnd = ZonedDateTime.parse("2021-09-25T16:36:54.771+10:00[Australia/Sydney]"),
-                goldenHour = ZonedDateTime.parse("2021-09-26T03:10:17.776+10:00[Australia/Sydney]"),
-                azimuth = -1.48815118586359, altitude = 0.04749226792696052
-            )
-        )
+        /**
+         * Factory method that checks application-level settings to determine which implementation of the
+         *  LocationService class to use.
+         *
+         * @return Intent to the relevant LocationService class, ready to start as a service
+         */
+        fun createServiceIntent(applicationContext: Context): Intent
+        {
+            return when
+            {
+                Constants.TEST_MODE_NO_API -> Intent(applicationContext, LocationServiceTestNoAPI::class.java)
+
+                Constants.ENABLE_MANUAL_LOCATION_FEATURE && PreferenceScreenFragment.useManualLocation ->
+                {
+                    Intent(applicationContext, LocationServiceManual::class.java)
+                }
+
+                Constants.USE_GOOGLE_PLAY_LOCATION -> Intent(applicationContext, LocationServiceGooglePlay::class.java)
+
+                else -> Intent(applicationContext, LocationServiceNonGoogle::class.java)
+            }
+        }
     }
 
     private val notificationChannel by lazy()
@@ -89,6 +92,8 @@ open class LocationService: Service()
 
         startForeground(1, createNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
     }
+
+    abstract override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int
 
     override fun onBind(intent: Intent): IBinder? = null
 

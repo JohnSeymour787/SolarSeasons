@@ -19,27 +19,24 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.work.WorkInfo
 import com.johnseymour.solarseasons.*
 import com.johnseymour.solarseasons.models.SkinExposureAdapter
 import com.johnseymour.solarseasons.models.SunInfo
 import com.johnseymour.solarseasons.models.SunInfoAdapter
 import com.johnseymour.solarseasons.models.UVData
-import com.johnseymour.solarseasons.services.LocationService
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import com.johnseymour.solarseasons.settings_screen.SettingsFragment
 import kotlinx.android.synthetic.main.fragment_current_u_v.*
 import java.io.FileNotFoundException
 import java.time.ZonedDateTime
 
-class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Observer<List<WorkInfo>>
+class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
 {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
@@ -59,9 +56,21 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         {
             if (intent.action == UVData.UV_DATA_UPDATED)
             {
+                if (layout.isRefreshing)
+                {
+                    layout.isRefreshing = false
+                }
+
                 intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
                 {
                     newUVDataReceived(it)
+                }
+
+                (intent.getSerializableExtra(ErrorStatus.ERROR_STATUS_KEY) as? ErrorStatus)?.let()
+                { errorStatus ->
+                    viewModel.latestError = errorStatus
+
+                    displayError(errorStatus)
                 }
             }
         }
@@ -195,8 +204,6 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         {
             enableLightStatusBar(requireActivity().window.decorView, resources.configuration)
         }
-
-        viewModel.lastObserving?.observe(viewLifecycleOwner, this) // In case of configuration change
     }
 
     /**
@@ -290,74 +297,17 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         } catch (e: FileNotFoundException){ }
     }
 
-    private fun prepareUVDataRequest()
-    {
-        viewModel.lastObserving = UVDataWorker.initiateOneTimeWorker(requireContext())
-        viewModel.lastObserving?.observe(viewLifecycleOwner, this)
-    }
-
     override fun onRefresh()
     {
         if (requireContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
             appStatusInformation.visibility = View.INVISIBLE
             launchAppDetailsButton.visibility = View.INVISIBLE
-            prepareUVDataRequest()
+            UVDataWorker.initiateOneTimeWorker(requireContext())
         }
         else if (layout.isRefreshing)
         {
             layout.isRefreshing = false
-        }
-    }
-
-    override fun onChanged(workInfo: List<WorkInfo>?)
-    {
-        if (workInfo?.firstOrNull()?.state == WorkInfo.State.SUCCEEDED)
-        {
-            LocationService.uvDataPromise?.success()
-            { lUVData ->
-                requireActivity().runOnUiThread()
-                {
-                    newUVDataReceived(lUVData)
-
-                    if (layout.isRefreshing)
-                    {
-                        layout.isRefreshing = false
-                    }
-
-                    viewModel.lastObserving?.removeObserver(this)
-
-                    viewModel.saveUVToDisk(requireContext())
-
-                    val ids = requireContext().getWidgetIDs()
-                    if (ids.isNotEmpty())
-                    {
-                        // Update all widgets
-                        val intent = Intent(requireContext(), SmallUVDisplay::class.java).apply()
-                        {
-                            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                            putExtra(UVData.UV_DATA_KEY, lUVData)
-                            putExtra(SmallUVDisplay.START_BACKGROUND_WORK_KEY, true) // Will result in background updates if the relevant permission is granted
-                            putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-                        }
-
-                        requireContext().sendBroadcast(intent)
-                    }
-                }
-            }?.fail()
-            { errorStatus ->
-                requireActivity().runOnUiThread()
-                {
-                    if (layout.isRefreshing)
-                    {
-                        layout.isRefreshing = false
-                    }
-
-                    viewModel.latestError = errorStatus
-
-                    displayError(errorStatus)
-                }
-            }
         }
     }
 
@@ -499,6 +449,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         sunInfoListTitleLabel.setTextColor(primaryTextColourInt)
         sunInfoListSubLabel.setTextColor(primaryTextColourInt)
         skinExposureLabel.setTextColor(primaryTextColourInt)
+        appStatusInformation.setTextColor(primaryTextColourInt)
 
         enableLightStatusBar(requireActivity().window.decorView, resources.configuration)
 
@@ -517,6 +468,9 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener, Obse
         skinExposureBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
         sunInfoListBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
         sunProgressLabelBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+
+        appStatusInformation.setTextColor(resources.getColor(R.color.dark_text, requireContext().theme))
+        settingsButton.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.uv_low, requireContext().theme))
     }
 
     private fun updateDynamicColours(lUVData: UVData)

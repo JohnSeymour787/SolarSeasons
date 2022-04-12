@@ -29,12 +29,16 @@ object Constants
     const val MINUTES_PER_HOUR = 60
     const val MINUTES_PER_DAY = 1440
     /** Maximum altitude on earth to get UV data for **/
-    const val MAXIMUM_EARTH_ALTITUDE = 30000.0
+    const val MAXIMUM_EARTH_ALTITUDE = 10000.0
+
+    const val MINIMUM_API_ACCEPTED_ALTITUDE = 0.0
 
     const val USE_GOOGLE_PLAY_LOCATION = false
 
     const val ENABLE_MANUAL_LOCATION_FEATURE = false
     const val ENABLE_API_KEY_ENTRY_FEATURE = false
+    /** Skips location retrieval and API calls to save on request quota. Service generates simple UV data **/
+    const val TEST_MODE_NO_API = false
 
     object SharedPreferences
     {

@@ -6,17 +6,13 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.*
 import android.content.pm.PackageManager
+import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import androidx.work.*
 import com.johnseymour.solarseasons.models.UVData
-import com.johnseymour.solarseasons.services.LocationService
-import nl.komponents.kovenant.android.startKovenant
 import java.io.FileNotFoundException
 
 /**
@@ -28,12 +24,10 @@ class SmallUVDisplay : AppWidgetProvider()
     {
         private var uvData: UVData? = null
         private var latestError: ErrorStatus? = null
-        private lateinit var observer: Observer<List<WorkInfo>>
-        private var lastObserving: LiveData<List<WorkInfo>>? = null
         private var previousReceivingScreenOnBroadcastSetting = false
-        private var usePeriodicWork = true
         private var backgroundRefreshRate = Constants.DEFAULT_REFRESH_TIME
         private var companionFieldsInitialised = false
+        var usePeriodicWork = false
         const val SET_RECEIVING_SCREEN_UNLOCK_KEY = "set_receiving_screen_unlock_key"
         const val SET_USE_PERIODIC_WORK_KEY = "set_use_periodic_work_key"
         const val SET_BACKGROUND_REFRESH_RATE_KEY = "set_background_refresh_rate_key"
@@ -45,6 +39,8 @@ class SmallUVDisplay : AppWidgetProvider()
             override fun onReceive(context: Context?, intent: Intent?)
             {
                 context ?: return
+
+                Log.d("TESTING_BOOT", "In widget onReceive programmatic filter")
                 val luvData = uvData ?: return
 
                 if (!luvData.sunInSky()) { return }
@@ -64,75 +60,13 @@ class SmallUVDisplay : AppWidgetProvider()
                 return
             }
 
-            lastObserving?.removeObserver(observer)
-
-            lastObserving = if (usePeriodicWork)
+            if (usePeriodicWork)
             {
                 UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = Constants.SHORTEST_REFRESH_TIME)
             }
             else
             {
                 UVDataWorker.initiateOneTimeWorker(context, true, Constants.SHORTEST_REFRESH_TIME)
-            }
-
-            lastObserving?.observeForever(observer)
-        }
-
-        private fun createObserver(context: Context): Observer<List<WorkInfo>>
-        {
-            return Observer<List<WorkInfo>>
-            { workInfo ->
-                when (workInfo.firstOrNull()?.state)
-                {
-                    WorkInfo.State.ENQUEUED ->
-                    {
-                        val widgetIds = AppWidgetManager.getInstance(context)
-                            .getAppWidgetIds(ComponentName(context, SmallUVDisplay::class.java))
-
-                        // Update intents
-                        val widgetIntent = Intent(context, SmallUVDisplay::class.java)
-                            .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
-                            .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
-                            // This widget's onReceive() is not responsible for starting periodic work except for
-                            // special situations
-                            .putExtra(START_BACKGROUND_WORK_KEY, !usePeriodicWork)
-
-                        val activityIntent = Intent(context, MainActivity::class.java)
-                            .setAction(UVData.UV_DATA_UPDATED)
-
-                        LocationService.uvDataPromise?.success()
-                        {
-                            if (!UVDataWorker.ignoreWorkRequest)
-                            {
-                                uvData = it
-                                latestError = null
-
-                                DiskRepository.writeLatestUV(it, context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
-
-                                widgetIntent.putExtra(UVData.UV_DATA_KEY, it)
-                                activityIntent.putExtra(UVData.UV_DATA_KEY, it)
-
-                                context.sendBroadcast(widgetIntent)
-                                LocalBroadcastManager.getInstance(context).sendBroadcast(activityIntent)
-                            }
-                        }?.fail()
-                        {
-                            latestError = it
-
-                            activityIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
-
-                            context.sendBroadcast(widgetIntent)
-                            LocalBroadcastManager.getInstance(context).sendBroadcast(activityIntent)
-                        }
-                    }
-
-                    WorkInfo.State.CANCELLED ->
-                    {
-                        lastObserving?.removeObserver(observer)
-                    }
-
-                    else -> {}
-                }
             }
         }
     }
@@ -163,8 +97,6 @@ class SmallUVDisplay : AppWidgetProvider()
         {
             configureWidgetCompanion(context)
         }
-
-        prepareEarliestRequest(context)
     }
 
     override fun onDisabled(context: Context)
@@ -178,8 +110,6 @@ class SmallUVDisplay : AppWidgetProvider()
      */
     private fun configureWidgetCompanion(context: Context)
     {
-        observer = createObserver(context)
-
         PreferenceManager.getDefaultSharedPreferences(context.applicationContext).apply()
         {
             previousReceivingScreenOnBroadcastSetting = getBoolean(Constants.SharedPreferences.SUBSCRIBE_SCREEN_UNLOCK_KEY, previousReceivingScreenOnBroadcastSetting)
@@ -190,7 +120,6 @@ class SmallUVDisplay : AppWidgetProvider()
             }
 
             usePeriodicWork = getString(Constants.SharedPreferences.WORK_TYPE_KEY, Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE) == Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE
-
             backgroundRefreshRate = getString(Constants.SharedPreferences.BACKGROUND_REFRESH_RATE_KEY, null)?.toLongOrNull() ?: backgroundRefreshRate
         }
 
@@ -210,6 +139,7 @@ class SmallUVDisplay : AppWidgetProvider()
         if (intent?.action == Intent.ACTION_BOOT_COMPLETED)
         {
             prepareEarliestRequest(context)
+            return
         }
 
         (intent?.getSerializableExtra(SET_RECEIVING_SCREEN_UNLOCK_KEY) as? Boolean)?.let()
@@ -254,47 +184,33 @@ class SmallUVDisplay : AppWidgetProvider()
             // Don't initiate a background request if that permission isn't given
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED)
             {
-                lastObserving?.removeObserver(observer)
                 return@let
             }
 
             if ((usePeriodicWork) && (!luvData.sunInSky()))
             {
-                lastObserving?.removeObserver(observer)
-
                 // Delay the next automatic worker until the sunrise of the next day
-                lastObserving = UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = luvData.minutesUntilSunrise)
-
-                lastObserving?.observeForever(observer)
-
+                UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = luvData.minutesUntilSunrise)
                 return@let
             }
 
             if (intent.getBooleanExtra(START_BACKGROUND_WORK_KEY, false))
             {
-                // Stop observing any other work
-                lastObserving?.removeObserver(observer)
-
-                lastObserving = if (usePeriodicWork)
+                when
                 {
-                    UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate)
-                }
-                else
-                {
-                    if (luvData.sunInSky())
-                    {
-                        UVDataWorker.initiateOneTimeWorker(context, true, backgroundRefreshRate)
-                    }
-                    else
-                    {
-                        // Delay the next automatic worker until the sunrise of the next day
-                        UVDataWorker.initiateOneTimeWorker(context, true, luvData.minutesUntilSunrise)
-                    }
-                }
+                    usePeriodicWork -> UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate)
 
-                // Begin observing new work
-                lastObserving?.observeForever(observer)
+                    luvData.sunInSky() -> UVDataWorker.initiateOneTimeWorker(context, true, backgroundRefreshRate)
+
+                    // Delay the next automatic worker until the sunrise of the next day
+                    else -> UVDataWorker.initiateOneTimeWorker(context, true, luvData.minutesUntilSunrise)
+                }
             }
+        }
+
+        (intent?.getSerializableExtra(ErrorStatus.ERROR_STATUS_KEY) as? ErrorStatus)?.let()
+        {
+            latestError = it
         }
 
         // Will call onUpdate
@@ -323,11 +239,20 @@ class SmallUVDisplay : AppWidgetProvider()
             latestError != null -> // Error has occurred
             {
                 views.setTextViewText(R.id.uvValue, context.getString(R.string.widget_error))
-                views.setTextColor(R.id.uvValue, context.resources.getColor(R.color.dark_text, context.theme))
 
                 views.setViewVisibility(R.id.widgetSunProgress, View.INVISIBLE)
                 views.setViewVisibility(R.id.updatedTime, View.INVISIBLE)
-                views.setInt(R.id.backgroundView, "setColorFilter", context.resources.getColor(R.color.light_window_background, context.theme))
+
+                if (lUseCustomTheme)
+                {
+                    views.setTextColor(R.id.uvValue, context.resources.getColor(R.color.dark_text, context.theme))
+                    views.setInt(R.id.backgroundView, "setColorFilter", context.resources.getColor(R.color.uv_low, context.theme))
+                }
+                else
+                {
+                    views.setTextColor(R.id.uvValue, context.resources.getColor(R.color.appWidgetTextColor, context.theme))
+                    views.setInt(R.id.backgroundView, "setColorFilter", context.resources.getColor(R.color.appWidgetBackgroundColor, context.theme))
+                }
             }
 
             uvData != null -> // Valid data

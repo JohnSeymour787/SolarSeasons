@@ -192,7 +192,7 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
 
     private fun validateAltitude(altitude: Double): Boolean
     {
-        return ((altitude >= 0.0) && (altitude <= Constants.MAXIMUM_EARTH_ALTITUDE))
+        return ((altitude >= Constants.MINIMUM_API_ACCEPTED_ALTITUDE) && (altitude <= Constants.MAXIMUM_EARTH_ALTITUDE))
     }
 
     companion object
