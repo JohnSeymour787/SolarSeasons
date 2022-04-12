@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import androidx.concurrent.futures.CallbackToFutureAdapter
-import androidx.lifecycle.LiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
 import com.google.common.util.concurrent.ListenableFuture
@@ -77,7 +76,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         }
 
 
-        fun initiatePeriodicWorker(context: Context, startDelay: Long? = null, timeInterval: Long): LiveData<List<WorkInfo>>
+        fun initiatePeriodicWorker(context: Context, startDelay: Long? = null, timeInterval: Long)
         {
             val workManager = WorkManager.getInstance(context.applicationContext)
             workManager.cancelUniqueWork(WORK_NAME)
@@ -86,16 +85,11 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
             uvDataRequest = createPeriodicRequest(timeInterval, delay)
 
-            // Need to initialise this here before the work is enqueued as some clients will immediately subscribe to it
-   //         LocationService.uvDataDeferred = deferred()
-
             // Start a unique work, but if one is already going, then replace that one (shouldn't need to occur because removed the work before)
             (uvDataRequest as? PeriodicWorkRequest)?.let { workManager.enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.REPLACE, it) }
-
-            return workManager.getWorkInfosForUniqueWorkLiveData(WORK_NAME)
         }
 
-        fun initiateOneTimeWorker(context: Context, delayedStart: Boolean = false, delayTime: Long = Constants.DEFAULT_REFRESH_TIME): LiveData<List<WorkInfo>>
+        fun initiateOneTimeWorker(context: Context, delayedStart: Boolean = false, delayTime: Long = Constants.DEFAULT_REFRESH_TIME)
         {
             val workManager = WorkManager.getInstance(context.applicationContext)
             workManager.cancelUniqueWork(WORK_NAME)
@@ -115,8 +109,6 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
             // Start a unique work, but if one is already going, then replace that one (shouldn't need to occur because removed the work before)
             (uvDataRequest as? OneTimeWorkRequest)?.let { workManager.enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.REPLACE, it) }
-
-            return workManager.getWorkInfosForUniqueWorkLiveData(WORK_NAME)
         }
 
         private fun locationServiceIntent(applicationContext: Context): Intent
