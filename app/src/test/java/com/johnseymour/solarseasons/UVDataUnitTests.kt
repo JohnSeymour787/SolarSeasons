@@ -8,13 +8,14 @@ import java.time.ZonedDateTime
 
 class UVDataUnitTests
 {
-    private val testInstance = UVData(
-        uv = 0.0399F, uvTime = ZonedDateTime.parse("2021-09-25T00:00:30.826+10:00[Australia/Sydney]"),
+    private fun generateTestInstance(testUVValue: Float) = UVData(
+        uv = testUVValue, uvTime = ZonedDateTime.parse("2021-09-25T00:00:30.826+10:00[Australia/Sydney]"),
         uvMax = 3.0005F, uvMaxTime = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"),
         ozone = 332.5F, ozoneTime = ZonedDateTime.parse("2021-09-25T16:04:07.137+10:00[Australia/Sydney]"),
         safeExposure = mapOf("st1" to 4180, "st2" to 5016, "st3" to 6688, "st4" to 8360, "st5" to 13376, "st6" to 25079),
         sunInfo = SunInfo(
-            solarNoon = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"), nadir = ZonedDateTime.parse("2021-09-25T09:53:36.274+10:00[Australia/Sydney]"),
+            solarNoon = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"),
+            nadir = ZonedDateTime.parse("2021-09-25T09:53:36.274+10:00[Australia/Sydney]"),
             sunrise = ZonedDateTime.parse("2021-09-25T15:52:48.317+10:00[Australia/Sydney]"),
             sunset = ZonedDateTime.parse("2021-09-26T03:54:24.230+10:00[Australia/Sydney]"),
             sunriseEnd = ZonedDateTime.parse("2021-09-25T15:56:13.870+10:00[Australia/Sydney]"),
@@ -34,16 +35,17 @@ class UVDataUnitTests
     @Test
     fun `uv background colour is correct`()
     {
-        testInstance.uv = 10.99999F
-        Assert.assertEquals(R.color.uv_very_high, testInstance.backgroundColorInt)
+        val testInstanceVeryHigh = generateTestInstance(10.99999F)
+        Assert.assertEquals(R.color.uv_very_high, testInstanceVeryHigh.backgroundColorInt)
 
-        testInstance.uv = 11.000001F
-        Assert.assertEquals(R.color.uv_extreme, testInstance.backgroundColorInt)
+        val testInstanceExtreme = generateTestInstance(11.000001F)
+        Assert.assertEquals(R.color.uv_extreme, testInstanceExtreme.backgroundColorInt)
     }
 
     @Test
     fun `test UVData sunInSky()`()
     {
+        val testInstance = generateTestInstance(5F)
         Assert.assertFalse(testInstance.sunInSky())
 
         val sunInSky = UVData(
@@ -52,7 +54,8 @@ class UVDataUnitTests
             ozone = 332.5F, ozoneTime = ZonedDateTime.parse("2021-09-25T16:04:07.137+10:00[Australia/Sydney]"),
             safeExposure = mapOf("st1" to 4180, "st2" to 5016, "st3" to 6688, "st4" to 8360, "st5" to 13376, "st6" to 25079),
             sunInfo = SunInfo(
-                solarNoon = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"), nadir = ZonedDateTime.parse("2021-09-25T09:53:36.274+10:00[Australia/Sydney]"),
+                solarNoon = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"),
+                nadir = ZonedDateTime.parse("2021-09-25T09:53:36.274+10:00[Australia/Sydney]"),
                 sunrise = ZonedDateTime.parse("2021-09-25T07:52:48.317+10:00[Australia/Sydney]"),
                 sunset = ZonedDateTime.parse("2021-09-26T18:54:24.230+10:00[Australia/Sydney]"),
                 sunriseEnd = ZonedDateTime.parse("2021-09-25T07:56:13.870+10:00[Australia/Sydney]"),
@@ -77,7 +80,8 @@ class UVDataUnitTests
             ozone = 332.5F, ozoneTime = ZonedDateTime.parse("2021-09-25T16:04:07.137+10:00[Australia/Sydney]"),
             safeExposure = mapOf("st1" to 4180, "st2" to 5016, "st3" to 6688, "st4" to 8360, "st5" to 13376, "st6" to 25079),
             sunInfo = SunInfo(
-                solarNoon = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"), nadir = ZonedDateTime.parse("2021-09-25T09:53:36.274+10:00[Australia/Sydney]"),
+                solarNoon = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"),
+                nadir = ZonedDateTime.parse("2021-09-25T09:53:36.274+10:00[Australia/Sydney]"),
                 sunrise = ZonedDateTime.parse("2021-09-25T07:52:48.317+10:00[Australia/Sydney]"),
                 sunset = ZonedDateTime.parse("2021-09-26T18:54:24.230+10:00[Australia/Sydney]"),
                 sunriseEnd = ZonedDateTime.parse("2021-09-25T07:56:13.870+10:00[Australia/Sydney]"),
@@ -102,7 +106,8 @@ class UVDataUnitTests
             ozone = 332.5F, ozoneTime = ZonedDateTime.parse("2021-09-25T16:04:07.137+10:00[Australia/Sydney]"),
             safeExposure = mapOf("st1" to 4180, "st2" to 5016, "st3" to 6688, "st4" to 8360, "st5" to 13376, "st6" to 25079),
             sunInfo = SunInfo(
-                solarNoon = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"), nadir = ZonedDateTime.parse("2021-09-25T09:53:36.274+10:00[Australia/Sydney]"),
+                solarNoon = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"),
+                nadir = ZonedDateTime.parse("2021-09-25T09:53:36.274+10:00[Australia/Sydney]"),
                 sunrise = ZonedDateTime.parse("2021-09-25T07:52:48.317+10:00[Australia/Sydney]"),
                 sunset = ZonedDateTime.parse("2021-09-26T18:54:24.230+10:00[Australia/Sydney]"),
                 sunriseEnd = ZonedDateTime.parse("2021-09-25T07:56:13.870+10:00[Australia/Sydney]"),
@@ -127,7 +132,8 @@ class UVDataUnitTests
             ozone = 332.5F, ozoneTime = ZonedDateTime.parse("2021-09-25T16:04:07.137+10:00[Australia/Sydney]"),
             safeExposure = mapOf("st1" to 4180, "st2" to 5016, "st3" to 6688, "st4" to 8360, "st5" to 13376, "st6" to 25079),
             sunInfo = SunInfo(
-                solarNoon = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"), nadir = ZonedDateTime.parse("2021-09-25T09:53:36.274+10:00[Australia/Sydney]"),
+                solarNoon = ZonedDateTime.parse("2021-09-25T21:53:36.274+10:00[Australia/Sydney]"),
+                nadir = ZonedDateTime.parse("2021-09-25T09:53:36.274+10:00[Australia/Sydney]"),
                 sunrise = ZonedDateTime.parse("2021-09-25T07:52:48.317+10:00[Australia/Sydney]"),
                 sunset = ZonedDateTime.parse("2021-09-26T18:54:24.230+10:00[Australia/Sydney]"),
                 sunriseEnd = ZonedDateTime.parse("2021-09-25T07:56:13.870+10:00[Australia/Sydney]"),

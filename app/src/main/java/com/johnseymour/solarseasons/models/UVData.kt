@@ -11,7 +11,7 @@ import kotlin.math.absoluteValue
 
 @Parcelize
 data class UVData(
-    var uv: Float,
+    val uv: Float,
     val uvTime: ZonedDateTime? = null,
     val uvMax: Float,
     val uvMaxTime: ZonedDateTime? = null,
