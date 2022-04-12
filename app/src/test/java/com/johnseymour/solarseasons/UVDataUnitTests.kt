@@ -39,7 +39,7 @@ class UVDataUnitTests
         Assert.assertEquals(R.color.uv_very_high, testInstanceVeryHigh.backgroundColorInt)
 
         val testInstanceExtreme = generateTestInstance(11.000001F)
-        Assert.assertEquals(R.color.uv_extreme, testInstanceExtreme.backgroundColorInt)
+        Assert.assertEquals(R.color.uv_extreme_alternate, testInstanceExtreme.backgroundColorInt)
     }
 
     @Test
