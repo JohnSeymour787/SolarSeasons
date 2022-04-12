@@ -37,6 +37,8 @@ object Constants
 
     const val ENABLE_MANUAL_LOCATION_FEATURE = false
     const val ENABLE_API_KEY_ENTRY_FEATURE = false
+    /** Skips location retrieval and API calls to save on request quota. Service generates simple UV data **/
+    const val TEST_MODE_NO_API = false
 
     object SharedPreferences
     {

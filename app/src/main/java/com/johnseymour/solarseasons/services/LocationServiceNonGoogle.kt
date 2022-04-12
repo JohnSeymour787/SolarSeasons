@@ -96,17 +96,8 @@ class LocationServiceNonGoogle: LocationService(), Consumer<Location?>, Location
     {
         location?.let()
         {
-            if (TEST_MODE)
-            {
-                counter++
-                test.uv = counter
-                uvDataDeferred?.resolve(test)
-                stopSelf()
-            }
-            else
-            {
-                super.locationSuccess(it.latitude, it.longitude, it.altitude)
-            }
+            super.locationSuccess(it.latitude, it.longitude, it.altitude)
+
         } ?: run()
         {
             when (locationRequestStatus)

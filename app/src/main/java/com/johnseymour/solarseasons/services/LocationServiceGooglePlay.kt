@@ -39,17 +39,7 @@ class LocationServiceGooglePlay: LocationService(), OnSuccessListener<Location>,
     {
         location?.let()
         {
-            if (TEST_MODE)
-            {
-                counter++
-                test.uv = counter
-                uvDataDeferred?.resolve(test)
-                stopSelf()
-            }
-            else
-            {
-                super.locationSuccess(it.latitude, it.longitude, it.altitude)
-            }
+            super.locationSuccess(it.latitude, it.longitude, it.altitude)
 
         } ?: run() // Can be null if location was turned off or device restarted
         {
