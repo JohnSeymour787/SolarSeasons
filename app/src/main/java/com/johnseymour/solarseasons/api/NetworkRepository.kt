@@ -1,5 +1,6 @@
 package com.johnseymour.solarseasons.api
 
+import android.util.Log
 import com.google.gson.GsonBuilder
 import com.johnseymour.solarseasons.Constants
 import com.johnseymour.solarseasons.models.SunInfo
@@ -131,6 +132,7 @@ object NetworkRepository
                     else -> result.reject(ErrorStatus.GeneralError)
                 }
 
+                Log.d("Network", "NetworkRepository - Response error: $errorText")
             }
 
             override fun onFailure(call: Call<UVData>, t: Throwable)
