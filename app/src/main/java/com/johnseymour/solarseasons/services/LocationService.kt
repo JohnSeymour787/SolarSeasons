@@ -14,11 +14,12 @@ import com.johnseymour.solarseasons.*
 import com.johnseymour.solarseasons.api.NetworkRepository
 import com.johnseymour.solarseasons.models.SunInfo
 import com.johnseymour.solarseasons.models.UVData
+import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise
 import java.time.ZonedDateTime
 
-open class LocationService: Service()
+abstract class LocationService: Service()
 {
     companion object
     {
@@ -59,6 +60,27 @@ open class LocationService: Service()
                 azimuth = -1.48815118586359, altitude = 0.04749226792696052
             )
         )
+
+        /**
+         * Factory method that checks application-level settings to determine which implementation of the
+         *  LocationService class to use.
+         *
+         * @return Intent to the relevant LocationService class, ready to start as a service
+         */
+        fun createServiceIntent(applicationContext: Context): Intent
+        {
+            return when
+            {
+                Constants.ENABLE_MANUAL_LOCATION_FEATURE && PreferenceScreenFragment.useManualLocation ->
+                {
+                    Intent(applicationContext, LocationServiceManual::class.java)
+                }
+
+                Constants.USE_GOOGLE_PLAY_LOCATION -> Intent(applicationContext, LocationServiceGooglePlay::class.java)
+
+                else -> Intent(applicationContext, LocationServiceNonGoogle::class.java)
+            }
+        }
     }
 
     private val notificationChannel by lazy()
@@ -89,6 +111,8 @@ open class LocationService: Service()
 
         startForeground(1, createNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
     }
+
+    abstract override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int
 
     override fun onBind(intent: Intent): IBinder? = null
 

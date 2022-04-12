@@ -9,10 +9,6 @@ import androidx.work.*
 import com.google.common.util.concurrent.ListenableFuture
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.services.LocationService
-import com.johnseymour.solarseasons.services.LocationServiceGooglePlay
-import com.johnseymour.solarseasons.services.LocationServiceManual
-import com.johnseymour.solarseasons.services.LocationServiceNonGoogle
-import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import nl.komponents.kovenant.deferred
 import java.util.concurrent.TimeUnit
 
@@ -111,21 +107,6 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
             (uvDataRequest as? OneTimeWorkRequest)?.let { workManager.enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.REPLACE, it) }
         }
 
-        private fun locationServiceIntent(applicationContext: Context): Intent
-        {
-            return when
-            {
-                Constants.ENABLE_MANUAL_LOCATION_FEATURE && PreferenceScreenFragment.useManualLocation ->
-                {
-                    Intent(applicationContext, LocationServiceManual::class.java)
-                }
-
-                Constants.USE_GOOGLE_PLAY_LOCATION -> Intent(applicationContext, LocationServiceGooglePlay::class.java)
-
-                else -> Intent(applicationContext, LocationServiceNonGoogle::class.java)
-            }
-        }
-
         fun cancelWorker(context: Context)
         {
             val workManager = WorkManager.getInstance(context)
@@ -134,7 +115,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
         fun stopLocationService(applicationContext: Context)
         {
-            applicationContext.stopService(locationServiceIntent(applicationContext))
+            applicationContext.stopService(LocationService.createServiceIntent(applicationContext))
         }
     }
 
@@ -144,7 +125,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         { result ->
             // Need to initialise this here because the service is created asynchronously
             LocationService.uvDataDeferred = deferred()
-            applicationContext.startForegroundService(locationServiceIntent(applicationContext))
+            applicationContext.startForegroundService(LocationService.createServiceIntent(applicationContext))
 
             val widgetIds = applicationContext.getWidgetIDs()
 
