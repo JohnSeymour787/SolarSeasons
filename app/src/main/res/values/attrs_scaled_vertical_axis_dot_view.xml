@@ -1,0 +1,11 @@
+<resources>
+    <declare-styleable name="ScaledVerticalAxisDotView">
+        <attr name="maxYValue" format="float" />
+        <attr name="minYValue" format="float"/>
+        <attr name="yValue" format="float"/>
+        <attr name="dotColour" format="color" />
+        <attr name="dotRadius" format="dimension" />
+        <attr name="lineColour" format="color" />
+        <attr name="lineThickness" format="dimension" />
+    </declare-styleable>
+</resources>
