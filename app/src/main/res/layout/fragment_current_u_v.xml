@@ -115,10 +115,51 @@
                 android:textColor="?android:textColorPrimary"
                 tools:text="Time of max: 13:43"
                 android:textSize="@dimen/widget_text_small"
-                app:layout_constraintBottom_toTopOf="@id/skinExposureLabel"
+                app:layout_constraintBottom_toTopOf="@id/uvForecastLabel"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/maxUV" />
+
+            <View
+                android:id="@+id/uvForecastBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/widget_background_shape"
+                android:backgroundTint="@color/section_background_transparent_colour"
+                android:alpha="@fraction/activity_background_alpha"
+                android:visibility="visible"
+                app:layout_constrainedHeight="true"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintTop_toTopOf="@id/uvForecastLabel"
+                app:layout_constraintBottom_toBottomOf="@id/uvForecastList"
+                app:layout_constraintStart_toStartOf="@id/uvForecastList"
+                app:layout_constraintEnd_toEndOf="@id/uvForecastList" />
+
+            <TextView
+                android:id="@+id/uvForecastLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UV Forecast"
+                android:visibility="visible"
+                android:textSize="@dimen/widget_text_medium"
+                android:textStyle="bold"
+                android:textColor="?android:textColorPrimary"
+                android:labelFor="@id/uvForecastList"
+                android:layout_marginTop="@dimen/margin_very_large"
+                android:layout_marginHorizontal="@dimen/margin_small"
+                android:paddingHorizontal="@dimen/margin_small"
+                app:layout_constraintTop_toBottomOf="@id/maxUVTime"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/uvForecastList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:paddingBottom="@dimen/margin_small"
+                android:layout_marginHorizontal="@dimen/widget_horizontal_margin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/uvForecastLabel"/>
 
             <View
                 android:id="@+id/skinExposureBackground"
@@ -148,7 +189,7 @@
                 android:layout_marginTop="@dimen/margin_very_large"
                 android:layout_marginHorizontal="@dimen/margin_small"
                 android:paddingHorizontal="@dimen/margin_small"
-                app:layout_constraintTop_toBottomOf="@id/maxUVTime"
+                app:layout_constraintTop_toBottomOf="@id/uvForecastList"
                 app:layout_constraintStart_toStartOf="parent"/>
 
             <androidx.recyclerview.widget.RecyclerView

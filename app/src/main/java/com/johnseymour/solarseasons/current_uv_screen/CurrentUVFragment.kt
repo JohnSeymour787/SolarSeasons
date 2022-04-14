@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.johnseymour.solarseasons.*
+import com.johnseymour.solarseasons.current_uv_screen.uv_forecast.UVForecastAdapter
 import com.johnseymour.solarseasons.models.SkinExposureAdapter
 import com.johnseymour.solarseasons.models.SunInfo
 import com.johnseymour.solarseasons.models.SunInfoAdapter
@@ -204,8 +205,10 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         {
             enableLightStatusBar(requireActivity().window.decorView, resources.configuration)
         }
-    }
 
+        uvForecastList.adapter = UVForecastAdapter(null, listOf(0F, 1F,2F,3F,5F,7F,5F,3F,2F,1.5F,1.32F,0.99F,0.0005F), 0)
+        uvForecastList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+    }
     /**
      * Reads the shared preferences for settings used by this fragment and updates the relevant
      *  memory variables with these values for quicker access later
