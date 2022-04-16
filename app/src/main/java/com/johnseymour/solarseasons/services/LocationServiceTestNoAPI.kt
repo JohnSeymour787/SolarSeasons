@@ -1,6 +1,5 @@
 package com.johnseymour.solarseasons.services
 
-import android.content.Intent
 import com.johnseymour.solarseasons.models.SunInfo
 import com.johnseymour.solarseasons.models.UVData
 import java.time.ZonedDateTime
@@ -39,7 +38,7 @@ class LocationServiceTestNoAPI: LocationService()
         }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int
+    override fun serviceMain(): Int
     {
         counter++
         uvDataDeferred?.resolve(generateTestData())

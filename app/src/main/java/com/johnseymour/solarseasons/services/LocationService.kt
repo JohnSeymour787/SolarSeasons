@@ -33,6 +33,8 @@ abstract class LocationService: Service()
         private const val NOTIFICATION_CHANNEL_ID = "Solar.seasons.id"
         private const val NOTIFICATION_CHANNEL_NAME = "Solar.seasons.foreground_location_channel"
 
+        const val FIRST_DAILY_REQUEST_KEY = "first_daily_request_key"
+
         var uvDataDeferred: Deferred<UVData, ErrorStatus>? = null
         val uvDataPromise: Promise<UVData, ErrorStatus>?
             get()
@@ -93,7 +95,19 @@ abstract class LocationService: Service()
         startForeground(1, createNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
     }
 
-    abstract override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int
+    private var firstRequestOfDay = false
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int
+    {
+        firstRequestOfDay = intent?.getBooleanExtra(FIRST_DAILY_REQUEST_KEY, false) ?: firstRequestOfDay
+
+        return serviceMain()
+    }
+
+    /** Main method in which the service code will run
+     *  @return - Must return one of the Service.START_* flags, such as START_STICKY
+     */
+    abstract fun serviceMain(): Int
 
     override fun onBind(intent: Intent): IBinder? = null
 

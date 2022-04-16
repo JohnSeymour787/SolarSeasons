@@ -1,13 +1,12 @@
 package com.johnseymour.solarseasons.services
 
-import android.content.Intent
 import androidx.preference.PreferenceManager
 import com.johnseymour.solarseasons.Constants
 import com.johnseymour.solarseasons.ErrorStatus
 
 class LocationServiceManual: LocationService()
 {
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int
+    override fun serviceMain(): Int
     {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 

@@ -1,7 +1,6 @@
 package com.johnseymour.solarseasons.services
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import androidx.core.app.ActivityCompat
@@ -19,7 +18,7 @@ class LocationServiceGooglePlay: LocationService(), OnSuccessListener<Location>,
 
     private var locationCancellationSource: CancellationTokenSource? = null
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int
+    override fun serviceMain(): Int
     {
         // Widget is responsible for additionally checking the background permission
         if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
