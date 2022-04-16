@@ -17,7 +17,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
     companion object
     {
         private const val WORK_NAME = "UV_DATA_WORK"
-        private const val RESTART_BACKGROUND_WORK = "restart_background_work"
+        private const val INITIATE_BACKGROUND_WORK = "restart_background_work"
         private val MIN_PERIODIC_INTERVAL_MINUTES = TimeUnit.MILLISECONDS.toMinutes(PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS)
         private val MAX_BACKOFF_MINUTES = TimeUnit.MILLISECONDS.toMinutes(PeriodicWorkRequest.MAX_BACKOFF_MILLIS)
 
@@ -36,7 +36,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 }
                 else
                 {
-                    setInputData(workDataOf(RESTART_BACKGROUND_WORK to true))
+                    setInputData(workDataOf(INITIATE_BACKGROUND_WORK to true))
                 }
                 build()
             }
@@ -133,7 +133,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
                 .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
 
-            if (inputData.getBoolean(RESTART_BACKGROUND_WORK, false))
+            if (inputData.getBoolean(INITIATE_BACKGROUND_WORK, false))
             {
                 // For coming from immediate request (no delay), will result in background updates if the relevant permission is granted
                 widgetIntent.putExtra(SmallUVDisplay.START_BACKGROUND_WORK_KEY, true)
