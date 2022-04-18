@@ -30,7 +30,7 @@ import com.johnseymour.solarseasons.current_uv_screen.uv_forecast.UVForecastAdap
 import com.johnseymour.solarseasons.models.*
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import com.johnseymour.solarseasons.settings_screen.SettingsFragment
-import kotlinx.android.synthetic.main.fragment_current_u_v.*
+import kotlinx.android.synthetic.main.fragment_current_uv.*
 import java.io.FileNotFoundException
 import java.time.ZonedDateTime
 
@@ -38,7 +38,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
 {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        return inflater.inflate(R.layout.fragment_current_u_v, container, false)
+        return inflater.inflate(R.layout.fragment_current_uv, container, false)
     }
 
     private val viewModel by lazy()
