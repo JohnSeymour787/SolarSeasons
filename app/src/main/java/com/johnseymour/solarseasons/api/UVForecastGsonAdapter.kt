@@ -6,7 +6,7 @@ import com.johnseymour.solarseasons.toZonedDateTime
 import java.lang.reflect.Type
 import java.time.ZoneId
 
-object UVForecastGsonAdapter: JsonDeserializer<Array<UVForecastData>>
+object UVForecastGsonAdapter: JsonDeserializer<Array<UVForecastData>>, JsonSerializer<Array<UVForecastData>>
 {
     override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): Array<UVForecastData>
     {
@@ -24,5 +24,27 @@ object UVForecastGsonAdapter: JsonDeserializer<Array<UVForecastData>>
         }
 
         return result.toTypedArray()
+    }
+
+    override fun serialize(forecastArray: Array<UVForecastData>?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement
+    {
+        val result = JsonObject()
+
+        forecastArray ?: return result
+
+        val forecastJsonArray = JsonArray()
+
+        forecastArray.forEach()
+        {
+            val arrayElement = JsonObject()
+            arrayElement.addProperty("uv", it.uv)
+            arrayElement.addProperty("uv_time", it.time.toString())
+
+            forecastJsonArray.add(arrayElement)
+        }
+
+        result.add("result", forecastJsonArray)
+
+        return result
     }
 }
