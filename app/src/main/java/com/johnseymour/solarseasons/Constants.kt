@@ -33,7 +33,8 @@ object Constants
 
     const val MINIMUM_API_ACCEPTED_ALTITUDE = 0.0
 
-    const val GENERAL_MAXIMUM_UV = 15F
+    /** Rough maximum UV expected at sea level, theoretically can be higher **/
+    const val GENERAL_MAXIMUM_UV = 14F
 
     const val USE_GOOGLE_PLAY_LOCATION = false
     const val ENABLE_MANUAL_LOCATION_FEATURE = false

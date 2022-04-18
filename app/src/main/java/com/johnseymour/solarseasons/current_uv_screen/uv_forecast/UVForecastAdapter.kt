@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.johnseymour.solarseasons.R
 import com.johnseymour.solarseasons.models.UVForecastData
 import com.johnseymour.solarseasons.preferredTimeString
+import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import kotlinx.android.synthetic.main.list_cell_uv_forecast.view.*
 
 class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private val textColorInt: Int): RecyclerView.Adapter<UVForecastAdapter.UVForecastViewHolder>()
@@ -36,14 +37,21 @@ class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private
         {
             layoutParams = ConstraintLayout.LayoutParams(resources.getDimensionPixelSize(R.dimen.uv_forecast_cell_width), resources.getDimensionPixelSize(R.dimen.uv_forecast_cell_height))
 
-//            if (PreferenceScreenFragment.useCustomTheme)
-//            {
-//                forecastUV.setTextColor(resources.getColor(textColorInt, context.theme))
-//                forecastTime.setTextColor(resources.getColor(textColorInt, context.theme))
-                //TODO() might want to set the colour of the dots as well, but only if they are not the same as the background colour
-//            }
+            if (PreferenceScreenFragment.useCustomTheme)
+            {
+                val textColor = resources.getColor(textColorInt, context.theme)
+                forecastUV.setTextColor(textColor)
+                forecastTime.setTextColor(textColor)
+                forecastDotView.dotColour = textColor
+                forecastDotView.lineColour = textColor
+            }
 
-            forecastTimes.maxByOrNull(UVForecastData::uv)?.let { forecastDotView.maxYValue = it.uv }
+            val maxUV = forecastTimes.maxOfOrNull(UVForecastData::uv) ?: 0F
+
+            if (maxUV > forecastDotView.maxYValue)
+            {
+                forecastDotView.maxYValue = maxUV
+            }
         }
 
         return UVForecastViewHolder(cell)
