@@ -8,6 +8,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.*
 import com.google.common.util.concurrent.ListenableFuture
 import com.johnseymour.solarseasons.models.UVData
+import com.johnseymour.solarseasons.models.UVForecastData
 import com.johnseymour.solarseasons.services.LocationService
 import nl.komponents.kovenant.deferred
 import java.util.concurrent.TimeUnit
@@ -25,7 +26,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         private var uvDataRequest: WorkRequest? = null
         private var previousDelayStartSetting = false
 
-        private fun createWorkRequest(delayedStart: Boolean, delayTime: Long): OneTimeWorkRequest
+        private fun createWorkRequest(delayedStart: Boolean, delayTime: Long, firstDailyRequest: Boolean): OneTimeWorkRequest
         {
             return OneTimeWorkRequestBuilder<UVDataWorker>().run()
             {
@@ -38,11 +39,17 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 {
                     setInputData(workDataOf(INITIATE_BACKGROUND_WORK to true))
                 }
+
+                if (firstDailyRequest)
+                {
+                    setInputData(workDataOf(LocationService.FIRST_DAILY_REQUEST_KEY to true))
+                }
+
                 build()
             }
         }
 
-        private fun createPeriodicRequest(timeInterval: Long, startDelay: Long): PeriodicWorkRequest
+        private fun createPeriodicRequest(timeInterval: Long, startDelay: Long, firstDailyRequest: Boolean): PeriodicWorkRequest
         {
             val lTimeInterval = if (timeInterval < MIN_PERIODIC_INTERVAL_MINUTES)
             {
@@ -64,6 +71,11 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
             return PeriodicWorkRequestBuilder<UVDataWorker>(lTimeInterval, TimeUnit.MINUTES).run()
             {
+                if (firstDailyRequest)
+                {
+                    setInputData(workDataOf(LocationService.FIRST_DAILY_REQUEST_KEY to true))
+                }
+
                 setInitialDelay(startDelay, TimeUnit.MINUTES)
                 setConstraints(workConstraints)
                 setBackoffCriteria(BackoffPolicy.LINEAR, lBackoffDelay, TimeUnit.MINUTES)
@@ -72,20 +84,20 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         }
 
 
-        fun initiatePeriodicWorker(context: Context, startDelay: Long? = null, timeInterval: Long)
+        fun initiatePeriodicWorker(context: Context, startDelay: Long? = null, timeInterval: Long, firstDailyRequest: Boolean = false)
         {
             val workManager = WorkManager.getInstance(context.applicationContext)
             workManager.cancelUniqueWork(WORK_NAME)
 
             val delay = startDelay ?: timeInterval
 
-            uvDataRequest = createPeriodicRequest(timeInterval, delay)
+            uvDataRequest = createPeriodicRequest(timeInterval, delay, firstDailyRequest)
 
             // Start a unique work, but if one is already going, then replace that one (shouldn't need to occur because removed the work before)
             (uvDataRequest as? PeriodicWorkRequest)?.let { workManager.enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.REPLACE, it) }
         }
 
-        fun initiateOneTimeWorker(context: Context, delayedStart: Boolean = false, delayTime: Long = Constants.DEFAULT_REFRESH_TIME)
+        fun initiateOneTimeWorker(context: Context, delayedStart: Boolean = false, delayTime: Long = Constants.DEFAULT_REFRESH_TIME, firstDailyRequest: Boolean = false)
         {
             val workManager = WorkManager.getInstance(context.applicationContext)
             workManager.cancelUniqueWork(WORK_NAME)
@@ -93,12 +105,12 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
             // First time creating, to avoid making the same thing
             if (uvDataRequest == null)
             {
-                uvDataRequest = createWorkRequest(delayedStart, delayTime)
+                uvDataRequest = createWorkRequest(delayedStart, delayTime, firstDailyRequest)
             }
             // However, if the setting is different from last time, need to make a new request and update the remembered setting
             else if (delayedStart != previousDelayStartSetting)
             {
-                uvDataRequest = createWorkRequest(delayedStart, delayTime)
+                uvDataRequest = createWorkRequest(delayedStart, delayTime, firstDailyRequest)
 
                 previousDelayStartSetting = delayedStart
             }
@@ -125,7 +137,14 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         { result ->
             // Need to initialise this here because the service is created asynchronously
             LocationService.uvDataDeferred = deferred()
-            applicationContext.startForegroundService(LocationService.createServiceIntent(applicationContext))
+
+            val locationServiceIntent = LocationService.createServiceIntent(applicationContext)
+            if (inputData.getBoolean(LocationService.FIRST_DAILY_REQUEST_KEY, false))
+            {
+                locationServiceIntent.putExtra(LocationService.FIRST_DAILY_REQUEST_KEY, true)
+            }
+
+            applicationContext.startForegroundService(locationServiceIntent)
 
             val widgetIds = applicationContext.getWidgetIDs()
 
@@ -149,10 +168,17 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
             LocationService.uvDataPromise?.success()
             {
-                DiskRepository.writeLatestUV(it, applicationContext.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
+                val dataSharedPreferences = applicationContext.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)
+                DiskRepository.writeLatestUV(it.uvData, dataSharedPreferences)
 
-                widgetIntent.putExtra(UVData.UV_DATA_KEY, it)
-                activityIntent.putExtra(UVData.UV_DATA_KEY, it)
+                it.forecast?.let()
+                { forecastData ->
+                    DiskRepository.writeLatestForecastList(forecastData, dataSharedPreferences)
+                    activityIntent.putParcelableArrayListExtra(UVForecastData.UV_FORECAST_LIST_KEY, ArrayList(forecastData))
+                }
+
+                widgetIntent.putExtra(UVData.UV_DATA_KEY, it.uvData)
+                activityIntent.putExtra(UVData.UV_DATA_KEY, it.uvData)
 
                 applicationContext.sendBroadcast(widgetIntent)
                 LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(activityIntent)

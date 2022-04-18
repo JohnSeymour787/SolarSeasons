@@ -27,6 +27,10 @@ class MainViewModel: ViewModel()
                     latestError = it
                 } ?: intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
                 {
+                    intent.getParcelableArrayListExtra<UVForecastData>(UVForecastData.UV_FORECAST_LIST_KEY)?.toList()?.let()
+                    { forecastData ->
+                        uvForecastData = forecastData
+                    }
                     uvData = it
                 }
             }

@@ -61,6 +61,11 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
 
                 intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
                 {
+                    intent.getParcelableArrayListExtra<UVForecastData>(UVForecastData.UV_FORECAST_LIST_KEY)?.toList()?.let()
+                    { forecastData ->
+                        viewModel.uvForecastData = forecastData
+                    }
+
                     newUVDataReceived(it)
                 }
 
@@ -432,7 +437,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             uvForecastLabel.visibility = View.VISIBLE
             uvForecastList.visibility = View.VISIBLE
 
-            uvForecastList.adapter = UVForecastAdapter(it,  lUVData.textColorInt)
+            uvForecastList.adapter = UVForecastAdapter(it, lUVData.textColorInt)
             uvForecastList.scrollToPosition(forecastBestScrollPosition)
         } ?: run()
         {
