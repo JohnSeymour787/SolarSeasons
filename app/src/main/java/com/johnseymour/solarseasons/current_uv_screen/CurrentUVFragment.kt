@@ -27,10 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.johnseymour.solarseasons.*
 import com.johnseymour.solarseasons.current_uv_screen.uv_forecast.UVForecastAdapter
-import com.johnseymour.solarseasons.models.SkinExposureAdapter
-import com.johnseymour.solarseasons.models.SunInfo
-import com.johnseymour.solarseasons.models.SunInfoAdapter
-import com.johnseymour.solarseasons.models.UVData
+import com.johnseymour.solarseasons.models.*
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import com.johnseymour.solarseasons.settings_screen.SettingsFragment
 import kotlinx.android.synthetic.main.fragment_current_u_v.*
@@ -206,7 +203,6 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             enableLightStatusBar(requireActivity().window.decorView, resources.configuration)
         }
 
-        uvForecastList.adapter = UVForecastAdapter(null, listOf(0F, 1F,2F,3F,5F,7F,5F,3F,2F,1.5F,1.32F,0.99F,0.0005F), 0)
         uvForecastList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
     /**
@@ -291,8 +287,11 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
     {
         try
         {
-            DiskRepository.readLatestUV(requireContext().getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, AppCompatActivity.MODE_PRIVATE))
-                ?.let()
+            val dataSharedPreferences = requireContext().getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, AppCompatActivity.MODE_PRIVATE)
+
+            viewModel.uvForecastData = DiskRepository.readLatestForecast(dataSharedPreferences)
+
+            DiskRepository.readLatestUV(dataSharedPreferences)?.let()
             {
                 viewModel.uvData = it
                 displayNewUVData(it)
@@ -324,23 +323,26 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             layout.setBackgroundColor(resources.getColor(R.color.uv_low, requireContext().theme))
         }
 
-        uvValue.visibility = View.INVISIBLE
-        uvText.visibility = View.INVISIBLE
-        maxUV.visibility = View.INVISIBLE
-        maxUVTime.visibility = View.INVISIBLE
-        cloudFactoredUVText.visibility = View.INVISIBLE
-        cloudCoverLevelText.visibility = View.INVISIBLE
-        lastUpdated.visibility = View.INVISIBLE
-        sunProgressLabel.visibility = View.INVISIBLE
-        sunProgress.visibility = View.INVISIBLE
-        sunProgressLabelBackground.visibility = View.INVISIBLE
-        sunInfoListTitleLabel.visibility = View.INVISIBLE
-        sunInfoListSubLabel.visibility = View.INVISIBLE
-        sunInfoList.visibility = View.INVISIBLE
-        sunInfoListBackground.visibility = View.INVISIBLE
-        skinExposureLabel.visibility = View.INVISIBLE
-        skinExposureList.visibility = View.INVISIBLE
-        skinExposureBackground.visibility = View.INVISIBLE
+        uvValue.visibility = View.GONE
+        uvText.visibility = View.GONE
+        maxUV.visibility = View.GONE
+        maxUVTime.visibility = View.GONE
+        cloudFactoredUVText.visibility = View.GONE
+        cloudCoverLevelText.visibility = View.GONE
+        lastUpdated.visibility = View.GONE
+        sunProgressLabel.visibility = View.GONE
+        sunProgress.visibility = View.GONE
+        sunProgressLabelBackground.visibility = View.GONE
+        sunInfoListTitleLabel.visibility = View.GONE
+        sunInfoListSubLabel.visibility = View.GONE
+        sunInfoList.visibility = View.GONE
+        sunInfoListBackground.visibility = View.GONE
+        skinExposureLabel.visibility = View.GONE
+        skinExposureList.visibility = View.GONE
+        skinExposureBackground.visibility = View.GONE
+        uvForecastLabel.visibility = View.GONE
+        uvForecastList.visibility = View.GONE
+        uvForecastBackground.visibility = View.GONE
     }
 
     private fun displayNewUVData(lUVData: UVData)
@@ -406,16 +408,38 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         val sortedSolarTimes = lUVData.sunInfo.timesArray.sortedWith { a, b -> a.time.compareTo(b.time) }
         // Calculate the index for the List of times that is closest to now, use this to set the default scroll position
         val timeNow = ZonedDateTime.now()
-        var bestScrollPosition = 0
-        while ((bestScrollPosition < sortedSolarTimes.size - 1) && (timeNow.isAfter(sortedSolarTimes[bestScrollPosition].time)))
+        var sunInfoBestScrollPosition = 0
+        while ((sunInfoBestScrollPosition < sortedSolarTimes.size - 1) && (timeNow.isAfter(sortedSolarTimes[sunInfoBestScrollPosition].time)))
         {
-            bestScrollPosition++
+            sunInfoBestScrollPosition++
         }
 
         sunInfoList.visibility = View.VISIBLE
         sunInfoList.adapter = SunInfoAdapter(sortedSolarTimes, lUVData.textColorInt, ::sunTimeOnClick)
         sunInfoList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        sunInfoList.scrollToPosition(bestScrollPosition)
+        sunInfoList.scrollToPosition(sunInfoBestScrollPosition)
+
+        viewModel.uvForecastData?.let()
+        {
+            var forecastBestScrollPosition = 0
+            while ((forecastBestScrollPosition < it.size) && (timeNow.isAfter(it[forecastBestScrollPosition].time)))
+            {
+                forecastBestScrollPosition++
+            }
+            if (forecastBestScrollPosition != 0) { forecastBestScrollPosition-- }
+
+            uvForecastBackground.visibility = View.VISIBLE
+            uvForecastLabel.visibility = View.VISIBLE
+            uvForecastList.visibility = View.VISIBLE
+
+            uvForecastList.adapter = UVForecastAdapter(it,  lUVData.textColorInt)
+            uvForecastList.scrollToPosition(forecastBestScrollPosition)
+        } ?: run()
+        {
+            uvForecastLabel.visibility = View.GONE
+            uvForecastList.visibility = View.GONE
+            uvForecastBackground.visibility = View.GONE
+        }
 
         appStatusInformation.visibility = View.INVISIBLE
         launchAppDetailsButton.visibility = View.INVISIBLE
@@ -452,6 +476,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         sunInfoListTitleLabel.setTextColor(primaryTextColourInt)
         sunInfoListSubLabel.setTextColor(primaryTextColourInt)
         skinExposureLabel.setTextColor(primaryTextColourInt)
+        uvForecastLabel.setTextColor(primaryTextColourInt)
         appStatusInformation.setTextColor(primaryTextColourInt)
 
         enableLightStatusBar(requireActivity().window.decorView, resources.configuration)
@@ -459,6 +484,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         skinExposureBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
         sunInfoListBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
         sunProgressLabelBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
+        uvForecastBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
     }
 
     /**
@@ -471,6 +497,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         skinExposureBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
         sunInfoListBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
         sunProgressLabelBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+        uvForecastBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
 
         appStatusInformation.setTextColor(resources.getColor(R.color.dark_text, requireContext().theme))
         settingsButton.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.uv_low, requireContext().theme))
@@ -494,6 +521,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         sunInfoListTitleLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         sunInfoListSubLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         skinExposureLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        uvForecastLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
    }
 
     private fun sunTimeOnClick(sunTimeData: SunInfo.SunTimeData)

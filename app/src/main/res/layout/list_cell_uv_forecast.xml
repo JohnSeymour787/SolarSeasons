@@ -12,6 +12,7 @@
         tools:text="12.4"
         android:textColor="?android:textColorPrimary"
         android:lines="1"
+        android:textStyle="bold"
         android:textAlignment="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

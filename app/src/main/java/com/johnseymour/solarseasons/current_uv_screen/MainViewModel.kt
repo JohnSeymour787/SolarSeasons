@@ -8,11 +8,13 @@ import androidx.lifecycle.ViewModel
 import com.johnseymour.solarseasons.DiskRepository
 import com.johnseymour.solarseasons.ErrorStatus
 import com.johnseymour.solarseasons.models.UVData
+import com.johnseymour.solarseasons.models.UVForecastData
 
 class MainViewModel: ViewModel()
 {
     var uvData: UVData? = null
     var latestError: ErrorStatus? = null
+    var uvForecastData: List<UVForecastData>? = null
 
     val uvDataBackgroundBroadcastReceiver = object : BroadcastReceiver()
     {
