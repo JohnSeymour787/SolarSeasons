@@ -6,6 +6,7 @@ import com.johnseymour.solarseasons.Constants
 import com.johnseymour.solarseasons.models.SunInfo
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.ErrorStatus
+import com.johnseymour.solarseasons.models.UVForecastData
 import nl.komponents.kovenant.deferred
 import nl.komponents.kovenant.Promise
 import okhttp3.OkHttpClient
@@ -27,6 +28,7 @@ object NetworkRepository
         {
             registerTypeAdapter(SunInfo::class.java, SunInfoGsonAdapter)
             registerTypeAdapter(UVData::class.java, UVDataGsonAdapter)
+            registerTypeAdapter(Array<UVForecastData>::class.java, UVForecastGsonAdapter)
             create()
         }
 
@@ -172,6 +174,54 @@ object NetworkRepository
             }
 
             override fun onFailure(call: Call<Double>, t: Throwable) { }
+        })
+
+        return result.promise
+    }
+
+    fun getUVForecast(latitude: Double, longitude: Double, altitude: Double): Promise<List<UVForecastData>, ErrorStatus>
+    {
+        val result = deferred<List<UVForecastData>, ErrorStatus>()
+
+        openUVAPI.getUVForecast(latitude, longitude, validateAltitude(altitude)).enqueue(object: Callback<Array<UVForecastData>>
+        {
+            override fun onResponse(call: Call<Array<UVForecastData>>, response: Response<Array<UVForecastData>>)
+            {
+                response.body()?.let()
+                {
+                    result.resolve(it.toList())
+                    return
+                }
+
+                val errorText = response.errorBody()?.string() ?: run()
+                {
+                    result.reject(ErrorStatus.GeneralError)
+                    return
+                }
+
+                when
+                {
+                    errorText.contains("Daily API quota exceeded") -> result.reject(ErrorStatus.APIQuotaExceeded)
+
+                    errorText.contains("API Key not found") -> result.reject(ErrorStatus.APIKeyInvalid)
+
+                    else -> result.reject(ErrorStatus.GeneralError)
+                }
+
+                Log.d("Network", "NetworkRepository - Response error: $errorText")
+            }
+
+            override fun onFailure(call: Call<Array<UVForecastData>>, t: Throwable)
+            {
+                if (t is IOException) // If network error
+                {
+                    result.reject(ErrorStatus.NetworkError)
+                }
+                else
+                {
+                    result.reject(ErrorStatus.GeneralNoResponseError)
+                }
+            }
         })
 
         return result.promise
