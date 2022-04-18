@@ -105,6 +105,23 @@ object NetworkRepository
         }
     }
 
+    private fun handleOpenUVAPIResponseError(errorText: String): ErrorStatus
+    {
+        return when
+        {
+            errorText.contains("Daily API quota exceeded") -> ErrorStatus.APIQuotaExceeded
+
+            errorText.contains("API Key not found") -> ErrorStatus.APIKeyInvalid
+
+            else ->
+            {
+                Log.d("Network", "NetworkRepository - Response error: $errorText")
+
+                ErrorStatus.GeneralError
+            }
+        }
+    }
+
     fun getRealTimeUV(latitude: Double, longitude: Double, altitude: Double): Promise<UVData, ErrorStatus>
     {
         val result = deferred<UVData, ErrorStatus>()
@@ -119,22 +136,13 @@ object NetworkRepository
                     return
                 }
 
-                val errorText = response.errorBody()?.string() ?: run()
+                response.errorBody()?.string()?.let()
                 {
-                    result.reject(ErrorStatus.GeneralError)
+                    result.reject(handleOpenUVAPIResponseError(it))
                     return
                 }
 
-                when
-                {
-                    errorText.contains("Daily API quota exceeded") -> result.reject(ErrorStatus.APIQuotaExceeded)
-
-                    errorText.contains("API Key not found") -> result.reject(ErrorStatus.APIKeyInvalid)
-
-                    else -> result.reject(ErrorStatus.GeneralError)
-                }
-
-                Log.d("Network", "NetworkRepository - Response error: $errorText")
+                result.reject(ErrorStatus.GeneralError)
             }
 
             override fun onFailure(call: Call<UVData>, t: Throwable)
@@ -193,22 +201,13 @@ object NetworkRepository
                     return
                 }
 
-                val errorText = response.errorBody()?.string() ?: run()
+                response.errorBody()?.string()?.let()
                 {
-                    result.reject(ErrorStatus.GeneralError)
+                    result.reject(handleOpenUVAPIResponseError(it))
                     return
                 }
 
-                when
-                {
-                    errorText.contains("Daily API quota exceeded") -> result.reject(ErrorStatus.APIQuotaExceeded)
-
-                    errorText.contains("API Key not found") -> result.reject(ErrorStatus.APIKeyInvalid)
-
-                    else -> result.reject(ErrorStatus.GeneralError)
-                }
-
-                Log.d("Network", "NetworkRepository - Response error: $errorText")
+                result.reject(ErrorStatus.GeneralError)
             }
 
             override fun onFailure(call: Call<Array<UVForecastData>>, t: Throwable)
