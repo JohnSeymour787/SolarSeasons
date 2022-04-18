@@ -8,11 +8,11 @@ import com.johnseymour.solarseasons.models.UVForecastData
 import com.johnseymour.solarseasons.preferredTimeString
 import kotlinx.android.synthetic.main.list_cell_uv_forecast.view.*
 
-class UVForecastAdapter(private val forecastTimes: List<UVForecastData>?= null, val cake: List<Float>, private val textColorInt: Int): RecyclerView.Adapter<UVForecastAdapter.UVForecastViewHolder>()
+class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private val textColorInt: Int): RecyclerView.Adapter<UVForecastAdapter.UVForecastViewHolder>()
 {
     inner class UVForecastViewHolder(view: UVForecastViewCell): RecyclerView.ViewHolder(view)
     {
-        internal fun bind(forecastData: UVForecastData, previousUV: Float?, nextUV: Float?)
+        internal fun bind(forecastData: UVForecastData, previousUV: Float, nextUV: Float)
         {
             itemView.apply()
             {
@@ -21,26 +21,11 @@ class UVForecastAdapter(private val forecastTimes: List<UVForecastData>?= null, 
                 forecastDotView.let()
                 {
                     it.yValue = forecastData.uv
-                    it.previousDotYValue = previousUV ?: 0F
-                    it.nextDotYValue = nextUV ?: 0F
+                    it.previousDotYValue = previousUV
+                    it.nextDotYValue = nextUV
                 }
 
                 forecastTime.text = preferredTimeString(context, forecastData.time)
-            }
-        }
-
-        internal fun bind2(uvForecast: Float, previousUV: Float?, nextUV: Float?)
-        {
-            itemView.apply()
-            {
-                forecastUV.text = resources.getString(R.string.uv_value, uvForecast)
-                forecastDotView.let()
-                {
-                    it.yValue = uvForecast
-                    it.previousDotYValue = previousUV ?: 0F
-                    it.nextDotYValue = nextUV ?: 0F
-                }
-                forecastTime.text = "Time"
             }
         }
     }
@@ -58,7 +43,7 @@ class UVForecastAdapter(private val forecastTimes: List<UVForecastData>?= null, 
                 //TODO() might want to set the colour of the dots as well, but only if they are not the same as the background colour
 //            }
 
-            cake.maxOrNull()?.let { forecastDotView.maxYValue = it }
+            forecastTimes.maxByOrNull(UVForecastData::uv)?.let { forecastDotView.maxYValue = it.uv }
         }
 
         return UVForecastViewHolder(cell)
@@ -66,16 +51,11 @@ class UVForecastAdapter(private val forecastTimes: List<UVForecastData>?= null, 
 
     override fun onBindViewHolder(holder: UVForecastViewHolder, position: Int)
     {
-//        val previousUV = forecastTimes.getOrNull(position - 1)?.forecastUV
-//        val nextUV = forecastTimes.getOrNull(position + 1)?.forecastUV
-//
-//        holder.bind(forecastTimes[position], previousUV, nextUV)
+        val previousUV = forecastTimes.getOrNull(position - 1)?.uv ?: 0F
+        val nextUV = forecastTimes.getOrNull(position + 1)?.uv ?: 0F
 
-        val previousUV = cake.getOrNull(position - 1)
-        val nextUV = cake.getOrNull(position + 1)
-
-        holder.bind2(cake[position], previousUV, nextUV)
+        holder.bind(forecastTimes[position], previousUV, nextUV)
     }
 
-    override fun getItemCount(): Int = cake.size
+    override fun getItemCount(): Int = forecastTimes.size
 }
