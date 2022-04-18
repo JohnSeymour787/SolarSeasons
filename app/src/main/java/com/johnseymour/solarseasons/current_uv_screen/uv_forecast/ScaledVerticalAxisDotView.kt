@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import androidx.annotation.ColorInt
 import com.johnseymour.solarseasons.Constants
 import com.johnseymour.solarseasons.R
 import kotlin.math.ceil
@@ -22,6 +23,7 @@ class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) :
     var minYValue = 0F
     var yValue = 0F
 
+    @ColorInt
     var dotColour = resources.getColor(R.color.black, context.theme)
         set(value)
         {
@@ -31,6 +33,7 @@ class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) :
 
     var dotRadius = resources.getDimension(R.dimen.uv_forecast_uv_dot_radius)
 
+    @ColorInt
     var lineColour = dotColour
         set(value)
         {
