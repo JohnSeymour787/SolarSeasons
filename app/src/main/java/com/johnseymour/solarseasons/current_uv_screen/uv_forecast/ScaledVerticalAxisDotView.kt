@@ -17,7 +17,7 @@ import kotlin.math.ceil
  */
 class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) : View(context, attrs)
 {
-    private val dotPaint = Paint()
+    private val dotPaint = Paint().apply { isAntiAlias = true }
 
     var maxYValue = Constants.GENERAL_MAXIMUM_UV
     var minYValue = 0F
@@ -48,7 +48,11 @@ class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) :
             field = value
         }
 
-    private val linePaint = Paint().apply { strokeWidth = lineThickness }
+    private val linePaint = Paint().apply()
+    {
+        strokeWidth = lineThickness
+        isAntiAlias = true
+    }
 
     var previousDotYValue: Float? = null
     var nextDotYValue: Float? = null
