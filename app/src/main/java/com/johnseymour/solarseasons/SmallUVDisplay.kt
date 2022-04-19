@@ -139,6 +139,9 @@ class SmallUVDisplay : AppWidgetProvider()
             backgroundRefreshRate = getString(Constants.SharedPreferences.BACKGROUND_REFRESH_RATE_KEY, null)?.toLongOrNull() ?: backgroundRefreshRate
         }
 
+        // Initialise memory
+        uvData ?: try { uvData = DiskRepository.readLatestUV(context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)) } catch (e: FileNotFoundException) {}
+
         companionFieldsInitialised = true
     }
 
@@ -247,9 +250,6 @@ class SmallUVDisplay : AppWidgetProvider()
         {
             RemoteViews(context.packageName, R.layout.small_u_v_display_default_theme)
         }
-
-        // Read from disk if memory is null
-        uvData ?: try { uvData = DiskRepository.readLatestUV(context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)) } catch (e: FileNotFoundException) {}
 
         when
         {
