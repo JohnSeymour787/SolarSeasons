@@ -123,7 +123,10 @@ class SmallUVDisplay : AppWidgetProvider()
     {
         PreferenceManager.getDefaultSharedPreferences(context.applicationContext).apply()
         {
-            OPENUV_API_KEY = getString(Constants.SharedPreferences.API_KEY, null) ?: ""
+            if (Constants.ENABLE_API_KEY_ENTRY_FEATURE)
+            {
+                OPENUV_API_KEY = getString(Constants.SharedPreferences.API_KEY, null) ?: ""
+            }
 
             previousReceivingScreenOnBroadcastSetting = getBoolean(Constants.SharedPreferences.SUBSCRIBE_SCREEN_UNLOCK_KEY, previousReceivingScreenOnBroadcastSetting)
 
