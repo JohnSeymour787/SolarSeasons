@@ -15,6 +15,7 @@ import androidx.work.*
 import com.johnseymour.solarseasons.api.OPENUV_API_KEY
 import com.johnseymour.solarseasons.models.UVData
 import java.io.FileNotFoundException
+import java.time.LocalDate
 
 /**
  * Implementation of App Widget functionality.
@@ -61,14 +62,23 @@ class SmallUVDisplay : AppWidgetProvider()
                 return
             }
 
-            if (usePeriodicWork)
+            if (usePeriodicWork) // TODO () consider not needing periodic work here, always want to do a one-time request to get the uvforecast
             {
                 UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = Constants.SHORTEST_REFRESH_TIME)
             }
             else
-        {                                           // TODO() V set this properly
-                UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = false, true, Constants.SHORTEST_REFRESH_TIME)
+            {
+                UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = isFirstDailyRequest(), true, Constants.SHORTEST_REFRESH_TIME)
             }
+        }
+
+        private fun isFirstDailyRequest(): Boolean
+        {
+            uvData?.uvTime?.toLocalDate()?.let()
+            {
+                return !(it.isEqual(LocalDate.now()))
+            }
+            return true
         }
     }
 
@@ -203,11 +213,11 @@ class SmallUVDisplay : AppWidgetProvider()
                 {
                     usePeriodicWork -> UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate)
                                                                                 // TODO() V set this properly
-                    luvData.sunInSky() -> UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = false,true, backgroundRefreshRate)
+                    luvData.sunInSky() -> UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = isFirstDailyRequest(),true, backgroundRefreshRate)
 
                     // Delay the next automatic worker until the sunrise of the next day
                                                                     // TODO() V set this properly
-                    else -> UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = false,true, luvData.minutesUntilSunrise)
+                    else -> UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = isFirstDailyRequest(),true, luvData.minutesUntilSunrise)
                 }
             }
         }
