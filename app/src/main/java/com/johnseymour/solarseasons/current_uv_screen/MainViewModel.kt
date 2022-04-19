@@ -1,14 +1,12 @@
 package com.johnseymour.solarseasons.current_uv_screen
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import androidx.lifecycle.ViewModel
 import com.johnseymour.solarseasons.DiskRepository
 import com.johnseymour.solarseasons.ErrorStatus
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.models.UVForecastData
+import java.time.LocalDate
 
 class MainViewModel: ViewModel()
 {
@@ -40,6 +38,20 @@ class MainViewModel: ViewModel()
     val uvDataChangedIntentFilter = IntentFilter(UVData.UV_DATA_UPDATED)
 
     var shouldRequestUVUpdateOnLaunch = true
+
+    fun isForecastCurrent(): Boolean
+    {
+        uvForecastData?.firstOrNull()?.time?.toLocalDate()?.let()
+        {
+            return it.isEqual(LocalDate.now())
+        }
+        return false
+    }
+
+    fun readForecastFromDisk(sharedPreferences: SharedPreferences)
+    {
+        uvForecastData = DiskRepository.readLatestForecast(sharedPreferences)
+    }
 
     /**
      * Writes this object's uvData field into persistent storage

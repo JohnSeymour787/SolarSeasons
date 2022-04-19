@@ -66,8 +66,8 @@ class SmallUVDisplay : AppWidgetProvider()
                 UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = Constants.SHORTEST_REFRESH_TIME)
             }
             else
-            {
-                UVDataWorker.initiateOneTimeWorker(context, true, Constants.SHORTEST_REFRESH_TIME)
+        {                                           // TODO() V set this properly
+                UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = false, true, Constants.SHORTEST_REFRESH_TIME)
             }
         }
     }
@@ -202,11 +202,12 @@ class SmallUVDisplay : AppWidgetProvider()
                 when
                 {
                     usePeriodicWork -> UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate)
-
-                    luvData.sunInSky() -> UVDataWorker.initiateOneTimeWorker(context, true, backgroundRefreshRate)
+                                                                                // TODO() V set this properly
+                    luvData.sunInSky() -> UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = false,true, backgroundRefreshRate)
 
                     // Delay the next automatic worker until the sunrise of the next day
-                    else -> UVDataWorker.initiateOneTimeWorker(context, true, luvData.minutesUntilSunrise)
+                                                                    // TODO() V set this properly
+                    else -> UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = false,true, luvData.minutesUntilSunrise)
                 }
             }
         }

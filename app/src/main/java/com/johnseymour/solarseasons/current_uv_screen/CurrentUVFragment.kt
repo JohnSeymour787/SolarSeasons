@@ -135,6 +135,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             displayError(it)
         } ?: arguments?.getParcelable<UVData>(UVData.UV_DATA_KEY)?.let()
         {
+            viewModel.readForecastFromDisk(requireContext().getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, AppCompatActivity.MODE_PRIVATE))
             newUVDataReceived(it)
         } ?: updateUVDataFromDisk()
 
@@ -294,7 +295,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         {
             val dataSharedPreferences = requireContext().getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, AppCompatActivity.MODE_PRIVATE)
 
-            viewModel.uvForecastData = DiskRepository.readLatestForecast(dataSharedPreferences)
+            viewModel.readForecastFromDisk(dataSharedPreferences)
 
             DiskRepository.readLatestUV(dataSharedPreferences)?.let()
             {
@@ -310,7 +311,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         {
             appStatusInformation.visibility = View.INVISIBLE
             launchAppDetailsButton.visibility = View.INVISIBLE
-            UVDataWorker.initiateOneTimeWorker(requireContext())
+            UVDataWorker.initiateOneTimeWorker(requireContext(), viewModel.isForecastCurrent().not())
         }
         else if (layout.isRefreshing)
         {

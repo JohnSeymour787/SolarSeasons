@@ -97,7 +97,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
             (uvDataRequest as? PeriodicWorkRequest)?.let { workManager.enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.REPLACE, it) }
         }
 
-        fun initiateOneTimeWorker(context: Context, delayedStart: Boolean = false, delayTime: Long = Constants.DEFAULT_REFRESH_TIME, firstDailyRequest: Boolean = false)
+        fun initiateOneTimeWorker(context: Context, firstDailyRequest: Boolean, delayedStart: Boolean = false, delayTime: Long = Constants.DEFAULT_REFRESH_TIME)
         {
             val workManager = WorkManager.getInstance(context.applicationContext)
             workManager.cancelUniqueWork(WORK_NAME)
