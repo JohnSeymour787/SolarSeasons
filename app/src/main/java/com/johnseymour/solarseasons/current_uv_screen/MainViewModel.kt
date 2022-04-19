@@ -39,6 +39,12 @@ class MainViewModel: ViewModel()
 
     var shouldRequestUVUpdateOnLaunch = true
 
+    /**
+     * Checks the date component of the UVForecastData to determine if it represents the forecast for today
+     *
+     * @return - true if currently stored forecast is for today and doesn't need updating
+     *         - false if forecast is either not for today or is null and requires updating
+     */
     fun isForecastCurrent(): Boolean
     {
         uvForecastData?.firstOrNull()?.time?.toLocalDate()?.let()
