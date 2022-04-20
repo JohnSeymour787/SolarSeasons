@@ -17,13 +17,13 @@ class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private
         {
             itemView.apply()
             {
-                forecastUV.text = resources.getString(R.string.uv_value, forecastData.uv)
-
                 forecastDotView.let()
                 {
                     it.yValue = forecastData.uv
                     it.previousDotYValue = previousUV
                     it.nextDotYValue = nextUV
+
+                    it.text = resources.getString(R.string.uv_value, forecastData.uv)
                 }
 
                 forecastTime.text = preferredTimeString(context, forecastData.time)
@@ -40,10 +40,10 @@ class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private
             if (PreferenceScreenFragment.useCustomTheme)
             {
                 val textColor = resources.getColor(textColorInt, context.theme)
-                forecastUV.setTextColor(textColor)
-                forecastTime.setTextColor(textColor)
+                forecastDotView.textColour = textColor
                 forecastDotView.dotColour = textColor
                 forecastDotView.lineColour = textColor
+                forecastTime.setTextColor(textColor)
             }
 
             val maxUV = forecastTimes.maxOfOrNull(UVForecastData::uv) ?: 0F
