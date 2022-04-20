@@ -14,7 +14,7 @@ import kotlin.math.ceil
 /**
  * View with a single circle (dot) centered horizontally with a vertical position set depending on the
  *  @yValue property set, within the range of @maxYValue and @minYValue. @maxYValue positions the dot
- *  at the top of the view.
+ *  at the top of the view. Text immediately above the dot can also be set
  */
 class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) : View(context, attrs)
 {
