@@ -93,6 +93,8 @@ class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) :
         textSize = this@ScaledVerticalAxisDotView.textSize
         typeface = this@ScaledVerticalAxisDotView.textFont
         textAlign = Paint.Align.CENTER
+        isSubpixelText = true
+        isLinearText = true
     }
 
     var text: String = ""
