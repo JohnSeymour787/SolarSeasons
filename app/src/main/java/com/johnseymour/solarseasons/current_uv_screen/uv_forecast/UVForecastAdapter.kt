@@ -4,6 +4,7 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.johnseymour.solarseasons.R
+import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.models.UVForecastData
 import com.johnseymour.solarseasons.preferredTimeString
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
@@ -24,6 +25,8 @@ class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private
                     it.nextDotYValue = nextUV
 
                     it.text = resources.getString(R.string.uv_value, forecastData.uv)
+
+                    it.lineColour = resources.getColor(UVData.uvColourInt(forecastData.uv), context.theme)
                 }
 
                 forecastTime.text = preferredTimeString(context, forecastData.time)
