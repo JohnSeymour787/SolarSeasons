@@ -3,6 +3,7 @@ package com.johnseymour.solarseasons.current_uv_screen.uv_forecast
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorInt
@@ -17,6 +18,8 @@ import kotlin.math.ceil
  */
 class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) : View(context, attrs)
 {
+    private val textBottomMargin: Float = 10F
+
     private val dotPaint = Paint().apply { isAntiAlias = true }
 
     var maxYValue = Constants.GENERAL_MAXIMUM_UV
@@ -54,6 +57,44 @@ class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) :
         isAntiAlias = true
     }
 
+    private var textStyle: Int = Typeface.NORMAL
+        set(value)
+        {
+            textPaint.typeface = Typeface.create(textPaint.typeface, value)
+            field = value
+        }
+
+    private var textFont: Typeface = Typeface.DEFAULT
+        set(value)
+        {
+            textPaint.typeface = Typeface.create(value, textPaint.typeface.style)
+            field = value
+        }
+
+    private var textSize: Float = resources.getDimension(R.dimen.text_default)
+        set(value)
+        {
+            textPaint.textSize = value
+            field = value
+        }
+
+    @ColorInt
+    var textColour = dotColour
+        set(value)
+        {
+            textPaint.color = value
+            field = value
+        }
+
+    private val textPaint = Paint().apply()
+    {
+        isAntiAlias = true
+        textSize = this@ScaledVerticalAxisDotView.textSize
+        typeface = this@ScaledVerticalAxisDotView.textFont
+        textAlign = Paint.Align.CENTER
+    }
+
+    var text: String = ""
     var previousDotYValue: Float? = null
     var nextDotYValue: Float? = null
 
@@ -98,6 +139,31 @@ class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) :
             lineThickness = a.getDimension(R.styleable.ScaledVerticalAxisDotView_lineThickness, lineThickness)
         }
 
+        if (a.hasValue(R.styleable.ScaledVerticalAxisDotView_android_fontFamily))
+        {
+            textFont = a.getFont(R.styleable.ScaledVerticalAxisDotView_android_fontFamily) ?: textFont
+        }
+
+        if (a.hasValue(R.styleable.ScaledVerticalAxisDotView_android_textStyle))
+        {
+            textStyle = a.getInt(R.styleable.ScaledVerticalAxisDotView_android_textStyle, textStyle)
+        }
+
+        if (a.hasValue(R.styleable.ScaledVerticalAxisDotView_textColour))
+        {
+            textColour = a.getColor(R.styleable.ScaledVerticalAxisDotView_textColour, textColour)
+        }
+
+        if (a.hasValue(R.styleable.ScaledVerticalAxisDotView_text))
+        {
+            text = a.getString(R.styleable.ScaledVerticalAxisDotView_text) ?: text
+        }
+
+        if (a.hasValue(R.styleable.ScaledVerticalAxisDotView_android_textSize))
+        {
+            textSize = a.getDimension(R.styleable.ScaledVerticalAxisDotView_android_textSize, textSize)
+        }
+
         a.recycle()
     }
 
@@ -121,21 +187,27 @@ class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) :
     {
         super.onDraw(canvas)
 
-        val dotHeight = (gradient*yValue) + contentHeight
+        val dotHeight = (gradient * yValue) + contentHeight
+        val contentCenter = contentWidth / 2F
 
         // If adjacent dots with known values, draw a line to them
         previousDotYValue?.let()
         {
-            val prevCircleHeight = (gradient*it) + contentHeight
-            canvas.drawLine(contentWidth/2F, dotHeight, 0 - (width/2F), prevCircleHeight, linePaint)
+            val prevCircleHeight = (gradient * it) + contentHeight
+            canvas.drawLine(contentCenter, dotHeight, 0 - (contentCenter), prevCircleHeight, linePaint)
         }
 
         nextDotYValue?.let()
         {
-            val nextCircleHeight = (gradient*it) + contentHeight
-            canvas.drawLine(contentWidth/2F, dotHeight, width.toFloat()+(width/2F), nextCircleHeight, linePaint)
+            val nextCircleHeight = (gradient * it) + contentHeight
+            canvas.drawLine(contentCenter, dotHeight, width.toFloat() + (contentCenter), nextCircleHeight, linePaint)
         }
 
-        canvas.drawCircle(contentWidth/2F, dotHeight, dotRadius, dotPaint)
+        if (text.isNotEmpty())
+        {
+            canvas.drawText(text, contentCenter, dotHeight - dotRadius - textBottomMargin, textPaint)
+        }
+
+        canvas.drawCircle(contentCenter, dotHeight, dotRadius, dotPaint)
     }
 }
