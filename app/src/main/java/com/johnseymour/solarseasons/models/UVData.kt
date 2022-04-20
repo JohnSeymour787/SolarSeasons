@@ -21,7 +21,8 @@ data class UVData(
     val sunInfo: SunInfo,
     var cloudCover: Double? = null): Parcelable
 {
-    val backgroundColorInt: Int = uvColourInt(uv)
+    val backgroundColorInt: Int
+        get() = uvColourInt(uv)
 
     val textColorInt: Int
         get() =
