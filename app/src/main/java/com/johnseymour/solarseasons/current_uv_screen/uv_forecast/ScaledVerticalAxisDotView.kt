@@ -3,6 +3,7 @@ package com.johnseymour.solarseasons.current_uv_screen.uv_forecast
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
@@ -177,10 +178,13 @@ class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) :
 
         if (w == 0 || h == 0) { return }
 
+        val textRectangle = Rect()
+        textPaint.getTextBounds(text, 0, text.length, textRectangle)
+
         contentWidth = width - paddingLeft - paddingRight
         contentHeight = height - paddingTop - paddingBottom - ceil(dotRadius).toInt()
         // Gradient of equation to work out dot height based on yValue
-        gradient = (-contentHeight + ceil(dotRadius).toInt()) / (maxYValue - minYValue)
+        gradient = -(contentHeight - ceil(dotRadius).toInt() - textRectangle.height() - textBottomMargin) / (maxYValue - minYValue)
     }
 
     override fun onDraw(canvas: Canvas)
