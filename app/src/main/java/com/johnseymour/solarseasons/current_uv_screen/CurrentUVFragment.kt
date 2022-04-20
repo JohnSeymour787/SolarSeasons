@@ -208,8 +208,6 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         {
             enableLightStatusBar(requireActivity().window.decorView, resources.configuration)
         }
-
-        uvForecastList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
     /**
      * Reads the shared preferences for settings used by this fragment and updates the relevant
@@ -439,6 +437,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             uvForecastList.visibility = View.VISIBLE
 
             uvForecastList.adapter = UVForecastAdapter(it, lUVData.textColorInt)
+            uvForecastList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             uvForecastList.scrollToPosition(forecastBestScrollPosition)
         } ?: run()
         {
