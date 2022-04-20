@@ -18,7 +18,7 @@ import kotlin.math.ceil
  */
 class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) : View(context, attrs)
 {
-    private val textBottomMargin: Float = 10F
+    private val textBottomMargin: Float = 15F
 
     private val dotPaint = Paint().apply { isAntiAlias = true }
 
