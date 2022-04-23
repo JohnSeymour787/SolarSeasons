@@ -438,7 +438,16 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
                 in 1 until it.size-1 -> // Replace the nearest time with the current lUVData.uv
                 {
                     forecastBestScrollPosition--
-                    lForecastList[forecastBestScrollPosition] = currentData
+
+                    // If latest UV data is too old for the forecast, then just modify the existing forecast to be "now"
+                    if (lUVData.minutesSinceDataRetrieved > Constants.UV_FORECAST_ACCEPTABLE_RECENT_UV_TIME)
+                    {
+                        lForecastList[forecastBestScrollPosition].isTimeNow = true
+                    }
+                    else
+                    {
+                        lForecastList[forecastBestScrollPosition] = currentData
+                    }
                 }
 
                 it.size-1 ->
