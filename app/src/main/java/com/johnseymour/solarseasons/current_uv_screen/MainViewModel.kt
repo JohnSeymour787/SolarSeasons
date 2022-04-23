@@ -59,6 +59,11 @@ class MainViewModel: ViewModel()
         uvForecastData = DiskRepository.readLatestForecast(sharedPreferences)
     }
 
+    fun readUVFromDisk(sharedPreferences: SharedPreferences)
+    {
+        DiskRepository.readLatestUV(sharedPreferences)?.let { uvData = it }
+    }
+
     /**
      * Writes this object's uvData field into persistent storage
      */

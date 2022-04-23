@@ -294,12 +294,8 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             val dataSharedPreferences = requireContext().getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, AppCompatActivity.MODE_PRIVATE)
 
             viewModel.readForecastFromDisk(dataSharedPreferences)
+            viewModel.readUVFromDisk(dataSharedPreferences)
 
-            DiskRepository.readLatestUV(dataSharedPreferences)?.let()
-            {
-                viewModel.uvData = it
-                displayNewUVData(it)
-            }
         } catch (e: FileNotFoundException){ }
     }
 
