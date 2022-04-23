@@ -426,17 +426,37 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         viewModel.uvForecastData?.let()
         {
             var forecastBestScrollPosition = 0
-            while ((forecastBestScrollPosition < it.size) && (timeNow.isAfter(it[forecastBestScrollPosition].time)))
+            while ((forecastBestScrollPosition < it.size-1) && (timeNow.isAfter(it[forecastBestScrollPosition].time)))
             {
                 forecastBestScrollPosition++
             }
-            if (forecastBestScrollPosition != 0) { forecastBestScrollPosition-- }
+
+            val lForecastList = it.toMutableList()
+            val currentData = UVForecastData(lUVData.uv, timeNow, true)
+
+            // Only replace the forecast data if not at either list end (to keep symmetrical UV curve)
+            when (forecastBestScrollPosition)
+            {
+                0 -> lForecastList.add(0, currentData)
+
+                in 1 until it.size-1 -> // Replace the nearest time with the current lUVData.uv
+                {
+                    forecastBestScrollPosition--
+                    lForecastList[forecastBestScrollPosition] = currentData
+                }
+
+                it.size-1 ->
+                {
+                    lForecastList.add(currentData)
+                    forecastBestScrollPosition++
+                }
+            }
 
             uvForecastBackground.visibility = View.VISIBLE
             uvForecastLabel.visibility = View.VISIBLE
             uvForecastList.visibility = View.VISIBLE
 
-            uvForecastList.adapter = UVForecastAdapter(it, lUVData.textColorInt)
+            uvForecastList.adapter = UVForecastAdapter(lForecastList, lUVData.textColorInt)
             uvForecastList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             uvForecastList.scrollToPosition(forecastBestScrollPosition)
         } ?: run()

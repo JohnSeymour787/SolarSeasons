@@ -29,7 +29,14 @@ class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private
                     it.lineColour = resources.getColor(UVData.uvColourInt(forecastData.uv), context.theme)
                 }
 
-                forecastTime.text = preferredTimeString(context, forecastData.time)
+                if (forecastData.isTimeNow)
+                {
+                    forecastTime.setText(R.string.uv_forecast_now_time_label)
+                }
+                else
+                {
+                    forecastTime.text = preferredTimeString(context, forecastData.time)
+                }
             }
         }
     }
