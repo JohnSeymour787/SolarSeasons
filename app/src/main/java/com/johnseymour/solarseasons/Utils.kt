@@ -13,10 +13,8 @@ import android.view.WindowInsetsController
 import androidx.annotation.AttrRes
 import androidx.core.content.ContextCompat
 import com.google.gson.JsonElement
-import java.time.DateTimeException
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.*
+import java.time.chrono.ChronoLocalDate
 import java.time.format.DateTimeParseException
 
 /**
@@ -164,3 +162,11 @@ fun Context.getWidgetIDs(): IntArray = AppWidgetManager.getInstance(this).getApp
  *         - false if no widgets
  */
 fun Context.hasWidgets(): Boolean = this.getWidgetIDs().isNotEmpty()
+
+/**
+ * Determines if this LocalDate is not the same date as another
+ *
+ * @return - true if a different date
+ *         - false if the same date
+ */
+fun LocalDate.isNotEqual(other: ChronoLocalDate): Boolean = this.isEqual(other).not()
