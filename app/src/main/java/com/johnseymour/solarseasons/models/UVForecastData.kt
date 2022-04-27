@@ -5,7 +5,7 @@ import kotlinx.android.parcel.Parcelize
 import java.time.ZonedDateTime
 
 @Parcelize
-data class UVForecastData(val uv: Float, val time: ZonedDateTime, var isTimeNow: Boolean = false): Parcelable
+data class UVForecastData(val uv: Float, val time: ZonedDateTime, val isTimeNow: Boolean = false): Parcelable
 {
     companion object
     {
