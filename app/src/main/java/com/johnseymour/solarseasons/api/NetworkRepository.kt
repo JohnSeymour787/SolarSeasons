@@ -16,11 +16,13 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import kotlin.math.roundToInt
 
 object NetworkRepository
 {
     private const val OPEN_UV_API_BASE_URL = "https://api.openuv.io/api/v1/"
     private const val WEATHER_API_BASE_URL = "https://api.weatherapi.com/v1/"
+    private const val UV_FORECAST_ROUND_TO_MINUTE = 10L
 
     private val openUVAPI by lazy()
     {
@@ -197,6 +199,21 @@ object NetworkRepository
             {
                 response.body()?.let()
                 {
+                    // Forecast times from the API are not always on the hour, or a nice looking time
+                    // If so, round them each to the nearest UV_FORECAST_ROUND_TO_MINUTE multiple
+                    it.firstOrNull()?.time?.minute?.let()
+                    { forecastMinute ->
+                        val differenceToNearestMins = ((forecastMinute / UV_FORECAST_ROUND_TO_MINUTE.toFloat()).roundToInt() * UV_FORECAST_ROUND_TO_MINUTE) - forecastMinute
+
+                        if (differenceToNearestMins != 0L)
+                        {
+                            it.forEachIndexed()
+                            { index, uvForecastData ->
+                                it[index] = uvForecastData.copy(time = uvForecastData.time.plusMinutes(differenceToNearestMins))
+                            }
+                        }
+                    }
+
                     result.resolve(it.toList())
                     return
                 }
