@@ -22,31 +22,7 @@ data class UVData(
     var cloudCover: Double? = null): Parcelable
 {
     val backgroundColorInt: Int
-    get() =
-        if (uv < UV_LOW)
-        {
-            R.color.uv_low
-        }
-        else if (uv >= UV_LOW && uv < UV_MODERATE)
-        {
-            R.color.uv_moderate
-        }
-        else if (uv >= UV_MODERATE && uv < UV_HIGH)
-        {
-            R.color.uv_high
-        }
-        else if (uv >= UV_HIGH && uv < UV_VERY_HIGH)
-        {
-            R.color.uv_very_high
-        }
-        else if (PreferenceScreenFragment.useCustomTheme)
-        {
-            R.color.uv_extreme
-        }
-        else
-        {
-            R.color.uv_extreme_alternate
-        }
+        get() = uvColourInt(uv)
 
     val textColorInt: Int
         get() =
@@ -258,6 +234,34 @@ data class UVData(
                 "st5" -> R.string.skin_type_5
                 "st6" -> R.string.skin_type_6
                 else -> R.string.skin_type_1
+            }
+        }
+
+        fun uvColourInt(uv: Float): Int
+        {
+            return if (uv < UV_LOW)
+            {
+                R.color.uv_low
+            }
+            else if (uv >= UV_LOW && uv < UV_MODERATE)
+            {
+                R.color.uv_moderate
+            }
+            else if (uv >= UV_MODERATE && uv < UV_HIGH)
+            {
+                R.color.uv_high
+            }
+            else if (uv >= UV_HIGH && uv < UV_VERY_HIGH)
+            {
+                R.color.uv_very_high
+            }
+            else if (PreferenceScreenFragment.useCustomTheme)
+            {
+                R.color.uv_extreme
+            }
+            else
+            {
+                R.color.uv_extreme_alternate
             }
         }
     }

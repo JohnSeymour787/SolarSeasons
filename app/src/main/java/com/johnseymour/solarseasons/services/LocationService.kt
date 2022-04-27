@@ -12,7 +12,9 @@ import androidx.core.app.NotificationCompat
 import androidx.preference.PreferenceManager
 import com.johnseymour.solarseasons.*
 import com.johnseymour.solarseasons.api.NetworkRepository
+import com.johnseymour.solarseasons.models.UVCombinedForecastData
 import com.johnseymour.solarseasons.models.UVData
+import com.johnseymour.solarseasons.models.UVForecastData
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise
@@ -28,13 +30,13 @@ abstract class LocationService: Service()
 {
     companion object
     {
-        private const val MAXIMUM_POSSIBLE_NETWORK_REQUESTS = 2
-
         private const val NOTIFICATION_CHANNEL_ID = "Solar.seasons.id"
         private const val NOTIFICATION_CHANNEL_NAME = "Solar.seasons.foreground_location_channel"
 
-        var uvDataDeferred: Deferred<UVData, ErrorStatus>? = null
-        val uvDataPromise: Promise<UVData, ErrorStatus>?
+        const val FIRST_DAILY_REQUEST_KEY = "first_daily_request_key"
+
+        var uvDataDeferred: Deferred<UVCombinedForecastData, ErrorStatus>? = null
+        val uvDataPromise: Promise<UVCombinedForecastData, ErrorStatus>?
             get()
             {
                 return uvDataDeferred?.promise
@@ -93,20 +95,42 @@ abstract class LocationService: Service()
         startForeground(1, createNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
     }
 
-    abstract override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int
+    private var firstRequestOfDay = false
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int
+    {
+        firstRequestOfDay = intent?.getBooleanExtra(FIRST_DAILY_REQUEST_KEY, false) ?: firstRequestOfDay
+
+        return serviceMain()
+    }
+
+    /** Main method in which the service code will run
+     *  @return - Must return one of the Service.START_* flags, such as START_STICKY
+     */
+    abstract fun serviceMain(): Int
 
     override fun onBind(intent: Intent): IBinder? = null
 
     private var uvData: UVData? = null
     private var cloudCover: Double? = null
-    private var requestsMade: Int = 0
+    private var uvForecast: List<UVForecastData>? = null
+
+    private fun calculateNumberOfRequests(cloudCoverEnabled: Boolean): Int
+    {
+        var result = 1
+
+        if (cloudCoverEnabled) { result++ }
+        if (firstRequestOfDay) { result++ }
+
+        return result
+    }
 
     private fun networkRequestsComplete()
     {
         uvData?.let()
         {
             it.cloudCover = cloudCover
-            uvDataDeferred?.resolve(it)
+            uvDataDeferred?.resolve(UVCombinedForecastData(it, uvForecast))
         }
 
         stopSelf()
@@ -117,6 +141,9 @@ abstract class LocationService: Service()
         val isCloudCoverEnabled = PreferenceManager.getDefaultSharedPreferences(applicationContext)
             .getBoolean(Constants.SharedPreferences.CLOUD_COVER_FACTOR_KEY, false)
 
+        val networkRequestsToMake = calculateNumberOfRequests(isCloudCoverEnabled)
+        var requestsMade = 0
+
         if (isCloudCoverEnabled)
         {
             NetworkRepository.getCurrentCloudCover(latitude, longitude).success()
@@ -124,14 +151,37 @@ abstract class LocationService: Service()
                 cloudCover = lCloudCover
                 requestsMade += 1
 
-                if (requestsMade == MAXIMUM_POSSIBLE_NETWORK_REQUESTS)
+                if (requestsMade == networkRequestsToMake)
                 {
                     networkRequestsComplete()
                 }
             }.fail() // Failure of cloud cover data is non-critical
             {
                 requestsMade += 1
-                if (requestsMade == MAXIMUM_POSSIBLE_NETWORK_REQUESTS)
+                if (requestsMade == networkRequestsToMake)
+                {
+                    networkRequestsComplete()
+                }
+            }
+        }
+
+        if (firstRequestOfDay)
+        {
+            NetworkRepository.getUVForecast(latitude, longitude, altitude).success()
+            { lUVForecast ->
+
+                uvForecast = lUVForecast
+
+                requestsMade += 1
+
+                if (requestsMade == networkRequestsToMake)
+                {
+                    networkRequestsComplete()
+                }
+            }.fail() // Failure of forecast data is also non-critical
+            {
+                requestsMade += 1
+                if (requestsMade == networkRequestsToMake)
                 {
                     networkRequestsComplete()
                 }
@@ -143,11 +193,7 @@ abstract class LocationService: Service()
             uvData = luvData
             requestsMade += 1
 
-            if ((isCloudCoverEnabled) && (requestsMade == MAXIMUM_POSSIBLE_NETWORK_REQUESTS))
-            {
-                networkRequestsComplete()
-            }
-            else if (!isCloudCoverEnabled)
+            if (requestsMade == networkRequestsToMake)
             {
                 networkRequestsComplete()
             }

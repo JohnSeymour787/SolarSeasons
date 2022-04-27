@@ -26,6 +26,8 @@
     <string name="exposure_time_hours">%dh</string>
     <string name="exposure_time_short_minutes">%dm</string>
     <string name="close_window">Close</string>
+    <string name="uv_forecast_label">UV Forecast</string>
+    <string name="uv_forecast_now_time_label">Now</string>
     <string name="sun_info_description_not_found">Description not found</string>
     <string name="api_quota_exceeded_error">UV service quota exceeded. No more network requests available for today</string>
     <string name="api_key_invalid_error">API key is invalid, please check your settings</string>

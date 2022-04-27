@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.*
 import android.content.pm.PackageManager
-import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.ActivityCompat
@@ -15,6 +14,7 @@ import androidx.work.*
 import com.johnseymour.solarseasons.api.OPENUV_API_KEY
 import com.johnseymour.solarseasons.models.UVData
 import java.io.FileNotFoundException
+import java.time.LocalDate
 
 /**
  * Implementation of App Widget functionality.
@@ -41,7 +41,6 @@ class SmallUVDisplay : AppWidgetProvider()
             {
                 context ?: return
 
-                Log.d("TESTING_BOOT", "In widget onReceive programmatic filter")
                 val luvData = uvData ?: return
 
                 if (!luvData.sunInSky()) { return }
@@ -61,14 +60,19 @@ class SmallUVDisplay : AppWidgetProvider()
                 return
             }
 
-            if (usePeriodicWork)
+            UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = isFirstDailyRequest(context), false, Constants.SHORTEST_REFRESH_TIME)
+        }
+
+        private fun isFirstDailyRequest(context: Context): Boolean
+        {
+            try
             {
-                UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = Constants.SHORTEST_REFRESH_TIME)
+                val forecast = DiskRepository.readLatestForecast(context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))?.firstOrNull() ?: return true
+
+                return forecast.time.toLocalDate().isNotEqual(LocalDate.now())
             }
-            else
-            {
-                UVDataWorker.initiateOneTimeWorker(context, true, Constants.SHORTEST_REFRESH_TIME)
-            }
+            catch (e: FileNotFoundException) {}
+            return true
         }
     }
 
@@ -113,7 +117,10 @@ class SmallUVDisplay : AppWidgetProvider()
     {
         PreferenceManager.getDefaultSharedPreferences(context.applicationContext).apply()
         {
-            OPENUV_API_KEY = getString(Constants.SharedPreferences.API_KEY, null) ?: ""
+            if (Constants.ENABLE_API_KEY_ENTRY_FEATURE)
+            {
+                OPENUV_API_KEY = getString(Constants.SharedPreferences.API_KEY, null) ?: ""
+            }
 
             previousReceivingScreenOnBroadcastSetting = getBoolean(Constants.SharedPreferences.SUBSCRIBE_SCREEN_UNLOCK_KEY, previousReceivingScreenOnBroadcastSetting)
 
@@ -125,6 +132,9 @@ class SmallUVDisplay : AppWidgetProvider()
             usePeriodicWork = getString(Constants.SharedPreferences.WORK_TYPE_KEY, Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE) == Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE
             backgroundRefreshRate = getString(Constants.SharedPreferences.BACKGROUND_REFRESH_RATE_KEY, null)?.toLongOrNull() ?: backgroundRefreshRate
         }
+
+        // Initialise memory
+        uvData ?: try { uvData = DiskRepository.readLatestUV(context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)) } catch (e: FileNotFoundException) {}
 
         companionFieldsInitialised = true
     }
@@ -203,10 +213,10 @@ class SmallUVDisplay : AppWidgetProvider()
                 {
                     usePeriodicWork -> UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate)
 
-                    luvData.sunInSky() -> UVDataWorker.initiateOneTimeWorker(context, true, backgroundRefreshRate)
+                    luvData.sunInSky() -> UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = isFirstDailyRequest(context),true, backgroundRefreshRate)
 
                     // Delay the next automatic worker until the sunrise of the next day
-                    else -> UVDataWorker.initiateOneTimeWorker(context, true, luvData.minutesUntilSunrise)
+                    else -> UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = true,true, luvData.minutesUntilSunrise)
                 }
             }
         }
@@ -233,9 +243,6 @@ class SmallUVDisplay : AppWidgetProvider()
         {
             RemoteViews(context.packageName, R.layout.small_u_v_display_default_theme)
         }
-
-        // Read from disk if memory is null
-        uvData ?: try { uvData = DiskRepository.readLatestUV(context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)) } catch (e: FileNotFoundException) {}
 
         when
         {

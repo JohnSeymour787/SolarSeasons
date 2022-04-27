@@ -33,4 +33,8 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="activity_settings_button_padding">10dp</dimen>
     <dimen name="api_fragment_web_view_height">350dp</dimen>
     <dimen name="api_fragment_web_view_default_scroll_position">750dp</dimen>
+    <dimen name="uv_forecast_uv_dot_radius">5dp</dimen>
+    <dimen name="uv_forecast_uv_line_thickness">3dp</dimen>
+    <dimen name="uv_forecast_cell_width">60dp</dimen>
+    <dimen name="uv_forecast_cell_height">120dp</dimen>
 </resources>

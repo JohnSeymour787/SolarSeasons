@@ -6,6 +6,7 @@ import com.johnseymour.solarseasons.Constants
 import com.johnseymour.solarseasons.models.SunInfo
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.ErrorStatus
+import com.johnseymour.solarseasons.models.UVForecastData
 import nl.komponents.kovenant.deferred
 import nl.komponents.kovenant.Promise
 import okhttp3.OkHttpClient
@@ -15,11 +16,13 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import kotlin.math.roundToInt
 
 object NetworkRepository
 {
     private const val OPEN_UV_API_BASE_URL = "https://api.openuv.io/api/v1/"
     private const val WEATHER_API_BASE_URL = "https://api.weatherapi.com/v1/"
+    private const val UV_FORECAST_ROUND_TO_MINUTE = 10L
 
     private val openUVAPI by lazy()
     {
@@ -27,6 +30,7 @@ object NetworkRepository
         {
             registerTypeAdapter(SunInfo::class.java, SunInfoGsonAdapter)
             registerTypeAdapter(UVData::class.java, UVDataGsonAdapter)
+            registerTypeAdapter(Array<UVForecastData>::class.java, UVForecastGsonAdapter)
             create()
         }
 
@@ -103,6 +107,23 @@ object NetworkRepository
         }
     }
 
+    private fun handleOpenUVAPIResponseError(errorText: String): ErrorStatus
+    {
+        return when
+        {
+            errorText.contains("Daily API quota exceeded") -> ErrorStatus.APIQuotaExceeded
+
+            errorText.contains("API Key not found") -> ErrorStatus.APIKeyInvalid
+
+            else ->
+            {
+                Log.d("Network", "NetworkRepository - Response error: $errorText")
+
+                ErrorStatus.GeneralError
+            }
+        }
+    }
+
     fun getRealTimeUV(latitude: Double, longitude: Double, altitude: Double): Promise<UVData, ErrorStatus>
     {
         val result = deferred<UVData, ErrorStatus>()
@@ -117,22 +138,13 @@ object NetworkRepository
                     return
                 }
 
-                val errorText = response.errorBody()?.string() ?: run()
+                response.errorBody()?.string()?.let()
                 {
-                    result.reject(ErrorStatus.GeneralError)
+                    result.reject(handleOpenUVAPIResponseError(it))
                     return
                 }
 
-                when
-                {
-                    errorText.contains("Daily API quota exceeded") -> result.reject(ErrorStatus.APIQuotaExceeded)
-
-                    errorText.contains("API Key not found") -> result.reject(ErrorStatus.APIKeyInvalid)
-
-                    else -> result.reject(ErrorStatus.GeneralError)
-                }
-
-                Log.d("Network", "NetworkRepository - Response error: $errorText")
+                result.reject(ErrorStatus.GeneralError)
             }
 
             override fun onFailure(call: Call<UVData>, t: Throwable)
@@ -172,6 +184,60 @@ object NetworkRepository
             }
 
             override fun onFailure(call: Call<Double>, t: Throwable) { }
+        })
+
+        return result.promise
+    }
+
+    fun getUVForecast(latitude: Double, longitude: Double, altitude: Double): Promise<List<UVForecastData>, ErrorStatus>
+    {
+        val result = deferred<List<UVForecastData>, ErrorStatus>()
+
+        openUVAPI.getUVForecast(latitude, longitude, validateAltitude(altitude)).enqueue(object: Callback<Array<UVForecastData>>
+        {
+            override fun onResponse(call: Call<Array<UVForecastData>>, response: Response<Array<UVForecastData>>)
+            {
+                response.body()?.let()
+                {
+                    // Forecast times from the API are not always on the hour, or a nice looking time
+                    // If so, round them each to the nearest UV_FORECAST_ROUND_TO_MINUTE multiple
+                    it.firstOrNull()?.time?.minute?.let()
+                    { forecastMinute ->
+                        val differenceToNearestMins = ((forecastMinute / UV_FORECAST_ROUND_TO_MINUTE.toFloat()).roundToInt() * UV_FORECAST_ROUND_TO_MINUTE) - forecastMinute
+
+                        if (differenceToNearestMins != 0L)
+                        {
+                            it.forEachIndexed()
+                            { index, uvForecastData ->
+                                it[index] = uvForecastData.copy(time = uvForecastData.time.plusMinutes(differenceToNearestMins))
+                            }
+                        }
+                    }
+
+                    result.resolve(it.toList())
+                    return
+                }
+
+                response.errorBody()?.string()?.let()
+                {
+                    result.reject(handleOpenUVAPIResponseError(it))
+                    return
+                }
+
+                result.reject(ErrorStatus.GeneralError)
+            }
+
+            override fun onFailure(call: Call<Array<UVForecastData>>, t: Throwable)
+            {
+                if (t is IOException) // If network error
+                {
+                    result.reject(ErrorStatus.NetworkError)
+                }
+                else
+                {
+                    result.reject(ErrorStatus.GeneralNoResponseError)
+                }
+            }
         })
 
         return result.promise

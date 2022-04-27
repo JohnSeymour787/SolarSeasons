@@ -26,12 +26,18 @@ object Constants
     /** Shortest time for app to auto refresh when it is launched into the foreground **/
     const val MINIMUM_APP_FOREGROUND_REFRESH_TIME = 10L
 
+    /** Time in minutes for which a current UV data is considered "recent" for displaying on the UV forecast graph **/
+    const val UV_FORECAST_ACCEPTABLE_RECENT_UV_TIME = 40L
+
     const val MINUTES_PER_HOUR = 60
     const val MINUTES_PER_DAY = 1440
     /** Maximum altitude on earth to get UV data for **/
     const val MAXIMUM_EARTH_ALTITUDE = 10000.0
 
     const val MINIMUM_API_ACCEPTED_ALTITUDE = 0.0
+
+    /** Rough maximum UV expected at sea level, theoretically can be higher **/
+    const val GENERAL_MAXIMUM_UV = 14F
 
     const val USE_GOOGLE_PLAY_LOCATION = false
     const val ENABLE_MANUAL_LOCATION_FEATURE = false

@@ -26,6 +26,8 @@
     <string name="exposure_time_hours">%d小时</string>
     <string name="exposure_time_short_minutes">%d分钟</string>
     <string name="close_window">关闭</string>
+    <string name="uv_forecast_label">UV Forecast</string>
+    <string name="uv_forecast_now_time_label">现在</string>
     <string name="sun_info_description_not_found">描述未被找到</string>
     <string name="api_quota_exceeded_error">UV service quota exceeded. No more network requests available for today</string>
     <string name="api_key_invalid_error">API key is invalid, please check your settings</string>

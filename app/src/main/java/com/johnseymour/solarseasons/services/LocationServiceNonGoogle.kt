@@ -2,7 +2,6 @@ package com.johnseymour.solarseasons.services
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
@@ -29,7 +28,7 @@ class LocationServiceNonGoogle: LocationService(), Consumer<Location?>, Location
 
     private var locationCancellationSignal: CancellationSignal? = null
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int
+    override fun serviceMain(): Int
     {
         if (!locationManager.isLocationEnabled)
         {
