@@ -422,27 +422,27 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         viewModel.uvForecastData?.let()
         {
             var forecastBestScrollPosition = 0
-            while ((forecastBestScrollPosition < it.size-1) && (timeNow.isAfter(it[forecastBestScrollPosition].time)))
+            while ((forecastBestScrollPosition < it.size) && (timeNow.isAfter(it[forecastBestScrollPosition].time)))
             {
                 forecastBestScrollPosition++
             }
 
+            forecastBestScrollPosition--
+
             val lForecastList = it.toMutableList()
             val currentData = UVForecastData(lUVData.uv, timeNow, true)
 
-            // Only replace the forecast data if not at either list end (to keep symmetrical UV curve)
+            // Only add the forecast data if at either list end (to keep symmetrical UV curve)
             when (forecastBestScrollPosition)
             {
-                0 -> lForecastList.add(0, currentData)
+                -1 -> lForecastList.add(0, currentData)
 
-                in 1 until it.size-1 -> // Replace the nearest time with the current lUVData.uv
+                in 0 until it.size-1 -> // Replace the nearest time with the current lUVData.uv
                 {
-                    forecastBestScrollPosition--
-
-                    // If latest UV data is too old for the forecast, then just modify the existing forecast to be "now"
+                    // If latest UV data is too old for the forecast, then just change the existing forecast to be "now"
                     if (lUVData.minutesSinceDataRetrieved > Constants.UV_FORECAST_ACCEPTABLE_RECENT_UV_TIME)
                     {
-                        lForecastList[forecastBestScrollPosition].isTimeNow = true
+                        lForecastList[forecastBestScrollPosition] = lForecastList[forecastBestScrollPosition].copy(isTimeNow = true)
                     }
                     else
                     {
