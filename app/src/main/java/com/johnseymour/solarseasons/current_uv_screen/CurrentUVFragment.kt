@@ -305,7 +305,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         {
             appStatusInformation.visibility = View.INVISIBLE
             launchAppDetailsButton.visibility = View.INVISIBLE
-            UVDataWorker.initiateOneTimeWorker(requireContext(), viewModel.isForecastCurrent().not())
+            UVDataWorker.initiateOneTimeWorker(requireContext(), viewModel.isForecastNotCurrent())
         }
         else if (layout.isRefreshing)
         {
