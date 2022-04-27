@@ -65,10 +65,13 @@ class SmallUVDisplay : AppWidgetProvider()
 
         private fun isFirstDailyRequest(context: Context): Boolean
         {
-            uvData?.uvTime?.toLocalDate()?.let()
+            try
             {
-                return !(it.isEqual(LocalDate.now()))
+                val forecast = DiskRepository.readLatestForecast(context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))?.firstOrNull() ?: return true
+
+                return forecast.time.toLocalDate().isNotEqual(LocalDate.now())
             }
+            catch (e: FileNotFoundException) {}
             return true
         }
     }
