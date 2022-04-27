@@ -49,7 +49,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
             }
         }
 
-        private fun createPeriodicRequest(timeInterval: Long, startDelay: Long, firstDailyRequest: Boolean): PeriodicWorkRequest
+        private fun createPeriodicRequest(timeInterval: Long, startDelay: Long): PeriodicWorkRequest
         {
             val lTimeInterval = if (timeInterval < MIN_PERIODIC_INTERVAL_MINUTES)
             {
@@ -71,11 +71,6 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
             return PeriodicWorkRequestBuilder<UVDataWorker>(lTimeInterval, TimeUnit.MINUTES).run()
             {
-                if (firstDailyRequest)
-                {
-                    setInputData(workDataOf(LocationService.FIRST_DAILY_REQUEST_KEY to true))
-                }
-
                 setInitialDelay(startDelay, TimeUnit.MINUTES)
                 setConstraints(workConstraints)
                 setBackoffCriteria(BackoffPolicy.LINEAR, lBackoffDelay, TimeUnit.MINUTES)
@@ -84,14 +79,14 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         }
 
 
-        fun initiatePeriodicWorker(context: Context, startDelay: Long? = null, timeInterval: Long, firstDailyRequest: Boolean = false)
+        fun initiatePeriodicWorker(context: Context, startDelay: Long? = null, timeInterval: Long)
         {
             val workManager = WorkManager.getInstance(context.applicationContext)
             workManager.cancelUniqueWork(WORK_NAME)
 
             val delay = startDelay ?: timeInterval
 
-            uvDataRequest = createPeriodicRequest(timeInterval, delay, firstDailyRequest)
+            uvDataRequest = createPeriodicRequest(timeInterval, delay)
 
             // Start a unique work, but if one is already going, then replace that one (shouldn't need to occur because removed the work before)
             (uvDataRequest as? PeriodicWorkRequest)?.let { workManager.enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.REPLACE, it) }

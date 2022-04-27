@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.*
 import android.content.pm.PackageManager
-import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.ActivityCompat
@@ -42,7 +41,6 @@ class SmallUVDisplay : AppWidgetProvider()
             {
                 context ?: return
 
-                Log.d("TESTING_BOOT", "In widget onReceive programmatic filter")
                 val luvData = uvData ?: return
 
                 if (!luvData.sunInSky()) { return }
@@ -62,17 +60,10 @@ class SmallUVDisplay : AppWidgetProvider()
                 return
             }
 
-            if (usePeriodicWork) // TODO () consider not needing periodic work here, always want to do a one-time request to get the uvforecast
-            {
-                UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = Constants.SHORTEST_REFRESH_TIME)
-            }
-            else
-            {
-                UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = isFirstDailyRequest(), true, Constants.SHORTEST_REFRESH_TIME)
-            }
+            UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = isFirstDailyRequest(context), false, Constants.SHORTEST_REFRESH_TIME)
         }
 
-        private fun isFirstDailyRequest(): Boolean
+        private fun isFirstDailyRequest(context: Context): Boolean
         {
             uvData?.uvTime?.toLocalDate()?.let()
             {
@@ -218,12 +209,11 @@ class SmallUVDisplay : AppWidgetProvider()
                 when
                 {
                     usePeriodicWork -> UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate)
-                                                                                // TODO() V set this properly
-                    luvData.sunInSky() -> UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = isFirstDailyRequest(),true, backgroundRefreshRate)
+
+                    luvData.sunInSky() -> UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = isFirstDailyRequest(context),true, backgroundRefreshRate)
 
                     // Delay the next automatic worker until the sunrise of the next day
-                                                                    // TODO() V set this properly
-                    else -> UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = isFirstDailyRequest(),true, luvData.minutesUntilSunrise)
+                    else -> UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = true,true, luvData.minutesUntilSunrise)
                 }
             }
         }
