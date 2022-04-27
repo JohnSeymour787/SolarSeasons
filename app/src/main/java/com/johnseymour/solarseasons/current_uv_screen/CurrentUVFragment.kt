@@ -421,6 +421,15 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
 
         viewModel.uvForecastData?.let()
         {
+            // New daily request can fail, don't want to use yesterday's forecast
+            if ((it.isEmpty()) || (viewModel.isForecastNotCurrent()))
+            {
+                uvForecastLabel.visibility = View.GONE
+                uvForecastList.visibility = View.GONE
+                uvForecastBackground.visibility = View.GONE
+                return@let
+            }
+
             var forecastBestScrollPosition = 0
             while ((forecastBestScrollPosition < it.size) && (timeNow.isAfter(it[forecastBestScrollPosition].time)))
             {
