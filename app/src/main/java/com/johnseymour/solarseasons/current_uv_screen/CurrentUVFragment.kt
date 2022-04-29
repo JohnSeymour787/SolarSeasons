@@ -444,7 +444,20 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             // Only add the forecast data if at either list end (to keep symmetrical UV curve)
             when (forecastBestScrollPosition)
             {
-                -1 -> lForecastList.add(0, currentData)
+                -1 ->
+                {
+                    // If latest UV data is too old for the forecast, then just add 0 to the start of the forecast
+                    if (lUVData.minutesSinceDataRetrieved > Constants.UV_FORECAST_ACCEPTABLE_RECENT_UV_TIME)
+                    {
+                        lForecastList.add(0, currentData.copy(uv = 0.0F))
+                    }
+                    else
+                    {
+                        lForecastList.add(0, currentData)
+                    }
+
+                    forecastBestScrollPosition++
+                }
 
                 in 0 until it.size-1 -> // Replace the nearest time with the current lUVData.uv
                 {
@@ -461,7 +474,15 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
 
                 it.size-1 ->
                 {
-                    lForecastList.add(currentData)
+                    if (lUVData.minutesSinceDataRetrieved > Constants.UV_FORECAST_ACCEPTABLE_RECENT_UV_TIME)
+                    {
+                        lForecastList.add(currentData.copy(uv = 0.0F))
+                    }
+                    else
+                    {
+                        lForecastList.add(currentData)
+                    }
+
                     forecastBestScrollPosition++
                 }
             }
