@@ -10,7 +10,7 @@ import com.johnseymour.solarseasons.preferredTimeString
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import kotlinx.android.synthetic.main.list_cell_uv_forecast.view.*
 
-class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private val textColorInt: Int): RecyclerView.Adapter<UVForecastAdapter.UVForecastViewHolder>()
+class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private val textColorInt: Int, private val cellPixelWidth: Int): RecyclerView.Adapter<UVForecastAdapter.UVForecastViewHolder>()
 {
     inner class UVForecastViewHolder(view: UVForecastViewCell): RecyclerView.ViewHolder(view)
     {
@@ -45,7 +45,7 @@ class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private
     {
         val cell = UVForecastViewCell(parent.context).apply()
         {
-            layoutParams = ConstraintLayout.LayoutParams(resources.getDimensionPixelSize(R.dimen.uv_forecast_cell_width), resources.getDimensionPixelSize(R.dimen.uv_forecast_cell_height))
+            layoutParams = ConstraintLayout.LayoutParams(cellPixelWidth, resources.getDimensionPixelSize(R.dimen.uv_forecast_cell_height))
 
             if (PreferenceScreenFragment.useCustomTheme)
             {

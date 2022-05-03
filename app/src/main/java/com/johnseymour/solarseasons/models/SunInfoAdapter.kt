@@ -9,7 +9,7 @@ import com.johnseymour.solarseasons.preferredTimeString
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import kotlinx.android.synthetic.main.list_cell_sun_info.view.*
 
-class SunInfoAdapter(private val sunTimes: List<SunInfo.SunTimeData>, private val textColorInt: Int, private val onClick: (SunInfo.SunTimeData) -> Unit): RecyclerView.Adapter<SunInfoAdapter.SunInfoViewHolder>()
+class SunInfoAdapter(private val sunTimes: List<SunInfo.SunTimeData>, private val textColorInt: Int, private val onClick: (SunInfo.SunTimeData) -> Unit, private val cellPixelWidth: Int): RecyclerView.Adapter<SunInfoAdapter.SunInfoViewHolder>()
 {
     inner class SunInfoViewHolder(view: SunInfoViewCell): RecyclerView.ViewHolder(view)
     {
@@ -30,7 +30,7 @@ class SunInfoAdapter(private val sunTimes: List<SunInfo.SunTimeData>, private va
     {
         val cell = SunInfoViewCell(parent.context).apply()
         {
-            layoutParams = ConstraintLayout.LayoutParams(resources.getDimensionPixelSize(R.dimen.cell_sun_info_width), resources.getDimensionPixelSize(R.dimen.cell_sun_info_height))
+            layoutParams = ConstraintLayout.LayoutParams(cellPixelWidth, resources.getDimensionPixelSize(R.dimen.cell_sun_info_height))
 
             if (PreferenceScreenFragment.useCustomTheme)
             {

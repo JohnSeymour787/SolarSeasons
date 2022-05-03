@@ -415,7 +415,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         }
 
         sunInfoList.visibility = View.VISIBLE
-        sunInfoList.adapter = SunInfoAdapter(sortedSolarTimes, lUVData.textColorInt, ::sunTimeOnClick)
+        sunInfoList.adapter = SunInfoAdapter(sortedSolarTimes, lUVData.textColorInt, ::sunTimeOnClick, viewModel.calculateSunTimesCellWidth(requireContext()))
         sunInfoList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         sunInfoList.scrollToPosition(sunInfoBestScrollPosition)
 
@@ -491,7 +491,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             uvForecastLabel.visibility = View.VISIBLE
             uvForecastList.visibility = View.VISIBLE
 
-            uvForecastList.adapter = UVForecastAdapter(lForecastList, lUVData.textColorInt)
+            uvForecastList.adapter = UVForecastAdapter(lForecastList, lUVData.textColorInt, viewModel.calculateUVForecastCellWidth(requireContext()))
             uvForecastList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             uvForecastList.scrollToPosition(forecastBestScrollPosition)
         } ?: run()

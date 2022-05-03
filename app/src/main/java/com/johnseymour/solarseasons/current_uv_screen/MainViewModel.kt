@@ -1,9 +1,12 @@
 package com.johnseymour.solarseasons.current_uv_screen
 
 import android.content.*
+import android.text.format.DateFormat
+import android.util.DisplayMetrics
 import androidx.lifecycle.ViewModel
 import com.johnseymour.solarseasons.DiskRepository
 import com.johnseymour.solarseasons.ErrorStatus
+import com.johnseymour.solarseasons.R
 import com.johnseymour.solarseasons.isNotEqual
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.models.UVForecastData
@@ -63,6 +66,40 @@ class MainViewModel: ViewModel()
     fun readUVFromDisk(sharedPreferences: SharedPreferences)
     {
         DiskRepository.readLatestUV(sharedPreferences)?.let { uvData = it }
+    }
+
+    /**
+     * Calculates the best width to use for the UV Forecast list cells depending on screen
+     *  density and if the user has 24 hour time format on (uses less space)
+     */
+    fun calculateUVForecastCellWidth(context: Context): Int
+    {
+        val resources = context.resources
+        return if ((resources.displayMetrics.densityDpi < DisplayMetrics.DENSITY_XXXHIGH) && (DateFormat.is24HourFormat(context)))
+        {
+            resources.getDimensionPixelSize(R.dimen.uv_forecast_cell_width)
+        }
+        else
+        {
+            resources.getDimensionPixelSize(R.dimen.uv_forecast_cell_width_larger)
+        }
+    }
+
+    /**
+     * Calculates the best width to use for the Sun Times list cells depending on screen
+     *  density and if the user has 24 hour time format on (uses less space)
+     */
+    fun calculateSunTimesCellWidth(context: Context): Int
+    {
+        val resources = context.resources
+        return if ((resources.displayMetrics.densityDpi < DisplayMetrics.DENSITY_XXXHIGH) && (DateFormat.is24HourFormat(context)))
+        {
+            resources.getDimensionPixelSize(R.dimen.cell_sun_info_width)
+        }
+        else
+        {
+            resources.getDimensionPixelSize(R.dimen.cell_sun_info_width_larger)
+        }
     }
 
     /**
