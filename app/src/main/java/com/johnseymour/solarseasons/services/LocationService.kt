@@ -18,6 +18,7 @@ import com.johnseymour.solarseasons.models.UVForecastData
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Abstract class to implement custom location implementations using different location APIs.
@@ -136,29 +137,29 @@ abstract class LocationService: Service()
         stopSelf()
     }
 
+    private var requestsMade = AtomicInteger(0)
+    private var canRetryRequest = true // Single retry of realtime UV data allowed
+
     fun locationSuccess(latitude: Double, longitude: Double, altitude: Double)
     {
         val isCloudCoverEnabled = PreferenceManager.getDefaultSharedPreferences(applicationContext)
             .getBoolean(Constants.SharedPreferences.CLOUD_COVER_FACTOR_KEY, false)
 
         val networkRequestsToMake = calculateNumberOfRequests(isCloudCoverEnabled)
-        var requestsMade = 0
 
         if (isCloudCoverEnabled)
         {
             NetworkRepository.getCurrentCloudCover(latitude, longitude).success()
             { lCloudCover ->
                 cloudCover = lCloudCover
-                requestsMade += 1
 
-                if (requestsMade == networkRequestsToMake)
+                if (requestsMade.incrementAndGet() == networkRequestsToMake)
                 {
                     networkRequestsComplete()
                 }
             }.fail() // Failure of cloud cover data is non-critical
             {
-                requestsMade += 1
-                if (requestsMade == networkRequestsToMake)
+                if (requestsMade.incrementAndGet() == networkRequestsToMake)
                 {
                     networkRequestsComplete()
                 }
@@ -172,35 +173,45 @@ abstract class LocationService: Service()
 
                 uvForecast = lUVForecast
 
-                requestsMade += 1
-
-                if (requestsMade == networkRequestsToMake)
+                if (requestsMade.incrementAndGet() == networkRequestsToMake)
                 {
                     networkRequestsComplete()
                 }
             }.fail() // Failure of forecast data is also non-critical
             {
-                requestsMade += 1
-                if (requestsMade == networkRequestsToMake)
+
+                if (requestsMade.incrementAndGet() == networkRequestsToMake)
                 {
                     networkRequestsComplete()
                 }
             }
         }
 
+        makeRealTimeUVRequest(latitude, longitude, altitude, networkRequestsToMake)
+    }
+
+    private fun makeRealTimeUVRequest(latitude: Double, longitude: Double, altitude: Double, networkRequestsToMake: Int)
+    {
         NetworkRepository.getRealTimeUV(latitude, longitude, altitude).success()
         { luvData ->
             uvData = luvData
-            requestsMade += 1
 
-            if (requestsMade == networkRequestsToMake)
+            if (requestsMade.incrementAndGet() == networkRequestsToMake)
             {
                 networkRequestsComplete()
             }
         }.fail()
         { errorStatus ->
-            uvDataDeferred?.reject(errorStatus)
-            stopSelf()
+            if ((canRetryRequest) && (errorStatus != ErrorStatus.NetworkError))
+            {
+                canRetryRequest = false
+                makeRealTimeUVRequest(latitude, longitude, altitude, networkRequestsToMake)
+            }
+            else
+            {
+                uvDataDeferred?.reject(errorStatus)
+                stopSelf()
+            }
         }
     }
 
