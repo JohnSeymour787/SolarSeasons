@@ -179,7 +179,6 @@ abstract class LocationService: Service()
                 }
             }.fail() // Failure of forecast data is also non-critical
             {
-
                 if (requestsMade.incrementAndGet() == networkRequestsToMake)
                 {
                     networkRequestsComplete()
