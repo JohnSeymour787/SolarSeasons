@@ -81,7 +81,7 @@
     <string name="sun_info_night_end">Night Ends</string>
     <string name="sun_info_night_end_description">This is the time when night officially ends, just before the dawn appears.</string>
     <string name="sun_info_night">Night</string>
-    <string name="sun_info_night_description">The is the official time when the night starts and dusk has completely ended.</string>
+    <string name="sun_info_night_description">This is the official time when the night starts and dusk has completely ended.</string>
     <string name="sun_info_golden_hour_end">Golden Hr Ends</string>
     <string name="sun_info_golden_hour_end_description">This is the time when the morning golden hour ends. Between dawn and this time is the best time for photography.</string>
     <string name="sun_info_golden_hour">Golden Hr Starts</string>
