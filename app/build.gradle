@@ -4,6 +4,10 @@ plugins {
     id 'kotlin-android-extensions'
 }
 
+def apiKeyPropertiesFile = rootProject.file("apiKeys.properties")
+def apiKeyProperties = new Properties()
+apiKeyProperties.load(new FileInputStream(apiKeyPropertiesFile))
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.1"
@@ -16,6 +20,11 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "OPEN_UV_API_KEY", apiKeyProperties["OPENUV_API_KEY"]
+        buildConfigField "boolean", "USE_GOOGLE_PLAY_LOCATION", 'false'
+        buildConfigField "boolean", "ENABLE_MANUAL_LOCATION", 'false'
+        buildConfigField "boolean", "ENABLE_API_KEY_ENTRY", 'false'
     }
 
     buildTypes {
@@ -23,11 +32,46 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
+        luke {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            buildConfigField "String", "OPEN_UV_API_KEY", apiKeyProperties["LUKEOPENUV_API_KEY"]
+            buildConfigField "boolean", "ENABLE_API_KEY_ENTRY", 'false'
+        }
+
+        nathan {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            buildConfigField "String", "OPEN_UV_API_KEY", '""'
+            buildConfigField "boolean", "ENABLE_MANUAL_LOCATION", 'true'
+            buildConfigField "boolean", "ENABLE_API_KEY_ENTRY", 'true'
+        }
+
+        steven {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            buildConfigField "String", "OPEN_UV_API_KEY", '""'
+            buildConfigField "boolean", "ENABLE_API_KEY_ENTRY", 'true'
+        }
+
+        china {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            buildConfigField "String", "OPEN_UV_API_KEY", apiKeyProperties["ZHOPENUV_API_KEY"]
+            buildConfigField "boolean", "ENABLE_API_KEY_ENTRY", 'false'
+        }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }

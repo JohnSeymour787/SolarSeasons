@@ -39,9 +39,9 @@ object Constants
     /** Rough maximum UV expected at sea level, theoretically can be higher **/
     const val GENERAL_MAXIMUM_UV = 14F
 
-    const val USE_GOOGLE_PLAY_LOCATION = false
-    const val ENABLE_MANUAL_LOCATION_FEATURE = false
-    const val ENABLE_API_KEY_ENTRY_FEATURE = false
+    const val USE_GOOGLE_PLAY_LOCATION = BuildConfig.USE_GOOGLE_PLAY_LOCATION
+    const val ENABLE_MANUAL_LOCATION_FEATURE = BuildConfig.ENABLE_MANUAL_LOCATION
+    const val ENABLE_API_KEY_ENTRY_FEATURE = BuildConfig.ENABLE_API_KEY_ENTRY
     /** Skips location retrieval and API calls to save on request quota. Service generates simple UV data **/
     const val TEST_MODE_NO_API = false
 
