@@ -1,3 +1,6 @@
 package com.johnseymour.solarseasons.api
 
-var OPENUV_API_KEY = "insert_api_key_here"
+import com.johnseymour.solarseasons.BuildConfig
+
+var OPENUV_API_KEY = BuildConfig.OPEN_UV_API_KEY
+const val WEATHER_API_KEY = BuildConfig.WEATHER_API_KEY
