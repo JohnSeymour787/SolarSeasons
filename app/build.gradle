@@ -37,7 +37,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            buildConfigField "String", "OPEN_UV_API_KEY", apiKeyProperties["LUKEOPENUV_API_KEY"]
+            buildConfigField "String", "OPEN_UV_API_KEY", apiKeyProperties["OPENUV_API_KEY"]
             buildConfigField "boolean", "ENABLE_API_KEY_ENTRY", 'false'
         }
 
@@ -62,7 +62,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            buildConfigField "String", "OPEN_UV_API_KEY", apiKeyProperties["ZHOPENUV_API_KEY"]
+            buildConfigField "String", "OPEN_UV_API_KEY", apiKeyProperties["OPENUV_API_KEY"]
             buildConfigField "boolean", "ENABLE_API_KEY_ENTRY", 'false'
         }
     }
