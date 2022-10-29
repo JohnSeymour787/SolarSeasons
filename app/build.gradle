@@ -22,6 +22,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "OPEN_UV_API_KEY", apiKeyProperties["OPENUV_API_KEY"]
+        buildConfigField "String", "WEATHER_API_KEY", apiKeyProperties["WEATHER_API_KEY"]
         buildConfigField "boolean", "USE_GOOGLE_PLAY_LOCATION", 'false'
         buildConfigField "boolean", "ENABLE_MANUAL_LOCATION", 'false'
         buildConfigField "boolean", "ENABLE_API_KEY_ENTRY", 'false'
