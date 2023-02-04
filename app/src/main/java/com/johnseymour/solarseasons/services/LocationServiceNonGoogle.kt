@@ -2,12 +2,14 @@ package com.johnseymour.solarseasons.services
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
 import android.os.CancellationSignal
+import android.os.PowerManager
 import androidx.core.app.ActivityCompat
 import com.johnseymour.solarseasons.ErrorStatus
 import java.util.function.Consumer
@@ -30,9 +32,17 @@ class LocationServiceNonGoogle: LocationService(), Consumer<Location?>, Location
 
     override fun serviceMain(): Int
     {
-        if (!locationManager.isLocationEnabled)
+        if (locationManager.isLocationEnabled.not())
         {
-            uvDataDeferred?.reject(ErrorStatus.LocationDisabledError)
+            // Due to battery saver being on
+            if ((getSystemService(Context.POWER_SERVICE) as? PowerManager)?.locationPowerSaveMode != PowerManager.LOCATION_MODE_NO_CHANGE)
+            {
+                uvDataDeferred?.reject(ErrorStatus.LocationBatterySaverError)
+            }
+            else
+            {
+                uvDataDeferred?.reject(ErrorStatus.LocationDisabledError)
+            }
             stopSelf()
 
             return START_STICKY

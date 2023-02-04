@@ -13,6 +13,7 @@ enum class ErrorStatus
     GeneralLocationError,
     ManualLocationError,
     LocationDisabledError,
+    LocationBatterySaverError,
     LocationAnyPermissionError,
     FineLocationPermissionError;
 
@@ -29,6 +30,7 @@ enum class ErrorStatus
             GeneralLocationError -> resources.getString(R.string.location_not_found)
             ManualLocationError -> resources.getString(R.string.location_manual_entry_error)
             LocationDisabledError -> resources.getString(R.string.location_disabled_error)
+            LocationBatterySaverError -> resources.getString(R.string.location_battery_saver_error)
             LocationAnyPermissionError -> resources.getString(R.string.location_permission_any_denied)
             FineLocationPermissionError -> resources.getString(R.string.location_permission_fine_error)
         }

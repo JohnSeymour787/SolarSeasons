@@ -246,7 +246,8 @@ class SmallUVDisplay : AppWidgetProvider()
 
         when
         {
-            latestError != null -> // Error has occurred
+            // Errors such as battery saver and general location error don't need to display the error message (ie errors that are not the result of direct user action)
+            latestError != null && latestError != ErrorStatus.LocationBatterySaverError && latestError != ErrorStatus.GeneralLocationError -> // Error has occurred
             {
                 views.setTextViewText(R.id.uvValue, context.getString(R.string.widget_error))
 
