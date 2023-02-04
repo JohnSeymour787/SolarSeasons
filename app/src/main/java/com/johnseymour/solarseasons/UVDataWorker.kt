@@ -34,6 +34,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 {
                     setInitialDelay(delayTime, TimeUnit.MINUTES)
                     setConstraints(workConstraints) // Only set the battery constraint when doing a delayed (background) start
+                    setBackoffCriteria(BackoffPolicy.EXPONENTIAL, delayTime, TimeUnit.MINUTES)
                 }
                 else
                 {
@@ -77,7 +78,6 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 build()
             }
         }
-
 
         fun initiatePeriodicWorker(context: Context, startDelay: Long? = null, timeInterval: Long)
         {
@@ -187,8 +187,24 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 applicationContext.sendBroadcast(widgetIntent)
                 LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(activityIntent)
 
-                result.set(Result.failure())
+                if (isFailureError(it))
+                {
+                    result.set(Result.failure())
+                }
+                else
+                {
+                    result.set(Result.retry())
+                }
             }
         }
+    }
+
+    private fun isFailureError(errorStatus: ErrorStatus): Boolean
+    {
+        return errorStatus == ErrorStatus.APIKeyInvalid
+                || errorStatus == ErrorStatus.APIQuotaExceeded
+                || errorStatus == ErrorStatus.LocationDisabledError
+                || errorStatus == ErrorStatus.LocationAnyPermissionError
+                || errorStatus == ErrorStatus.FineLocationPermissionError
     }
 }
