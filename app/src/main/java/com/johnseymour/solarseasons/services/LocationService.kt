@@ -114,11 +114,12 @@ abstract class LocationService: Service()
 
     private var uvData: UVData? = null
     private var cloudCover: Double? = null
+    private var cityName: String? = null
     private var uvForecast: List<UVForecastData>? = null
 
     private fun calculateNumberOfRequests(cloudCoverEnabled: Boolean): Int
     {
-        var result = 1
+        var result = 2 // City name and UV data always fetched
 
         if (cloudCoverEnabled) { result++ }
         if (firstRequestOfDay) { result++ }
@@ -131,6 +132,7 @@ abstract class LocationService: Service()
         uvData?.let()
         {
             it.cloudCover = cloudCover
+            it.cityName = cityName
             uvDataDeferred?.resolve(UVCombinedForecastData(it, uvForecast))
         }
 
@@ -183,6 +185,21 @@ abstract class LocationService: Service()
                 {
                     networkRequestsComplete()
                 }
+            }
+        }
+
+        NetworkRepository.getGeoCodedCityName(latitude, longitude).success()
+        { lCityName ->
+            cityName = lCityName
+            if (requestsMade.incrementAndGet() == networkRequestsToMake)
+            {
+                networkRequestsComplete()
+            }
+        }.fail() // Failure of city name data is non-critical
+        {
+            if (requestsMade.incrementAndGet() == networkRequestsToMake)
+            {
+                networkRequestsComplete()
             }
         }
 

@@ -19,7 +19,8 @@ data class UVData(
     val ozoneTime: ZonedDateTime? = null,
     val safeExposure: Map<String, Int>? = null,
     val sunInfo: SunInfo,
-    var cloudCover: Double? = null): Parcelable
+    var cloudCover: Double? = null,
+    var cityName: String? = null): Parcelable
 {
     val backgroundColorInt: Int
         get() = uvColourInt(uv)

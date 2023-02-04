@@ -6,9 +6,12 @@ import com.johnseymour.solarseasons.Constants
 import com.johnseymour.solarseasons.models.SunInfo
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.ErrorStatus
+import com.johnseymour.solarseasons.asNegative
+import com.johnseymour.solarseasons.asPositive
 import com.johnseymour.solarseasons.models.UVForecastData
 import nl.komponents.kovenant.deferred
 import nl.komponents.kovenant.Promise
+import nl.komponents.kovenant.reject
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -16,12 +19,15 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import java.util.*
 import kotlin.math.roundToInt
+import kotlin.random.Random
 
 object NetworkRepository
 {
     private const val OPEN_UV_API_BASE_URL = "https://api.openuv.io/api/v1/"
     private const val WEATHER_API_BASE_URL = "https://api.weatherapi.com/v1/"
+    private const val REVERSE_GEOCODER_API_BASE_URL = "https://api.bigdatacloud.net/data/"
     private const val UV_FORECAST_ROUND_TO_MINUTE = 10L
 
     private val openUVAPI by lazy()
@@ -91,6 +97,23 @@ object NetworkRepository
             .build()
 
         retrofit.create(WeatherAPI::class.java)
+    }
+
+    private val reverseGeoCoderAPI by lazy()
+    {
+        val gsonBuilder = GsonBuilder().run()
+        {
+            registerTypeAdapter(String::class.javaObjectType, ReverseGeoCoderDeserialiser)
+            create()
+        }
+
+        val gsonConverter = GsonConverterFactory.create(gsonBuilder)
+
+        val retrofit = Retrofit.Builder().baseUrl(REVERSE_GEOCODER_API_BASE_URL)
+            .addConverterFactory(gsonConverter)
+            .build()
+
+        retrofit.create(ReverseGeoCodingAPI::class.java)
     }
 
     /**
@@ -183,7 +206,7 @@ object NetworkRepository
                 }
             }
 
-            override fun onFailure(call: Call<Double>, t: Throwable) { }
+            override fun onFailure(call: Call<Double>, t: Throwable) { result.reject() }
         })
 
         return result.promise
@@ -241,5 +264,54 @@ object NetworkRepository
         })
 
         return result.promise
+    }
+
+    /**
+     * Returns the city name at a coordinate location
+     */
+    fun getGeoCodedCityName(latitude: Double, longitude: Double): Promise<String, Unit>
+    {
+        val result = deferred<String, Unit>()
+
+        reverseGeoCoderAPI.getCityName(obfuscateCoordinate(latitude, Constants.MAXIMUM_LATITUDE_DEGREE), obfuscateCoordinate(longitude, Constants.MAXIMUM_LONGITUDE_DEGREE), Locale.getDefault().language).enqueue(object: Callback<String>
+        {
+            override fun onResponse(call: Call<String>, response: Response<String>)
+            {
+                response.body()?.let()
+                {
+                    result.resolve(it)
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) { result.reject() }
+        })
+
+        return result.promise
+    }
+
+    /**
+     * Adds some inaccuracy to a location coordinate for some privacy before sending location to external APIs.
+     * Validates the obfuscated coordinate to the range of >= -maxAbsoluteValue and <= +maxAbsoluteValue
+     */
+    private fun obfuscateCoordinate(coordinate: Double, maxAbsoluteValue: Double): Double
+    {
+        // Randomly add or subtract the obfuscation amount
+        val result = if (Random.nextBoolean())
+        {
+            coordinate + Constants.LOCATION_OBFUSCATION_COORDINATE_DECIMAL
+        }
+        else
+        {
+            coordinate - Constants.LOCATION_OBFUSCATION_COORDINATE_DECIMAL
+        }
+
+        return when
+        {
+            result > maxAbsoluteValue.asPositive() -> maxAbsoluteValue.asPositive()
+
+            result < maxAbsoluteValue.asNegative() -> maxAbsoluteValue.asNegative()
+
+            else -> result
+        }
     }
 }

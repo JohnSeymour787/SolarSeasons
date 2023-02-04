@@ -329,6 +329,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         maxUVTime.visibility = View.GONE
         cloudFactoredUVText.visibility = View.GONE
         cloudCoverLevelText.visibility = View.GONE
+        cityName.visibility = View.GONE
         lastUpdated.visibility = View.GONE
         sunProgressLabel.visibility = View.GONE
         sunProgress.visibility = View.GONE
@@ -364,6 +365,12 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             cloudCoverLevelText.visibility = View.VISIBLE
             cloudCoverLevelText.text = resources.getString(it)
         } ?: run { cloudCoverLevelText.visibility = View.GONE }
+
+        lUVData.cityName?.let()
+        {
+            cityName.visibility = View.VISIBLE
+            cityName.text = lUVData.cityName
+        } ?: run { cityName.visibility = View.GONE }
 
         maxUV.visibility = View.VISIBLE
         maxUV.text = resources.getString(R.string.max_uv, lUVData.uvMax)
@@ -529,6 +536,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         uvText.setTextColor(primaryTextColourInt)
         cloudFactoredUVText.setTextColor(primaryTextColourInt)
         cloudCoverLevelText.setTextColor(primaryTextColourInt)
+        cityName.setTextColor(primaryTextColourInt)
         maxUV.setTextColor(primaryTextColourInt)
         maxUVTime.setTextColor(primaryTextColourInt)
         lastUpdated.setTextColor(primaryTextColourInt)
@@ -575,6 +583,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         maxUV.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         cloudFactoredUVText.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         cloudCoverLevelText.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        cityName.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         maxUVTime.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         lastUpdated.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
         sunProgressLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))

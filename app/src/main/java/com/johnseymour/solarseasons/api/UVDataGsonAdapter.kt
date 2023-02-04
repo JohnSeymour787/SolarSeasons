@@ -34,7 +34,9 @@ object UVDataGsonAdapter: JsonDeserializer<UVData>, JsonSerializer<UVData>
 
             val cloudCover = it.getAsJsonPrimitive("cloud_cover")?.asString?.toDoubleOrNull()
 
-            return UVData(uv, uvTime, uvMax, uvMaxTime, ozone, ozoneTime, safeExposure, sunInfo, cloudCover)
+            val cityName = it.getAsJsonPrimitive("city_name")?.asString
+
+            return UVData(uv, uvTime, uvMax, uvMaxTime, ozone, ozoneTime, safeExposure, sunInfo, cloudCover, cityName)
         }
 
         return null
@@ -85,6 +87,7 @@ object UVDataGsonAdapter: JsonDeserializer<UVData>, JsonSerializer<UVData>
         uvJSON.addProperty("uv_max_time", uvData.uvMaxTime?.toString() ?: "")
         uvJSON.addProperty("ozone_time", uvData.ozoneTime?.toString() ?: "")
         uvJSON.addProperty("cloud_cover", uvData.cloudCover?.toString() ?: "")
+        uvJSON.addProperty("city_name", uvData.cityName)
 
         uvJSON.add("safe_exposure_time", context.serialize(uvData.safeExposure) ?: JsonObject())
 

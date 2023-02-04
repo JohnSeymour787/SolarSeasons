@@ -16,6 +16,7 @@ import com.google.gson.JsonElement
 import java.time.*
 import java.time.chrono.ChronoLocalDate
 import java.time.format.DateTimeParseException
+import kotlin.math.withSign
 
 /**
  * If this JsonElement is a String representing a date, this method will convert it to a ZonedDateTime.
@@ -170,3 +171,8 @@ fun Context.hasWidgets(): Boolean = this.getWidgetIDs().isNotEmpty()
  *         - false if the same date
  */
 fun LocalDate.isNotEqual(other: ChronoLocalDate): Boolean = this.isEqual(other).not()
+
+/** Returns this number with a positive sign (eg -5 becomes 5) **/
+fun Double.asPositive(): Double = this.withSign(1)
+/** Returns this number with a negative sign (eg 5 becomes -5) **/
+fun Double.asNegative(): Double = this.withSign(-1)

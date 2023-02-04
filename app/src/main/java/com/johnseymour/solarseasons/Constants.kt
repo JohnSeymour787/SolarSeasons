@@ -34,7 +34,19 @@ object Constants
     /** Maximum altitude on earth to get UV data for **/
     const val MAXIMUM_EARTH_ALTITUDE = 10000.0
 
+    const val MAXIMUM_LATITUDE_DEGREE = 90.0
+    const val MAXIMUM_LONGITUDE_DEGREE = 180.0
+
     const val MINIMUM_API_ACCEPTED_ALTITUDE = 0.0
+
+    private const val LOCATION_OBFUSCATION_METERS = 1000
+    private const val LOCATION_OBFUSCATION_METERS_TO_COORDINATE_DECIMAL = 0.00001
+    /**
+     * Decimal points of a coordinate degree that corresponds to meters in distance
+     * @sample 0.00001 is around 1.11 meters
+     * @see (https://gis.stackexchange.com/questions/8650/measuring-accuracy-of-latitude-and-longitude)
+     */
+    const val LOCATION_OBFUSCATION_COORDINATE_DECIMAL = LOCATION_OBFUSCATION_METERS * LOCATION_OBFUSCATION_METERS_TO_COORDINATE_DECIMAL
 
     /** Rough maximum UV expected at sea level, theoretically can be higher **/
     const val GENERAL_MAXIMUM_UV = 14F
