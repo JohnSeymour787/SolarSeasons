@@ -11,6 +11,7 @@ import android.util.TypedValue
 import android.view.View
 import android.view.WindowInsetsController
 import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import com.google.gson.JsonElement
 import java.time.*
@@ -176,3 +177,41 @@ fun LocalDate.isNotEqual(other: ChronoLocalDate): Boolean = this.isEqual(other).
 fun Double.asPositive(): Double = this.withSign(1)
 /** Returns this number with a negative sign (eg 5 becomes -5) **/
 fun Double.asNegative(): Double = this.withSign(-1)
+
+/**
+ * Returns the primary text colour used with the current theme
+ */
+@ColorInt
+fun Resources.Theme.textColorPrimary(): Int
+{
+    val value = TypedValue()
+    this.resolveAttribute(android.R.attr.textColorPrimary, value, true)
+    return value.data
+}
+
+fun Configuration.isDarkMode(): Boolean
+{
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+    {
+        this.isNightModeActive
+    }
+    else
+    {
+        this.uiMode == Configuration.UI_MODE_NIGHT_YES
+    }
+}
+
+/**
+ * Gets the system ID for the device default themed alert dialogue, depending on device dark mode
+ */
+fun Context.getThemeForDeviceDefaultDialogAlert(): Int
+{
+    return if (this.resources.configuration.isDarkMode())
+    {
+        android.R.style.Theme_DeviceDefault_Dialog_Alert
+    }
+    else
+    {
+        android.R.style.Theme_DeviceDefault_Light_Dialog_Alert
+    }
+}

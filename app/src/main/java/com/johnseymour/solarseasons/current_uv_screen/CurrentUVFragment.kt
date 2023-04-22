@@ -595,14 +595,25 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
 
     private fun sunTimeOnClick(sunTimeData: SunInfo.SunTimeData)
     {
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(requireContext(), requireContext().getThemeForDeviceDefaultDialogAlert())
 
         builder.setTitle(sunTimeData.nameResourceInt)
         builder.setIcon(sunTimeData.imageResourceInt)
         builder.setMessage(SunInfo.sunTimeDescription(sunTimeData.nameResourceInt))
         builder.setPositiveButton(R.string.close_window) { _, _ -> }
 
-        builder.create().show()
+        val alert = builder.create()
+
+        // Force set text colour because some OS's don't properly theme the button for dark mode
+        alert.setOnShowListener()
+        {
+            alert.getButton(AlertDialog.BUTTON_POSITIVE)?.apply()
+            {
+                setTextColor(requireContext().theme.textColorPrimary())
+            }
+        }
+
+        alert.show()
     }
 
     private fun launchAppDetailsActivity()
