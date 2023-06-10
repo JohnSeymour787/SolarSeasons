@@ -1,10 +1,7 @@
 package com.johnseymour.solarseasons.current_uv_screen.uv_forecast
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
-import android.graphics.Typeface
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorInt
@@ -19,13 +16,23 @@ import kotlin.math.ceil
  */
 class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) : View(context, attrs)
 {
+    companion object
+    {
+        /** y values below this amount will use the normal line paint instead of the dashed one for clarity **/
+        private const val Y_VALUE_DASHED_LINE_THRESHOLD = 2F
+        private const val VERTICAL_MARKER_DASH_PATH_ON_INTERVAL = 10F
+        private const val VERTICAL_MARKER_DASH_PATH_OFF_INTERVAL = 12F
+    }
+
     private val textBottomMargin: Float = 15F
 
     private val dotPaint = Paint().apply { isAntiAlias = true }
 
     var maxYValue = Constants.GENERAL_MAXIMUM_UV
     var minYValue = 0F
-    var yValue = 0F
+    var yValue = 10F
+
+    var drawVerticalMarkerLine = false
 
     @ColorInt
     var dotColour = resources.getColor(R.color.black, context.theme)
@@ -45,6 +52,14 @@ class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) :
             field = value
         }
 
+    @ColorInt
+    var verticalMarkerLineColour = dotColour
+        set(value)
+        {
+            dashedVerticalLinePaint.color = value
+            field = value
+        }
+
     var lineThickness = resources.getDimension(R.dimen.uv_forecast_uv_line_thickness)
         set(value)
         {
@@ -56,6 +71,15 @@ class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) :
     {
         strokeWidth = lineThickness
         isAntiAlias = true
+    }
+
+    private val dashedVerticalLinePaint = Paint().apply()
+    {
+        color = linePaint.color
+        strokeWidth = linePaint.strokeWidth
+        isAntiAlias = true
+        style = Paint.Style.STROKE
+        pathEffect = DashPathEffect(floatArrayOf(VERTICAL_MARKER_DASH_PATH_ON_INTERVAL, VERTICAL_MARKER_DASH_PATH_OFF_INTERVAL), 0F)
     }
 
     private var textStyle: Int = Typeface.NORMAL
@@ -212,6 +236,11 @@ class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) :
         if (text.isNotEmpty())
         {
             canvas.drawText(text, contentCenter, dotHeight - dotRadius - textBottomMargin, textPaint)
+        }
+
+        if (drawVerticalMarkerLine)
+        {
+            canvas.drawLine(contentCenter, height.toFloat(), contentCenter, dotHeight, if (yValue > Y_VALUE_DASHED_LINE_THRESHOLD) { dashedVerticalLinePaint } else { linePaint })
         }
 
         canvas.drawCircle(contentCenter, dotHeight, dotRadius, dotPaint)

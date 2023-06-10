@@ -27,6 +27,9 @@ class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private
                     it.text = resources.getString(R.string.uv_value, forecastData.uv)
 
                     it.lineColour = resources.getColor(UVData.uvColourInt(forecastData.uv), context.theme)
+                    it.verticalMarkerLineColour = resources.getColor(if (PreferenceScreenFragment.useCustomTheme) { textColorInt } else { UVData.uvColourInt(forecastData.uv) }, context.theme)
+
+                    it.drawVerticalMarkerLine = forecastData.isTimeNow
                 }
 
                 if (forecastData.isTimeNow)
