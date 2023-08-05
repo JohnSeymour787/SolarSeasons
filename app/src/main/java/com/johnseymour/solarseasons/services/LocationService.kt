@@ -189,8 +189,7 @@ abstract class LocationService: Service()
                 }
             }
 
-            // TODO() Default is 3.5-3.5
-            NetworkRepository.getUVProtectionTimes(latitude, longitude, altitude, 3.5F, 3.5F).success()
+            NetworkRepository.getUVProtectionTimes(latitude, longitude, altitude, Constants.UV_PROTECTION_TIME_DEFAULT_FROM_UV, Constants.UV_PROTECTION_TIME_DEFAULT_TO_UV).success()
             { lUVProtection ->
                 uvProtection = lUVProtection
                 if (requestsMade.incrementAndGet() == networkRequestsToMake)

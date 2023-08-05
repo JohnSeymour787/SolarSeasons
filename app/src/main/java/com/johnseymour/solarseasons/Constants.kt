@@ -29,6 +29,9 @@ object Constants
     /** Time in minutes for which a current UV data is considered "recent" for displaying on the UV forecast graph **/
     const val UV_FORECAST_ACCEPTABLE_RECENT_UV_TIME = 40L
 
+    const val UV_PROTECTION_TIME_DEFAULT_FROM_UV = 3.5F
+    const val UV_PROTECTION_TIME_DEFAULT_TO_UV = 3.5F
+
     const val MINUTES_PER_HOUR = 60
     const val MINUTES_PER_DAY = 1440
     /** Maximum altitude on earth to get UV data for **/
