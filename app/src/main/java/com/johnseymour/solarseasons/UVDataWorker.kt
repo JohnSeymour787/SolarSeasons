@@ -1,5 +1,7 @@
 package com.johnseymour.solarseasons
 
+import android.app.AlarmManager
+import android.app.NotificationManager
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
@@ -9,8 +11,10 @@ import androidx.work.*
 import com.google.common.util.concurrent.ListenableFuture
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.models.UVForecastData
+import com.johnseymour.solarseasons.models.UVProtectionTimeData
 import com.johnseymour.solarseasons.services.LocationService
 import nl.komponents.kovenant.deferred
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 class UVDataWorker(applicationContext: Context, workerParameters: WorkerParameters): ListenableWorker(applicationContext, workerParameters)
@@ -172,6 +176,11 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                     activityIntent.putParcelableArrayListExtra(UVForecastData.UV_FORECAST_LIST_KEY, ArrayList(forecastData))
                 }
 
+                it.protectionTime?.let()
+                { protectionTimeData ->
+                    scheduleProtectionTimeNotification(protectionTimeData)
+                }
+
                 widgetIntent.putExtra(UVData.UV_DATA_KEY, it.uvData)
                 activityIntent.putExtra(UVData.UV_DATA_KEY, it.uvData)
 
@@ -197,6 +206,61 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 }
             }
         }
+    }
+
+    private fun scheduleProtectionTimeNotification(protectionTimeData: UVProtectionTimeData)
+    {
+        if (protectionTimeData.isProtectionNeeded.not()) { return }
+
+        val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (notificationManager.areNotificationsEnabled().not()) { return }
+
+        val alarmManager = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        // TODO() After API 33 check alarms are enabled
+
+        val timeNow = ZonedDateTime.now()
+
+        var protectionTimeAlreadyStarted = false
+
+        // TODO() Here need to check settings whether to schedule time now (on first request), at a user-set time, or on the fromTime
+        val protectionStartScheduleTime = if (false) // At fromTime // TODO() Can be a when statement
+        {
+
+            protectionTimeAlreadyStarted = true
+            if (protectionTimeData.fromTime.isAfter(timeNow))
+            {
+                timeNow
+            }
+            else
+            {
+                protectionTimeData.fromTime
+            }
+        }
+        else if (false) // Custom time // TODO() custom user time, see behaviour if this time has already passed
+        {
+            if (protectionTimeData.fromTime.isAfter(timeNow))
+            {
+                protectionTimeAlreadyStarted = true
+                timeNow
+            }
+            else
+            {
+                protectionTimeData.fromTime
+            }
+        }
+        else // On first receive
+        {
+            if (timeNow.isAfter(protectionTimeData.fromTime))
+            {
+                protectionTimeAlreadyStarted = true
+            }
+            timeNow
+        }
+
+        alarmManager.set(AlarmManager.RTC, protectionStartScheduleTime.toEpochMilli(), protectionTimeData.protectionStartPendingIntent(applicationContext, protectionTimeAlreadyStarted))
+
+        // TODO() Also need to check if end time notifications are enabled
+        alarmManager.set(AlarmManager.RTC, protectionTimeData.toTime.toEpochMilli(), protectionTimeData.protectionEndPendingIntent(applicationContext))
     }
 
     private fun isFailureError(errorStatus: ErrorStatus): Boolean

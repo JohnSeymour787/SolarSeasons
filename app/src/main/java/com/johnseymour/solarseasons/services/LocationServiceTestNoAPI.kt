@@ -42,7 +42,7 @@ class LocationServiceTestNoAPI: LocationService()
     override fun serviceMain(): Int
     {
         counter++
-        uvDataDeferred?.resolve(UVCombinedForecastData(generateTestData(), null))
+        uvDataDeferred?.resolve(UVCombinedForecastData(generateTestData(), null, null))
 
         stopSelf()
 

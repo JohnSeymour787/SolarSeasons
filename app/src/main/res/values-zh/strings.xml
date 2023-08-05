@@ -141,4 +141,12 @@ account is needed for authentication and you will not need to create a new passw
     <string name="api_key_fragment_page_4_key_added_success_text">API key stored. You can change it in the settings later if desired\n\nThe app is now ready to be used</string>
     <string name="api_key_fragment_page_4_key_added_success_toast">API key saved</string>
     <string name="api_key_fragment_page_4_launch_main_app_button_text">Go to App</string>
+
+    <string name="uv_protection_notification_channel_name">Sun Protection Times</string>
+    <string name="uv_protection_notification_channel_description">Sun protection start and end notifications</string>
+    <string name="uv_protection_notification_start_protection_title">Sun Protection Warning</string>
+    <string name="uv_protection_notification_start_protection_body_scheduled">From %1$s to %2$s the UV index will be above %3$.1f. Sun protection is recommended between these times</string>
+    <string name="uv_protection_notification_start_protection_body_immediate">The UV index is now above %1$.1f. Sun protection is recommended until %2$s</string>
+    <string name="uv_protection_notification_end_protection_title">Sun Protection Ended</string>
+    <string name="uv_protection_notification_end_protection_body">The UV index is now below %1$.1f. Sun protection is no longer required</string>
 </resources>

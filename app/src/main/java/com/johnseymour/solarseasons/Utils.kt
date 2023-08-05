@@ -173,6 +173,9 @@ fun Context.hasWidgets(): Boolean = this.getWidgetIDs().isNotEmpty()
  */
 fun LocalDate.isNotEqual(other: ChronoLocalDate): Boolean = this.isEqual(other).not()
 
+/** Returns the number of milliseconds from epoch time */
+fun ZonedDateTime.toEpochMilli(): Long = this.toInstant().toEpochMilli()
+
 /** Returns this number with a positive sign (eg -5 becomes 5) **/
 fun Double.asPositive(): Double = this.withSign(1)
 /** Returns this number with a negative sign (eg 5 becomes -5) **/
