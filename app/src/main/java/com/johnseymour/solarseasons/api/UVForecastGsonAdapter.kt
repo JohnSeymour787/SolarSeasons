@@ -19,8 +19,9 @@ object UVForecastGsonAdapter: JsonDeserializer<Array<UVForecastData>>, JsonSeria
         {
             val uv = it.asJsonObject?.get("uv")?.asFloat ?: return@forEach
             val uvTime = it.asJsonObject?.get("uv_time")?.toZonedDateTime(systemZone) ?: return@forEach
+            val isProtectionBoundary = it.asJsonObject?.get("protection_boundary")?.asBoolean ?: false
 
-            result.add(UVForecastData(uv, uvTime))
+            result.add(UVForecastData(uv, uvTime, isProtectionTimeBoundary = isProtectionBoundary))
         }
 
         return result.toTypedArray()
@@ -39,6 +40,7 @@ object UVForecastGsonAdapter: JsonDeserializer<Array<UVForecastData>>, JsonSeria
             val arrayElement = JsonObject()
             arrayElement.addProperty("uv", it.uv)
             arrayElement.addProperty("uv_time", it.time.toString())
+            arrayElement.addProperty("protection_boundary", it.isProtectionTimeBoundary)
 
             forecastJsonArray.add(arrayElement)
         }

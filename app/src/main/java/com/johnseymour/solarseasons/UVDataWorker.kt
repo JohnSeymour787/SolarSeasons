@@ -172,8 +172,9 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
                 it.forecast?.let()
                 { forecastData ->
-                    DiskRepository.writeLatestForecastList(forecastData, dataSharedPreferences)
-                    activityIntent.putParcelableArrayListExtra(UVForecastData.UV_FORECAST_LIST_KEY, ArrayList(forecastData))
+                    val updatedForecast = it.protectionTime?.let { protectionData -> setUVForecastProtectionTimeBoundaries(forecastData.toMutableList(), protectionData) } ?: forecastData
+                    DiskRepository.writeLatestForecastList(updatedForecast, dataSharedPreferences)
+                    activityIntent.putParcelableArrayListExtra(UVForecastData.UV_FORECAST_LIST_KEY, ArrayList(updatedForecast))
                 }
 
                 it.protectionTime?.let()
@@ -206,6 +207,31 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 }
             }
         }
+    }
+
+    /** Modifies a UVForecastData list to find and set elements whose time is the closest match to the passed UVProtectionTimeData. */
+    private fun setUVForecastProtectionTimeBoundaries(forecastData: MutableList<UVForecastData>, protectionTimeData: UVProtectionTimeData): List<UVForecastData>
+    {
+        if (protectionTimeData.isProtectionNeeded.not()) { return forecastData }
+
+        var fromTimeForecastIndex = 0
+        while ((fromTimeForecastIndex < forecastData.size) && (protectionTimeData.fromTime.isAfter(forecastData[fromTimeForecastIndex].time)))
+        {
+            fromTimeForecastIndex++
+        }
+        fromTimeForecastIndex--
+
+        var toTimeForecastIndex = 0
+        while ((toTimeForecastIndex < forecastData.size) && (protectionTimeData.toTime.isAfter(forecastData[toTimeForecastIndex].time)))
+        {
+            toTimeForecastIndex++
+        }
+        toTimeForecastIndex--
+
+        forecastData[fromTimeForecastIndex] = forecastData[fromTimeForecastIndex].copy(isProtectionTimeBoundary = true)
+        forecastData[toTimeForecastIndex] = forecastData[toTimeForecastIndex].copy(isProtectionTimeBoundary = true)
+
+        return forecastData
     }
 
     private fun scheduleProtectionTimeNotification(protectionTimeData: UVProtectionTimeData)
