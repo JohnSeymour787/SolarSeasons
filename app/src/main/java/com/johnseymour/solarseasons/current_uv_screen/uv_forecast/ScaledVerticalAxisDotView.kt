@@ -33,6 +33,7 @@ class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) :
     var yValue = 10F
 
     var drawVerticalMarkerLine = false
+    var useDashedVerticalMarkerLine = true
 
     @ColorInt
     var dotColour = resources.getColor(R.color.black, context.theme)
@@ -240,7 +241,7 @@ class ScaledVerticalAxisDotView(context: Context, attrs: AttributeSet? = null) :
 
         if (drawVerticalMarkerLine)
         {
-            canvas.drawLine(contentCenter, height.toFloat(), contentCenter, dotHeight, if (yValue > Y_VALUE_DASHED_LINE_THRESHOLD) { dashedVerticalLinePaint } else { linePaint })
+            canvas.drawLine(contentCenter, height.toFloat(), contentCenter, dotHeight, if (useDashedVerticalMarkerLine && yValue > Y_VALUE_DASHED_LINE_THRESHOLD) { dashedVerticalLinePaint } else { linePaint })
         }
 
         canvas.drawCircle(contentCenter, dotHeight, dotRadius, dotPaint)

@@ -7,6 +7,7 @@ import com.johnseymour.solarseasons.R
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.models.UVForecastData
 import com.johnseymour.solarseasons.preferredTimeString
+import com.johnseymour.solarseasons.resolveColourAttr
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import kotlinx.android.synthetic.main.list_cell_uv_forecast.view.*
 
@@ -27,9 +28,28 @@ class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private
                     it.text = resources.getString(R.string.uv_value, forecastData.uv)
 
                     it.lineColour = resources.getColor(UVData.uvColourInt(forecastData.uv), context.theme)
-                    it.verticalMarkerLineColour = resources.getColor(if (PreferenceScreenFragment.useCustomTheme) { textColorInt } else { UVData.uvColourInt(forecastData.uv) }, context.theme)
 
-                    it.drawVerticalMarkerLine = forecastData.isTimeNow
+                    when
+                    {
+                        forecastData.isTimeNow ->
+                        {
+                            it.drawVerticalMarkerLine = true
+                            it.useDashedVerticalMarkerLine = true
+                            it.verticalMarkerLineColour = if (PreferenceScreenFragment.useCustomTheme) { resources.getColor(textColorInt, context.theme) } else { context.resolveColourAttr(android.R.attr.textColorPrimary) }
+                        }
+
+                        forecastData.isProtectionTimeBoundary ->
+                        {
+                            it.drawVerticalMarkerLine = true
+                            it.useDashedVerticalMarkerLine = false
+                            it.verticalMarkerLineColour = resources.getColor(UVData.uvColourInt(forecastData.uv), context.theme)
+                        }
+
+                        else ->
+                        {
+                            it.drawVerticalMarkerLine = false
+                        }
+                    }
                 }
 
                 if (forecastData.isTimeNow)
