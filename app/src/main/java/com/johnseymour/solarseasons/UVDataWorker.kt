@@ -26,7 +26,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         private val MIN_PERIODIC_INTERVAL_MINUTES = TimeUnit.MILLISECONDS.toMinutes(PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS)
         private val MAX_BACKOFF_MINUTES = TimeUnit.MILLISECONDS.toMinutes(PeriodicWorkRequest.MAX_BACKOFF_MILLIS)
 
-        private val workConstraints = Constraints.Builder().setRequiresBatteryNotLow(true).build()
+        private val workConstraints = Constraints.Builder().setRequiresBatteryNotLow(true).setRequiredNetworkType(NetworkType.CONNECTED).build()
         private var uvDataRequest: WorkRequest? = null
         private var previousDelayStartSetting = false
 
@@ -194,11 +194,11 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 widgetIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
                 activityIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
 
-                applicationContext.sendBroadcast(widgetIntent)
-                LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(activityIntent)
-
                 if (isFailureError(it))
                 {
+                    // Only if not going to retry later show the error message
+                    applicationContext.sendBroadcast(widgetIntent)
+                    LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(activityIntent)
                     result.set(Result.failure())
                 }
                 else
