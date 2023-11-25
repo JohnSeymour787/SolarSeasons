@@ -252,6 +252,8 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
         val defaultPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
+        if (defaultPreferences.getBoolean(Constants.SharedPreferences.UV_PROTECTION_NOTIFICATION_KEY, true).not()) { return }
+
         val protectionStartScheduleTime = when (DiskRepository.uvNotificationTimeType(defaultPreferences))
         {
             DiskRepository.NotificationTimeType.DayStart ->
