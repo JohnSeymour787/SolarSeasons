@@ -70,6 +70,11 @@ object Constants
         const val CUSTOM_APP_THEME_VALUE = "custom_theme"
         const val APP_LAUNCH_AUTO_REQUEST_KEY = "app_launch_auto_request"
 
+        const val UV_PROTECTION_NOTIFICATION_KEY = "uv_protection_notification"
+        const val UV_PROTECTION_NOTIFICATION_TIME_KEY = "uv_protection_notification_time"
+        const val UV_PROTECTION_NOTIFICATION_CUSTOM_TIME_KEY = "uv_protection_notification_custom_time"
+        const val UV_PROTECTION_END_NOTIFICATION_KEY = "uv_protection_end_notification"
+
         const val MANUAL_LOCATION_ENABLED_KEY = "enable_manual_location"
         const val MANUAL_LOCATION_LATITUDE_KEY = "manual_location_latitude"
         const val MANUAL_LOCATION_LONGITUDE_KEY = "manual_location_longitude"

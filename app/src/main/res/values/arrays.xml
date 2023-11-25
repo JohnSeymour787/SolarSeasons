@@ -32,6 +32,18 @@
         <item>240</item>
     </string-array>
 
+    <string-array name="preferences_uv_protection_time_option_entries">
+        <item>Start of Day</item>
+        <item>When Protection Needed</item>
+        <item>Custom Time</item>
+    </string-array>
+
+    <string-array name="preferences_uv_protection_time_option_values">
+        <item>first_request</item>
+        <item>uv_from_time</item>
+        <item>custom_time</item>
+    </string-array>
+
     <string-array name="preferences_app_theme_entries">
         <item>Default - Follows Device Theme</item>
         <item>Custom - Colour Depends on UV Level</item>

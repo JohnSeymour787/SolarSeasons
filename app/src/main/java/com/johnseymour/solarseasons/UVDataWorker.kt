@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.PreferenceManager
 import androidx.work.*
 import com.google.common.util.concurrent.ListenableFuture
 import com.johnseymour.solarseasons.models.UVData
@@ -234,7 +235,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         return forecastData
     }
 
-    private fun scheduleProtectionTimeNotification(protectionTimeData: UVProtectionTimeData)
+    private fun scheduleProtectionTimeNotification(protectionTimeData: UVProtectionTimeData, )
     {
         if (protectionTimeData.isProtectionNeeded.not()) { return }
 
@@ -242,51 +243,60 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         if (notificationManager.areNotificationsEnabled().not()) { return }
 
         val alarmManager = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        // TODO() After API 33 check alarms are enabled
+
+        if (alarmManager.canScheduleExactAlarms().not()) { return }
 
         val timeNow = ZonedDateTime.now()
 
         var protectionTimeAlreadyStarted = false
 
-        // TODO() Here need to check settings whether to schedule time now (on first request), at a user-set time, or on the fromTime
-        val protectionStartScheduleTime = if (false) // At fromTime // TODO() Can be a when statement
-        {
+        val defaultPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
-            protectionTimeAlreadyStarted = true
-            if (protectionTimeData.fromTime.isAfter(timeNow))
+        val protectionStartScheduleTime = when (DiskRepository.uvNotificationTimeType(defaultPreferences))
+        {
+            DiskRepository.NotificationTimeType.DayStart ->
             {
+                if (timeNow.isAfter(protectionTimeData.fromTime))
+                {
+                    protectionTimeAlreadyStarted = true
+                }
                 timeNow
             }
-            else
+
+            DiskRepository.NotificationTimeType.Custom ->
             {
-                protectionTimeData.fromTime
+                val uvNotificationCustomTime = DiskRepository.uvNotificationCustomTime(defaultPreferences) ?: timeNow
+                if (timeNow.isAfter(uvNotificationCustomTime))
+                {
+                    timeNow
+                }
+                else
+                {
+                    uvNotificationCustomTime
+                }
             }
-        }
-        else if (false) // Custom time // TODO() custom user time, see behaviour if this time has already passed
-        {
-            if (protectionTimeData.fromTime.isAfter(timeNow))
+
+            DiskRepository.NotificationTimeType.WhenNeeded ->
             {
-                protectionTimeAlreadyStarted = true
-                timeNow
+                if (timeNow.isAfter(protectionTimeData.fromTime))
+                {
+                    protectionTimeAlreadyStarted = true
+                    timeNow
+                }
+                else
+                {
+                    protectionTimeData.fromTime
+                }
             }
-            else
-            {
-                protectionTimeData.fromTime
-            }
-        }
-        else // On first receive
-        {
-            if (timeNow.isAfter(protectionTimeData.fromTime))
-            {
-                protectionTimeAlreadyStarted = true
-            }
-            timeNow
         }
 
         alarmManager.set(AlarmManager.RTC, protectionStartScheduleTime.toEpochMilli(), protectionTimeData.protectionStartPendingIntent(applicationContext, protectionTimeAlreadyStarted))
 
-        // TODO() Also need to check if end time notifications are enabled
-        alarmManager.set(AlarmManager.RTC, protectionTimeData.toTime.toEpochMilli(), protectionTimeData.protectionEndPendingIntent(applicationContext))
+        val uvEndNotificationsEnabled = defaultPreferences.getBoolean(Constants.SharedPreferences.UV_PROTECTION_END_NOTIFICATION_KEY, true)
+        if (uvEndNotificationsEnabled)
+        {
+            alarmManager.set(AlarmManager.RTC, protectionTimeData.toTime.toEpochMilli(), protectionTimeData.protectionEndPendingIntent(applicationContext))
+        }
     }
 
     private fun isFailureError(errorStatus: ErrorStatus): Boolean

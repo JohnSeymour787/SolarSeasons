@@ -25,6 +25,41 @@
         app:summary="@string/preference_cloud_cover_summary"
         app:defaultValue="false" />
 
+    <SwitchPreferenceCompat
+        app:key="uv_protection_notification"
+        app:title="UV Protection Notification"
+        app:singleLineTitle="false"
+        app:iconSpaceReserved="false"
+        app:summary="The app will send a push notification reminding you to apply sun protection when the UV exceeds 3.5."
+        app:defaultValue="true" />
+
+    <ListPreference
+        app:key="uv_protection_notification_time"
+        app:title="UV Protection Notification Time"
+        app:entries="@array/preferences_uv_protection_time_option_entries"
+        app:entryValues="@array/preferences_uv_protection_time_option_values"
+        app:defaultValue="first_request"
+        app:iconSpaceReserved="false"
+        app:useSimpleSummaryProvider="true"
+        app:shouldDisableView="true"
+        app:dependency="uv_protection_notification" />
+
+    <EditTextPreference
+        app:key="uv_protection_notification_custom_time"
+        app:title="Notify Me At"
+        app:iconSpaceReserved="false"
+        app:useSimpleSummaryProvider="true"
+        app:shouldDisableView="true"
+        app:dependency="uv_protection_notification" />
+
+    <SwitchPreferenceCompat
+        app:key="uv_protection_end_notification"
+        app:title="UV Protection Ended Notification"
+        app:singleLineTitle="false"
+        app:iconSpaceReserved="false"
+        app:summary="The app will send a push notification when the UV level returns to safe levels."
+        app:defaultValue="true" />
+
     <PreferenceCategory
         app:key="manual_location_settings"
         app:title="@string/preference_manual_location_category_title"
