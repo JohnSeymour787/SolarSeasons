@@ -235,7 +235,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         return forecastData
     }
 
-    private fun scheduleProtectionTimeNotification(protectionTimeData: UVProtectionTimeData, )
+    private fun scheduleProtectionTimeNotification(protectionTimeData: UVProtectionTimeData)
     {
         if (protectionTimeData.isProtectionNeeded.not()) { return }
 
@@ -243,7 +243,6 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         if (notificationManager.areNotificationsEnabled().not()) { return }
 
         val alarmManager = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
         if (alarmManager.canScheduleExactAlarms().not()) { return }
 
         val timeNow = ZonedDateTime.now()
