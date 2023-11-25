@@ -157,11 +157,13 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
                 val updatedScreenUnlockSetting = sharedPreferences.getBoolean(key, false)
                 setFragmentResult(WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(SmallUVDisplay.SET_RECEIVING_SCREEN_UNLOCK_KEY to updatedScreenUnlockSetting))
             }
+
             Constants.SharedPreferences.WORK_TYPE_KEY ->
             {
                 val updatedWorkTypeValue = sharedPreferences.getString(key, null) ?: return
                 setFragmentResult(WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(SmallUVDisplay.SET_USE_PERIODIC_WORK_KEY to (updatedWorkTypeValue == Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE)))
             }
+
             Constants.SharedPreferences.BACKGROUND_REFRESH_RATE_KEY ->
             {
                 val updatedRefreshRateValue = sharedPreferences.getString(key, null)?.toLongOrNull() ?: return
