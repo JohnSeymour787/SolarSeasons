@@ -113,6 +113,12 @@
     <string name="preference_manual_location_latitude_error">Latitude value must be within -90.0 and +90.0</string>
     <string name="preference_manual_location_longitude_error">Longitude value must be within -180.0 and +180.0</string>
     <string name="preference_manual_location_altitude_error">Altitude value must be within 0 and 30000</string>
+    <string name="preference_uv_notification_enabled_title">UV Protection Notification</string>
+    <string name="preference_uv_notification_enabled_summary">The app will send a push notification reminding you to apply sun protection when the UV exceeds 3.5.</string>
+    <string name="preference_uv_notification_time_type_title">UV Protection Notification Time</string>
+    <string name="preference_uv_notification_custom_time_title">Notify Me At</string>
+    <string name="preference_uv_notification_end_time_enabled_title">UV Protection Ended Notification</string>
+    <string name="preference_uv_notification_end_time_enabled_summary">The app will send a push notification when the UV level returns to safe levels.</string>
     <string name="preference_uv_notification_custom_time_error">Custom time value must be a 24 hour time with a "." between minutes and hours</string>
     <string name="preference_api_key_title">API Key</string>
     <string name="preferences_screen_background_processing_explanation">Note: Some versions of the Android operating system kill background processes after a while, meaning that the app widget might not always refresh consistently.\n\nAdjusting some of the above settings may improve the reliability of the background data synchronisation.</string>
@@ -151,4 +157,5 @@ account is needed for authentication and you will not need to create a new passw
     <string name="uv_protection_notification_start_protection_body_immediate">The UV index is now above %1$.1f. Sun protection is recommended until %2$s</string>
     <string name="uv_protection_notification_end_protection_title">Sun Protection Ended</string>
     <string name="uv_protection_notification_end_protection_body">The UV index is now below %1$.1f. Sun protection is no longer required</string>
+    <string name="uv_protection_notification_persist_notification_message">Persist Notification</string>
 </resources>
