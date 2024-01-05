@@ -280,9 +280,9 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
             DiskRepository.NotificationTimeType.WhenNeeded ->
             {
+                protectionTimeAlreadyStarted = true
                 if (timeNow.isAfter(protectionTimeData.fromTime))
                 {
-                    protectionTimeAlreadyStarted = true
                     timeNow
                 }
                 else
