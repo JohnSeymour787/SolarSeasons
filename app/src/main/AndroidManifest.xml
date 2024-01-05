@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:versionCode="4"
-    android:versionName="4"
-    package="com.johnseymour.solarseasons">
+    android:versionName="4">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -20,6 +19,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SolarSeasons"
         tools:ignore="AllowBackup">
+        <receiver
+            android:name=".ProtectionTimeAlarmReceiver"
+            android:enabled="true"
+            android:exported="false" />
 
         <service
             android:name=".services.LocationService"
@@ -37,8 +40,7 @@
             android:name=".services.LocationServiceTestNoAPI"
             android:foregroundServiceType="location" />
 
-        <receiver
-            android:name=".SmallUVDisplay">
+        <receiver android:name=".SmallUVDisplay" android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -51,11 +53,14 @@
 
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>
+
 </manifest>

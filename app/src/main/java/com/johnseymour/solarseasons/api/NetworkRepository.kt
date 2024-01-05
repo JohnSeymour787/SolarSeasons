@@ -9,6 +9,7 @@ import com.johnseymour.solarseasons.ErrorStatus
 import com.johnseymour.solarseasons.asNegative
 import com.johnseymour.solarseasons.asPositive
 import com.johnseymour.solarseasons.models.UVForecastData
+import com.johnseymour.solarseasons.models.UVProtectionTimeData
 import nl.komponents.kovenant.deferred
 import nl.komponents.kovenant.Promise
 import nl.komponents.kovenant.reject
@@ -37,6 +38,7 @@ object NetworkRepository
             registerTypeAdapter(SunInfo::class.java, SunInfoGsonAdapter)
             registerTypeAdapter(UVData::class.java, UVDataGsonAdapter)
             registerTypeAdapter(Array<UVForecastData>::class.java, UVForecastGsonAdapter)
+            registerTypeAdapter(UVProtectionTimeData::class.java, UVProtectionDataGsonAdapter)
             create()
         }
 
@@ -251,6 +253,45 @@ object NetworkRepository
             }
 
             override fun onFailure(call: Call<Array<UVForecastData>>, t: Throwable)
+            {
+                if (t is IOException) // If network error
+                {
+                    result.reject(ErrorStatus.NetworkError)
+                }
+                else
+                {
+                    result.reject(ErrorStatus.GeneralNoResponseError)
+                }
+            }
+        })
+
+        return result.promise
+    }
+
+    fun getUVProtectionTimes(latitude: Double, longitude: Double, altitude: Double, fromUV: Float, toUV: Float): Promise<UVProtectionTimeData, ErrorStatus>
+    {
+        val result = deferred<UVProtectionTimeData, ErrorStatus>()
+
+        openUVAPI.getUVProtectionTimes(latitude, longitude, validateAltitude(altitude), fromUV, toUV).enqueue(object: Callback<UVProtectionTimeData>
+        {
+            override fun onResponse(call: Call<UVProtectionTimeData>, response: Response<UVProtectionTimeData>)
+            {
+                response.body()?.let()
+                {
+                    result.resolve(it)
+                    return
+                }
+
+                response.errorBody()?.string()?.let()
+                {
+                    result.reject(handleOpenUVAPIResponseError(it))
+                    return
+                }
+
+                result.reject(ErrorStatus.GeneralError)
+            }
+
+            override fun onFailure(call: Call<UVProtectionTimeData>, t: Throwable)
             {
                 if (t is IOException) // If network error
                 {

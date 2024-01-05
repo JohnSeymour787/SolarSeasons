@@ -446,7 +446,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             forecastBestScrollPosition--
 
             val lForecastList = it.toMutableList()
-            val currentData = UVForecastData(lUVData.uv, timeNow, true)
+            val currentData = UVForecastData(lUVData.uv, timeNow, isTimeNow = true)
 
             // Only add the forecast data if at either list end (to keep symmetrical UV curve)
             when (forecastBestScrollPosition)

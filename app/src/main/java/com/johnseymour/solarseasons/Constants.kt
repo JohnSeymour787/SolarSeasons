@@ -15,7 +15,7 @@ object Constants
     const val OPEN_UV_WEBSITE_CONSOLE_URL = "https://www.openuv.io/console"
 
     /** Default background refresh rate of calling the API in minutes **/
-    const val DEFAULT_REFRESH_TIME = 30L
+    const val DEFAULT_REFRESH_TIME = 60L
 
     /** Shortest time interval to call the API, in minutes **/
     const val SHORTEST_REFRESH_TIME = 1L
@@ -28,6 +28,9 @@ object Constants
 
     /** Time in minutes for which a current UV data is considered "recent" for displaying on the UV forecast graph **/
     const val UV_FORECAST_ACCEPTABLE_RECENT_UV_TIME = 40L
+
+    const val UV_PROTECTION_TIME_DEFAULT_FROM_UV = 3.5F
+    const val UV_PROTECTION_TIME_DEFAULT_TO_UV = 3.5F
 
     const val MINUTES_PER_HOUR = 60
     const val MINUTES_PER_DAY = 1440
@@ -66,6 +69,11 @@ object Constants
         const val APP_THEME_KEY = "app_theme"
         const val CUSTOM_APP_THEME_VALUE = "custom_theme"
         const val APP_LAUNCH_AUTO_REQUEST_KEY = "app_launch_auto_request"
+
+        const val UV_PROTECTION_NOTIFICATION_KEY = "uv_protection_notification"
+        const val UV_PROTECTION_NOTIFICATION_TIME_KEY = "uv_protection_notification_time"
+        const val UV_PROTECTION_NOTIFICATION_CUSTOM_TIME_KEY = "uv_protection_notification_custom_time"
+        const val UV_PROTECTION_END_NOTIFICATION_KEY = "uv_protection_end_notification"
 
         const val MANUAL_LOCATION_ENABLED_KEY = "enable_manual_location"
         const val MANUAL_LOCATION_LATITUDE_KEY = "manual_location_latitude"

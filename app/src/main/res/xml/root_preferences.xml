@@ -25,6 +25,42 @@
         app:summary="@string/preference_cloud_cover_summary"
         app:defaultValue="false" />
 
+    <SwitchPreferenceCompat
+        app:key="uv_protection_notification"
+        app:title="@string/preference_uv_notification_enabled_title"
+        app:singleLineTitle="false"
+        app:iconSpaceReserved="false"
+        app:summary="@string/preference_uv_notification_enabled_summary"
+        app:defaultValue="true" />
+
+    <ListPreference
+        app:key="uv_protection_notification_time"
+        app:title="@string/preference_uv_notification_time_type_title"
+        app:entries="@array/preferences_uv_protection_time_option_entries"
+        app:entryValues="@array/preferences_uv_protection_time_option_values"
+        app:defaultValue="first_request"
+        app:iconSpaceReserved="false"
+        app:useSimpleSummaryProvider="true"
+        app:shouldDisableView="true"
+        app:dependency="uv_protection_notification" />
+
+    <EditTextPreference
+        app:key="uv_protection_notification_custom_time"
+        app:title="@string/preference_uv_notification_custom_time_title"
+        app:iconSpaceReserved="false"
+        app:useSimpleSummaryProvider="true"
+        app:shouldDisableView="true"
+        app:dependency="uv_protection_notification" />
+
+    <SwitchPreferenceCompat
+        app:key="uv_protection_end_notification"
+        app:title="@string/preference_uv_notification_end_time_enabled_title"
+        app:singleLineTitle="false"
+        app:iconSpaceReserved="false"
+        app:summary="@string/preference_uv_notification_end_time_enabled_summary"
+        app:defaultValue="true"
+        app:dependency="uv_protection_notification" />
+
     <PreferenceCategory
         app:key="manual_location_settings"
         app:title="@string/preference_manual_location_category_title"
@@ -98,7 +134,7 @@
             app:title="@string/preference_background_refresh_rate_title"
             app:entries="@array/preferences_background_refresh_rate_entries"
             app:entryValues="@array/preferences_background_refresh_rate_values"
-            app:defaultValue="30"
+            app:defaultValue="60"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 

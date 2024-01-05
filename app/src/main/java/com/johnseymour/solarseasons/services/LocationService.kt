@@ -15,6 +15,7 @@ import com.johnseymour.solarseasons.api.NetworkRepository
 import com.johnseymour.solarseasons.models.UVCombinedForecastData
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.models.UVForecastData
+import com.johnseymour.solarseasons.models.UVProtectionTimeData
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise
@@ -116,13 +117,14 @@ abstract class LocationService: Service()
     private var cloudCover: Double? = null
     private var cityName: String? = null
     private var uvForecast: List<UVForecastData>? = null
+    private var uvProtection: UVProtectionTimeData? = null
 
     private fun calculateNumberOfRequests(cloudCoverEnabled: Boolean): Int
     {
         var result = 2 // City name and UV data always fetched
 
         if (cloudCoverEnabled) { result++ }
-        if (firstRequestOfDay) { result++ }
+        if (firstRequestOfDay) { result += 2 }
 
         return result
     }
@@ -133,7 +135,7 @@ abstract class LocationService: Service()
         {
             it.cloudCover = cloudCover
             it.cityName = cityName
-            uvDataDeferred?.resolve(UVCombinedForecastData(it, uvForecast))
+            uvDataDeferred?.resolve(UVCombinedForecastData(it, uvForecast, uvProtection))
         }
 
         stopSelf()
@@ -180,6 +182,21 @@ abstract class LocationService: Service()
                     networkRequestsComplete()
                 }
             }.fail() // Failure of forecast data is also non-critical
+            {
+                if (requestsMade.incrementAndGet() == networkRequestsToMake)
+                {
+                    networkRequestsComplete()
+                }
+            }
+
+            NetworkRepository.getUVProtectionTimes(latitude, longitude, altitude, Constants.UV_PROTECTION_TIME_DEFAULT_FROM_UV, Constants.UV_PROTECTION_TIME_DEFAULT_TO_UV).success()
+            { lUVProtection ->
+                uvProtection = lUVProtection
+                if (requestsMade.incrementAndGet() == networkRequestsToMake)
+                {
+                    networkRequestsComplete()
+                }
+            }.fail() // Failure of protection data is also non-critical
             {
                 if (requestsMade.incrementAndGet() == networkRequestsToMake)
                 {

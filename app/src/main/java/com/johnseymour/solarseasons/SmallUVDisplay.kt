@@ -10,7 +10,6 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager
-import androidx.work.*
 import com.johnseymour.solarseasons.api.OPENUV_API_KEY
 import com.johnseymour.solarseasons.models.UVData
 import java.io.FileNotFoundException
@@ -71,7 +70,7 @@ class SmallUVDisplay : AppWidgetProvider()
 
                 return forecast.time.toLocalDate().isNotEqual(LocalDate.now())
             }
-            catch (e: FileNotFoundException) {}
+            catch (_: FileNotFoundException) {}
             return true
         }
     }
@@ -89,7 +88,7 @@ class SmallUVDisplay : AppWidgetProvider()
                 {
                     this.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
                 } ?: run { putExtra(UVData.UV_DATA_KEY, uvData) }
-            }.let { PendingIntent.getActivity(context, appWidgetId, it, PendingIntent.FLAG_UPDATE_CURRENT) }
+            }.let { PendingIntent.getActivity(context, appWidgetId, it, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE) }
 
             updateAppWidget(context, appWidgetManager, appWidgetId, intent)
         }
@@ -134,7 +133,7 @@ class SmallUVDisplay : AppWidgetProvider()
         }
 
         // Initialise memory
-        uvData ?: try { uvData = DiskRepository.readLatestUV(context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)) } catch (e: FileNotFoundException) {}
+        uvData ?: try { uvData = DiskRepository.readLatestUV(context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)) } catch (_: FileNotFoundException) {}
 
         companionFieldsInitialised = true
     }
