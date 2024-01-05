@@ -134,7 +134,7 @@
             app:title="@string/preference_background_refresh_rate_title"
             app:entries="@array/preferences_background_refresh_rate_entries"
             app:entryValues="@array/preferences_background_refresh_rate_values"
-            app:defaultValue="30"
+            app:defaultValue="60"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 

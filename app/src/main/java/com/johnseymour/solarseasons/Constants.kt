@@ -15,7 +15,7 @@ object Constants
     const val OPEN_UV_WEBSITE_CONSOLE_URL = "https://www.openuv.io/console"
 
     /** Default background refresh rate of calling the API in minutes **/
-    const val DEFAULT_REFRESH_TIME = 30L
+    const val DEFAULT_REFRESH_TIME = 60L
 
     /** Shortest time interval to call the API, in minutes **/
     const val SHORTEST_REFRESH_TIME = 1L
