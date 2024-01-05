@@ -40,7 +40,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 {
                     setInitialDelay(delayTime, TimeUnit.MINUTES)
                     setConstraints(workConstraints) // Only set the battery constraint when doing a delayed (background) start
-                    setBackoffCriteria(BackoffPolicy.EXPONENTIAL, delayTime, TimeUnit.MINUTES)
+                    setBackoffCriteria(BackoffPolicy.LINEAR, delayTime, TimeUnit.MINUTES)
                 }
                 else
                 {
