@@ -18,6 +18,7 @@ import com.johnseymour.solarseasons.services.LocationService
 import nl.komponents.kovenant.deferred
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
+import kotlin.math.absoluteValue
 
 class UVDataWorker(applicationContext: Context, workerParameters: WorkerParameters): ListenableWorker(applicationContext, workerParameters)
 {
@@ -217,18 +218,36 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         if (protectionTimeData.isProtectionNeeded.not()) { return forecastData }
 
         var fromTimeForecastIndex = 0
-        while ((fromTimeForecastIndex < forecastData.size) && (protectionTimeData.fromTime.isAfter(forecastData[fromTimeForecastIndex].time)))
+        while ((fromTimeForecastIndex < forecastData.size - 1) && ((forecastData[fromTimeForecastIndex].time).isBefore(protectionTimeData.fromTime)))
         {
             fromTimeForecastIndex++
         }
-        fromTimeForecastIndex--
+        fromTimeForecastIndex = if (fromTimeForecastIndex > 0) fromTimeForecastIndex - 1 else fromTimeForecastIndex
+
+        val fromUvAtIndex = forecastData[fromTimeForecastIndex].uv
+        val fromUvAtNext = forecastData[if (fromTimeForecastIndex < forecastData.size - 1) fromTimeForecastIndex + 1 else fromTimeForecastIndex].uv
+
+        // If the next UV is closer to the protection UV then use that, increase the index
+        if ((fromUvAtIndex - protectionTimeData.fromUV).absoluteValue > (fromUvAtNext - protectionTimeData.fromUV).absoluteValue)
+        {
+            fromTimeForecastIndex++
+        }
 
         var toTimeForecastIndex = 0
-        while ((toTimeForecastIndex < forecastData.size) && (protectionTimeData.toTime.isAfter(forecastData[toTimeForecastIndex].time)))
+        while ((toTimeForecastIndex < forecastData.size - 1) && (forecastData[toTimeForecastIndex].time).isBefore(protectionTimeData.toTime))
         {
             toTimeForecastIndex++
         }
-        toTimeForecastIndex--
+        toTimeForecastIndex = if (toTimeForecastIndex > 0) toTimeForecastIndex - 1 else toTimeForecastIndex
+
+        val toUvAtIndex = forecastData[toTimeForecastIndex].uv
+        val toUvAtNext = forecastData[if (toTimeForecastIndex < forecastData.size - 1) toTimeForecastIndex + 1 else toTimeForecastIndex].uv
+
+        // If the next UV is closer to the protection UV then use that, increase the index
+        if ((toUvAtIndex - protectionTimeData.toUV).absoluteValue > (toUvAtNext - protectionTimeData.toUV).absoluteValue)
+        {
+            toTimeForecastIndex++
+        }
 
         forecastData[fromTimeForecastIndex] = forecastData[fromTimeForecastIndex].copy(isProtectionTimeBoundary = true)
         forecastData[toTimeForecastIndex] = forecastData[toTimeForecastIndex].copy(isProtectionTimeBoundary = true)
