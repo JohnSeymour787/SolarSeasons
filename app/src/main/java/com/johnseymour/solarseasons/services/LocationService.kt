@@ -9,12 +9,13 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import androidx.preference.PreferenceManager
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.johnseymour.solarseasons.*
 import com.johnseymour.solarseasons.api.NetworkRepository
 import com.johnseymour.solarseasons.models.UVCombinedForecastData
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.models.UVForecastData
+import com.johnseymour.solarseasons.models.UVLocationData
 import com.johnseymour.solarseasons.models.UVProtectionTimeData
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import nl.komponents.kovenant.Deferred
@@ -36,6 +37,8 @@ abstract class LocationService: Service()
         private const val NOTIFICATION_CHANNEL_NAME = "Solar.seasons.foreground_location_channel"
 
         const val FIRST_DAILY_REQUEST_KEY = "first_daily_request_key"
+
+        const val LOCATION_UPDATE_RECEIVED = "com.johnseymour.solarseasons.LOCATION_UPDATE_RECEIVED"
 
         var uvDataDeferred: Deferred<UVCombinedForecastData, ErrorStatus>? = null
         val uvDataPromise: Promise<UVCombinedForecastData, ErrorStatus>?
@@ -146,81 +149,87 @@ abstract class LocationService: Service()
 
     fun locationSuccess(latitude: Double, longitude: Double, altitude: Double)
     {
-        val isCloudCoverEnabled = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-            .getBoolean(Constants.SharedPreferences.CLOUD_COVER_FACTOR_KEY, false)
-
-        val networkRequestsToMake = calculateNumberOfRequests(isCloudCoverEnabled)
-
-        if (isCloudCoverEnabled)
+        val intent = Intent(LOCATION_UPDATE_RECEIVED).apply()
         {
-            NetworkRepository.getCurrentCloudCover(latitude, longitude).success()
-            { lCloudCover ->
-                cloudCover = lCloudCover
-
-                if (requestsMade.incrementAndGet() == networkRequestsToMake)
-                {
-                    networkRequestsComplete()
-                }
-            }.fail() // Failure of cloud cover data is non-critical
-            {
-                if (requestsMade.incrementAndGet() == networkRequestsToMake)
-                {
-                    networkRequestsComplete()
-                }
-            }
+            putExtra(UVLocationData.UV_LOCATION_KEY, UVLocationData(latitude, longitude, altitude))
         }
-
-        if (firstRequestOfDay)
-        {
-            NetworkRepository.getUVForecast(latitude, longitude, altitude).success()
-            { lUVForecast ->
-
-                uvForecast = lUVForecast
-
-                if (requestsMade.incrementAndGet() == networkRequestsToMake)
-                {
-                    networkRequestsComplete()
-                }
-            }.fail() // Failure of forecast data is also non-critical
-            {
-                if (requestsMade.incrementAndGet() == networkRequestsToMake)
-                {
-                    networkRequestsComplete()
-                }
-            }
-
-            NetworkRepository.getUVProtectionTimes(latitude, longitude, altitude, Constants.UV_PROTECTION_TIME_DEFAULT_FROM_UV, Constants.UV_PROTECTION_TIME_DEFAULT_TO_UV).success()
-            { lUVProtection ->
-                uvProtection = lUVProtection
-                if (requestsMade.incrementAndGet() == networkRequestsToMake)
-                {
-                    networkRequestsComplete()
-                }
-            }.fail() // Failure of protection data is also non-critical
-            {
-                if (requestsMade.incrementAndGet() == networkRequestsToMake)
-                {
-                    networkRequestsComplete()
-                }
-            }
-        }
-
-        NetworkRepository.getGeoCodedCityName(latitude, longitude).success()
-        { lCityName ->
-            cityName = lCityName
-            if (requestsMade.incrementAndGet() == networkRequestsToMake)
-            {
-                networkRequestsComplete()
-            }
-        }.fail() // Failure of city name data is non-critical
-        {
-            if (requestsMade.incrementAndGet() == networkRequestsToMake)
-            {
-                networkRequestsComplete()
-            }
-        }
-
-        makeRealTimeUVRequest(latitude, longitude, altitude, networkRequestsToMake)
+        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
+        stopSelf()
+//        val isCloudCoverEnabled = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+//            .getBoolean(Constants.SharedPreferences.CLOUD_COVER_FACTOR_KEY, false)
+//
+//        val networkRequestsToMake = calculateNumberOfRequests(isCloudCoverEnabled)
+//
+//        if (isCloudCoverEnabled)
+//        {
+//            NetworkRepository.getCurrentCloudCover(latitude, longitude).success()
+//            { lCloudCover ->
+//                cloudCover = lCloudCover
+//
+//                if (requestsMade.incrementAndGet() == networkRequestsToMake)
+//                {
+//                    networkRequestsComplete()
+//                }
+//            }.fail() // Failure of cloud cover data is non-critical
+//            {
+//                if (requestsMade.incrementAndGet() == networkRequestsToMake)
+//                {
+//                    networkRequestsComplete()
+//                }
+//            }
+//        }
+//
+//        if (firstRequestOfDay)
+//        {
+//            NetworkRepository.getUVForecast(latitude, longitude, altitude).success()
+//            { lUVForecast ->
+//
+//                uvForecast = lUVForecast
+//
+//                if (requestsMade.incrementAndGet() == networkRequestsToMake)
+//                {
+//                    networkRequestsComplete()
+//                }
+//            }.fail() // Failure of forecast data is also non-critical
+//            {
+//                if (requestsMade.incrementAndGet() == networkRequestsToMake)
+//                {
+//                    networkRequestsComplete()
+//                }
+//            }
+//
+//            NetworkRepository.getUVProtectionTimes(latitude, longitude, altitude, Constants.UV_PROTECTION_TIME_DEFAULT_FROM_UV, Constants.UV_PROTECTION_TIME_DEFAULT_TO_UV).success()
+//            { lUVProtection ->
+//                uvProtection = lUVProtection
+//                if (requestsMade.incrementAndGet() == networkRequestsToMake)
+//                {
+//                    networkRequestsComplete()
+//                }
+//            }.fail() // Failure of protection data is also non-critical
+//            {
+//                if (requestsMade.incrementAndGet() == networkRequestsToMake)
+//                {
+//                    networkRequestsComplete()
+//                }
+//            }
+//        }
+//
+//        NetworkRepository.getGeoCodedCityName(latitude, longitude).success()
+//        { lCityName ->
+//            cityName = lCityName
+//            if (requestsMade.incrementAndGet() == networkRequestsToMake)
+//            {
+//                networkRequestsComplete()
+//            }
+//        }.fail() // Failure of city name data is non-critical
+//        {
+//            if (requestsMade.incrementAndGet() == networkRequestsToMake)
+//            {
+//                networkRequestsComplete()
+//            }
+//        }
+//
+//        makeRealTimeUVRequest(latitude, longitude, altitude, networkRequestsToMake)
     }
 
     private fun makeRealTimeUVRequest(latitude: Double, longitude: Double, altitude: Double, networkRequestsToMake: Int)

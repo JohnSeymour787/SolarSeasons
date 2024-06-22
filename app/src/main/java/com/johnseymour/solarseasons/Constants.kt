@@ -83,5 +83,6 @@ object Constants
         const val API_KEY = "stored_api_key"
 
         const val CLOUD_COVER_FACTOR_KEY = "cloud_cover_factor"
+        const val LATEST_CITY_NAME_KEY = "latest_city_name"
     }
 }
