@@ -99,9 +99,12 @@ class UVDataUseCase(val context: Context)
         }
     }
 
-    fun getUVData(locationData: UVLocationData, withCloudCover: Boolean, isFirstDailyRequest: Boolean, updateCityData: Boolean): Promise<UVCombinedForecastData, ErrorStatus>
+    fun getUVData(locationData: UVLocationData, isFirstDailyRequest: Boolean, updateCityData: Boolean): Promise<UVCombinedForecastData, ErrorStatus>
     {
         val result = deferred<UVCombinedForecastData, ErrorStatus>()
+
+        val withCloudCover = PreferenceManager.getDefaultSharedPreferences(context)
+            .getBoolean(Constants.SharedPreferences.CLOUD_COVER_FACTOR_KEY, false)
 
         val networkRequestsToMake = calculateNumberOfRequests(withCloudCover, isFirstDailyRequest, updateCityData)
         val requestsMade = AtomicInteger(0)
@@ -163,10 +166,10 @@ class UVDataUseCase(val context: Context)
 
         if (updateCityData)
         {
-            // Todo, if location has not changed then also dont need to make this call
             NetworkRepository.getGeoCodedCityName(locationData.latitude, locationData.longitude).success()
             { lCityName ->
                 cityName = lCityName
+                DiskRepository.writeLastCityName(lCityName, PreferenceManager.getDefaultSharedPreferences(context))
                 if (requestsMade.incrementAndGet() == networkRequestsToMake)
                 {
                     networkRequestsComplete(result)
@@ -179,7 +182,10 @@ class UVDataUseCase(val context: Context)
                 }
             }
         }
-        // TODO() else needs to be handled outside this, use shared preferences to get last city name
+        else
+        {
+            cityName = DiskRepository.readLastCityName(PreferenceManager.getDefaultSharedPreferences(context))
+        }
 
         makeRealTimeUVRequest(locationData, networkRequestsToMake, result, requestsMade)
 
