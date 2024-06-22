@@ -69,6 +69,25 @@ object DiskRepository
     {
         return NotificationTimeType.from(preferences.getString(Constants.SharedPreferences.UV_PROTECTION_NOTIFICATION_TIME_KEY, null) ?: "") ?: NotificationTimeType.DayStart
     }
+
+    fun writeLastLocation(location: UVLocationData, preferences: SharedPreferences)
+    {
+        preferences.edit()
+            .putString(Constants.SharedPreferences.MANUAL_LOCATION_LATITUDE_KEY, location.latitude.toString())
+            .putString(Constants.SharedPreferences.MANUAL_LOCATION_LONGITUDE_KEY, location.longitude.toString())
+            .putString(Constants.SharedPreferences.MANUAL_LOCATION_ALTITUDE_KEY, location.altitude.toString())
+            .apply()
+    }
+
+    fun readLastLocation(preferences: SharedPreferences): UVLocationData?
+    {
+        val latitude = preferences.getString(Constants.SharedPreferences.MANUAL_LOCATION_LATITUDE_KEY, null)?.toDoubleOrNull() ?: return null
+        val longitude = preferences.getString(Constants.SharedPreferences.MANUAL_LOCATION_LONGITUDE_KEY, null)?.toDoubleOrNull() ?: return null
+        val altitude = preferences.getString(Constants.SharedPreferences.MANUAL_LOCATION_ALTITUDE_KEY, null)?.toDoubleOrNull() ?: return null
+
+        return UVLocationData(latitude, longitude, altitude)
+    }
+
     fun writeLastCityName(cityName: String, preferences: SharedPreferences)
     {
         preferences.edit()
