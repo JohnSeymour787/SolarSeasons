@@ -41,6 +41,7 @@ class MainViewModel: ViewModel()
                 {
                     intent.getParcelableExtra<UVLocationData>(UVLocationData.UV_LOCATION_KEY)?.let()
                     {
+                        DiskRepository.writeLastLocation(it, PreferenceManager.getDefaultSharedPreferences(context))
                         // Always update city data for a new location
                         currentUVForLocationData(context, it, true)
                     }

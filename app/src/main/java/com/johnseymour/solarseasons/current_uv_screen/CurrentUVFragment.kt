@@ -25,17 +25,12 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.work.ListenableWorker.Result
 import com.johnseymour.solarseasons.*
-import com.johnseymour.solarseasons.UVDataWorker.Companion.INITIATE_BACKGROUND_WORK
 import com.johnseymour.solarseasons.current_uv_screen.uv_forecast.UVForecastAdapter
 import com.johnseymour.solarseasons.models.*
-import com.johnseymour.solarseasons.services.LocationService
-import com.johnseymour.solarseasons.services.UVDataUseCase
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import com.johnseymour.solarseasons.settings_screen.SettingsFragment
 import kotlinx.android.synthetic.main.fragment_current_uv.*
-import nl.komponents.kovenant.deferred
 import java.io.FileNotFoundException
 import java.time.ZonedDateTime
 
@@ -264,8 +259,9 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
 
             if ((viewModel.uvData?.minutesSinceDataRetrieved ?: 0) > Constants.MINIMUM_APP_FOREGROUND_REFRESH_TIME)
             {
-                onRefresh() // Manually simulate swiping down to start a new request
+                // Manually simulate swiping down to start a new request
                 layout.isRefreshing = true
+                viewModel.updateCurrentUV(requireContext(), false)
             }
         }
 
@@ -310,83 +306,13 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         {
             appStatusInformation.visibility = View.INVISIBLE
             launchAppDetailsButton.visibility = View.INVISIBLE
-            UVDataWorker.initiateOneTimeWorker(requireContext(), viewModel.isForecastNotCurrent())
-        }
-        else if (layout.isRefreshing)
-        {
-            layout.isRefreshing = false
-        }
-    }
-
-    private fun getCurrentUVData()
-    {
-        // Need to initialise this here because the service is created asynchronously
-   //     LocationService.uvDataDeferred = deferred()
-
-        val locationServiceIntent = LocationService.createServiceIntent(requireContext())
-        if (inputData.getBoolean(LocationService.FIRST_DAILY_REQUEST_KEY, false))
-        {
-            locationServiceIntent.putExtra(LocationService.FIRST_DAILY_REQUEST_KEY, true)
-        }
-
-        applicationContext.startForegroundService(locationServiceIntent)
-
-        val widgetIds = applicationContext.getWidgetIDs()
-
-        val widgetIntent = Intent(applicationContext, SmallUVDisplay::class.java)
-            .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
-            .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
-
-        if (inputData.getBoolean(INITIATE_BACKGROUND_WORK, false))
-        {
-            // For coming from immediate request (no delay), will result in background updates if the relevant permission is granted
-            widgetIntent.putExtra(SmallUVDisplay.START_BACKGROUND_WORK_KEY, true)
+            viewModel.updateCurrentUV(requireContext(), true)
         }
         else
         {
-            // The widget is not responsible for starting periodic work except for special situations
-            widgetIntent.putExtra(SmallUVDisplay.START_BACKGROUND_WORK_KEY, !SmallUVDisplay.usePeriodicWork)
-        }
-
-        val activityIntent = Intent(requireContext(), MainActivity::class.java)
-            .setAction(UVData.UV_DATA_UPDATED)
-
-        UVDataUseCase(requireContext()).getUVData(UVDataUseCase.UVLocationData(1,1,1), false, viewModel.isForecastNotCurrent(), false).success()
-        {
-            val context = context ?: return@success
-
-            val dataSharedPreferences = context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)
-            DiskRepository.writeLatestUV(it.uvData, dataSharedPreferences)
-
-            it.forecast?.let()
-            { forecastData ->
-                DiskRepository.writeLatestForecastList(forecastData, dataSharedPreferences)
-                activityIntent.putParcelableArrayListExtra(UVForecastData.UV_FORECAST_LIST_KEY, ArrayList(forecastData))
-            }
-
-            widgetIntent.putExtra(UVData.UV_DATA_KEY, it.uvData)
-            activityIntent.putExtra(UVData.UV_DATA_KEY, it.uvData)
-
-            context.sendBroadcast(widgetIntent)
-            LocalBroadcastManager.getInstance(context).sendBroadcast(activityIntent)
-        }
-
-        LocationService.uvDataPromise?.success()
-        {
-
-
-            result.set(Result.success())
-        }?.fail()
-        {
-            widgetIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
-            activityIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
-
-            if (isFailureError(it))
-            {
-                // Only if not going to retry later show the error message
-                context?.sendBroadcast(widgetIntent)
-                LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(activityIntent)
-            }
+            appStatusInformation.visibility = View.INVISIBLE
+            launchAppDetailsButton.visibility = View.INVISIBLE
+            viewModel.updateCurrentUV(requireContext(), false)
         }
     }
 
