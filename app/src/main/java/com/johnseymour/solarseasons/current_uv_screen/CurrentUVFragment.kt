@@ -297,7 +297,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             viewModel.readForecastFromDisk(dataSharedPreferences)
             viewModel.readUVFromDisk(dataSharedPreferences)
 
-        } catch (e: FileNotFoundException){ }
+        } catch (_: FileNotFoundException){ }
     }
 
     override fun onRefresh()
@@ -466,7 +466,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
                         lForecastList.add(0, currentData)
                     }
 
-                    forecastBestScrollPosition++
+                    forecastBestScrollPosition = 0
                 }
 
                 in 0 until it.size-1 -> // Replace the nearest time with the current lUVData.uv
