@@ -251,9 +251,9 @@ abstract class LocationService: Service()
 
     /**
      * Called when it is determined that the location cannot be determined anymore. Rejects the current
-     *  uvDataDeferred promise and stops this service.
+     *  locationDataDeferred promise and stops this service.
      *
-     *  @param errorStatus - ErrorStatus used to reject the uvDataDeferred promise with.
+     *  @param errorStatus - ErrorStatus used to reject the locationDataDeferred promise with.
      */
     fun finalLocationFailure(errorStatus: ErrorStatus)
     {
