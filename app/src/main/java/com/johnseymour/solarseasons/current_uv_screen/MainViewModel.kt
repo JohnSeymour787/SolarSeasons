@@ -148,7 +148,6 @@ class MainViewModel: ViewModel()
         }
     }
 
-    // TODO call from fragment, for pull down swipe refresh can force location update, otherwise for autocall dont
     fun updateCurrentUV(context: Context, forceLocationUpdate: Boolean = false)
     {
         val lastLocationData = DiskRepository.readLastLocation(PreferenceManager.getDefaultSharedPreferences(context))
