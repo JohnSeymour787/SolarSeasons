@@ -189,7 +189,9 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
                     LocationService.locationDataPromise?.success()
                     {
+                        DiskRepository.writeLastLocation(it, PreferenceManager.getDefaultSharedPreferences(applicationContext))
                         currentUVForLocationData(it, updateCityData = true, result, widgetIntent, activityIntent)
+                        LocationService.locationDataDeferred = null
                     }
                 }
             }
