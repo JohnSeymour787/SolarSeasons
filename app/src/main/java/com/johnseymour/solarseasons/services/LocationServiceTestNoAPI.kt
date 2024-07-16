@@ -1,7 +1,6 @@
 package com.johnseymour.solarseasons.services
 
 import com.johnseymour.solarseasons.models.SunInfo
-import com.johnseymour.solarseasons.models.UVCombinedForecastData
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.models.UVLocationData
 import java.time.ZonedDateTime
