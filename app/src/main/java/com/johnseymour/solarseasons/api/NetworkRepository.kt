@@ -153,6 +153,12 @@ object NetworkRepository
     {
         val result = deferred<UVData, ErrorStatus>()
 
+        if (Constants.TEST_MODE_NO_API)
+        {
+            result.resolve(UVData.generateTestData())
+            return result.promise
+        }
+
         openUVAPI.getRealTimeUV(latitude, longitude, validateAltitude(altitude)).enqueue(object: Callback<UVData>
         {
             override fun onResponse(call: Call<UVData>, response: Response<UVData>)
