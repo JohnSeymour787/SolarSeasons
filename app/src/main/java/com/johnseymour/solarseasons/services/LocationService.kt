@@ -38,8 +38,6 @@ abstract class LocationService: Service()
 
         const val FIRST_DAILY_REQUEST_KEY = "first_daily_request_key"
 
-        const val LOCATION_UPDATE_RECEIVED = "com.johnseymour.solarseasons.LOCATION_UPDATE_RECEIVED"
-
         var uvDataDeferred: Deferred<UVCombinedForecastData, ErrorStatus>? = null
         val uvDataPromise: Promise<UVCombinedForecastData, ErrorStatus>?
             get()
@@ -156,13 +154,7 @@ abstract class LocationService: Service()
 
     fun locationSuccess(latitude: Double, longitude: Double, altitude: Double)
     {
-        val intent = Intent(LOCATION_UPDATE_RECEIVED).apply()
-        {
-            val uvLocationData = UVLocationData(latitude, longitude, altitude)
-            putExtra(UVLocationData.UV_LOCATION_KEY, uvLocationData)
-            locationDataDeferred?.resolve(uvLocationData)
-        }
-        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
+        locationDataDeferred?.resolve(UVLocationData(latitude, longitude, altitude))
         stopSelf()
 //        val isCloudCoverEnabled = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 //            .getBoolean(Constants.SharedPreferences.CLOUD_COVER_FACTOR_KEY, false)
