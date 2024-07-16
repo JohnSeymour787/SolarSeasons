@@ -19,39 +19,14 @@ import com.johnseymour.solarseasons.models.UVForecastData
 import com.johnseymour.solarseasons.models.UVLocationData
 import com.johnseymour.solarseasons.services.LocationService
 import com.johnseymour.solarseasons.services.UVDataUseCase
+import nl.komponents.kovenant.deferred
 import java.time.LocalDate
 
 class MainViewModel: ViewModel()
 {
-    private var localBroadcastManager: LocalBroadcastManager? = null
-
     var uvData: UVData? = null
     var latestError: ErrorStatus? = null
     var uvForecastData: List<UVForecastData>? = null
-
-    private val locationUpdatedIntentFilter = IntentFilter(LocationService.LOCATION_UPDATE_RECEIVED)
-
-    private val locationUpdatedBroadcastReceiver by lazy()
-    {
-        object : BroadcastReceiver()
-        {
-            override fun onReceive(context: Context, intent: Intent)
-            {
-                if (intent.action == LocationService.LOCATION_UPDATE_RECEIVED)
-                {
-                    intent.getParcelableExtra<UVLocationData>(UVLocationData.UV_LOCATION_KEY)?.let()
-                    {
-                        DiskRepository.writeLastLocation(it, PreferenceManager.getDefaultSharedPreferences(context))
-                        // Always update city data for a new location
-                        currentUVForLocationData(context, it, true)
-                    }
-                }
-
-                localBroadcastManager?.unregisterReceiver(this)
-                localBroadcastManager = null
-            }
-        }
-    }
 
     val uvDataBackgroundBroadcastReceiver = object : BroadcastReceiver()
     {
@@ -154,12 +129,20 @@ class MainViewModel: ViewModel()
 
         if (lastLocationData == null || forceLocationUpdate)
         {
-            localBroadcastManager = LocalBroadcastManager.getInstance(context)
-            localBroadcastManager?.registerReceiver(locationUpdatedBroadcastReceiver, locationUpdatedIntentFilter)
+            // Need to initialise this here because the service is created asynchronously
+            LocationService.locationDataDeferred = deferred()
 
             val locationServiceIntent = LocationService.createServiceIntent(context)
-
             context.startForegroundService(locationServiceIntent)
+
+            LocationService.locationDataPromise?.success()
+            {
+                DiskRepository.writeLastLocation(it, PreferenceManager.getDefaultSharedPreferences(context))
+                // Always update city data for a new location
+                currentUVForLocationData(context, it, true)
+                LocationService.locationDataDeferred = null
+            }
+
             return
         }
 
