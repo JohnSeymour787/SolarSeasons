@@ -47,6 +47,13 @@ abstract class LocationService: Service()
                 return uvDataDeferred?.promise
             }
 
+        var locationDataDeferred: Deferred<UVLocationData, ErrorStatus>? = null
+        val locationDataPromise: Promise<UVLocationData, ErrorStatus>?
+            get()
+            {
+                return locationDataDeferred?.promise
+            }
+
         /**
          * Factory method that checks application-level settings to determine which implementation of the
          *  LocationService class to use.
@@ -151,7 +158,9 @@ abstract class LocationService: Service()
     {
         val intent = Intent(LOCATION_UPDATE_RECEIVED).apply()
         {
-            putExtra(UVLocationData.UV_LOCATION_KEY, UVLocationData(latitude, longitude, altitude))
+            val uvLocationData = UVLocationData(latitude, longitude, altitude)
+            putExtra(UVLocationData.UV_LOCATION_KEY, uvLocationData)
+            locationDataDeferred?.resolve(uvLocationData)
         }
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
         stopSelf()
