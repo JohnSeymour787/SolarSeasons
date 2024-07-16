@@ -3,6 +3,7 @@ package com.johnseymour.solarseasons.services
 import com.johnseymour.solarseasons.models.SunInfo
 import com.johnseymour.solarseasons.models.UVCombinedForecastData
 import com.johnseymour.solarseasons.models.UVData
+import com.johnseymour.solarseasons.models.UVLocationData
 import java.time.ZonedDateTime
 
 class LocationServiceTestNoAPI: LocationService()
@@ -42,7 +43,7 @@ class LocationServiceTestNoAPI: LocationService()
     override fun serviceMain(): Int
     {
         counter++
-        uvDataDeferred?.resolve(UVCombinedForecastData(generateTestData(), null, null))
+        locationDataDeferred?.resolve(UVLocationData(-37.9050904, 144.9330945, 10.0))
 
         stopSelf()
 

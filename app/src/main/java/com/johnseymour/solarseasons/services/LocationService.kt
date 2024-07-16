@@ -9,10 +9,8 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.johnseymour.solarseasons.*
 import com.johnseymour.solarseasons.api.NetworkRepository
-import com.johnseymour.solarseasons.models.UVCombinedForecastData
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.models.UVForecastData
 import com.johnseymour.solarseasons.models.UVLocationData
@@ -37,13 +35,6 @@ abstract class LocationService: Service()
         private const val NOTIFICATION_CHANNEL_NAME = "Solar.seasons.foreground_location_channel"
 
         const val FIRST_DAILY_REQUEST_KEY = "first_daily_request_key"
-
-        var uvDataDeferred: Deferred<UVCombinedForecastData, ErrorStatus>? = null
-        val uvDataPromise: Promise<UVCombinedForecastData, ErrorStatus>?
-            get()
-            {
-                return uvDataDeferred?.promise
-            }
 
         var locationDataDeferred: Deferred<UVLocationData, ErrorStatus>? = null
         val locationDataPromise: Promise<UVLocationData, ErrorStatus>?
@@ -137,17 +128,17 @@ abstract class LocationService: Service()
         return result
     }
 
-    private fun networkRequestsComplete()
-    {
-        uvData?.let()
-        {
-            it.cloudCover = cloudCover
-            it.cityName = cityName
-            uvDataDeferred?.resolve(UVCombinedForecastData(it, uvForecast, uvProtection))
-        }
-
-        stopSelf()
-    }
+//    private fun networkRequestsComplete()
+//    {
+//        uvData?.let()
+//        {
+//            it.cloudCover = cloudCover
+//            it.cityName = cityName
+//            locationDataDeferred?.resolve(UVCombinedForecastData(it, uvForecast, uvProtection))
+//        }
+//
+//        stopSelf()
+//    }
 
     private var requestsMade = AtomicInteger(0)
     private var canRetryRequest = true // Single retry of realtime UV data allowed
@@ -241,7 +232,7 @@ abstract class LocationService: Service()
 
             if (requestsMade.incrementAndGet() == networkRequestsToMake)
             {
-                networkRequestsComplete()
+             //   networkRequestsComplete()
             }
         }.fail()
         { errorStatus ->
@@ -252,7 +243,7 @@ abstract class LocationService: Service()
             }
             else
             {
-                uvDataDeferred?.reject(errorStatus)
+                locationDataDeferred?.reject(errorStatus)
                 stopSelf()
             }
         }
@@ -266,7 +257,7 @@ abstract class LocationService: Service()
      */
     fun finalLocationFailure(errorStatus: ErrorStatus)
     {
-        uvDataDeferred?.reject(errorStatus)
+        locationDataDeferred?.reject(errorStatus)
         stopSelf()
     }
 
@@ -274,9 +265,9 @@ abstract class LocationService: Service()
     {
         super.onDestroy()
 
-        if (uvDataDeferred?.promise?.isDone() == false)
+        if (locationDataDeferred?.promise?.isDone() == false)
         {
-            uvDataDeferred?.reject(ErrorStatus.LocationServiceTerminated)
+            locationDataDeferred?.reject(ErrorStatus.LocationServiceTerminated)
         }
     }
 }
