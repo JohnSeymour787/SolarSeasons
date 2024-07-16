@@ -181,6 +181,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 }
                 else
                 {
+                    // Need to initialise this here because the service is created asynchronously
                     LocationService.locationDataDeferred = deferred()
 
                     val locationServiceIntent = LocationService.createServiceIntent(applicationContext)
@@ -196,63 +197,6 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
             {
                 currentUVForLocationData(lastLocationData, updateCityData = false, result, widgetIntent, activityIntent)
             }
-
-            // Need to initialise this here because the service is created asynchronously
-//            LocationService.uvDataDeferred = deferred()
-//
-//            val locationServiceIntent = LocationService.createServiceIntent(applicationContext)
-//            if (inputData.getBoolean(LocationService.FIRST_DAILY_REQUEST_KEY, false))
-//            {
-//                locationServiceIntent.putExtra(LocationService.FIRST_DAILY_REQUEST_KEY, true)
-//            }
-//
-//            applicationContext.startForegroundService(locationServiceIntent)
-
-
-
-            //UVDataUseCase(applicationContext).getUVData(lastLocationData, firstDailyRequest, updateCityData).success()
-
-//            LocationService.uvDataPromise?.success()
-//            {
-//                val dataSharedPreferences = applicationContext.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)
-//                DiskRepository.writeLatestUV(it.uvData, dataSharedPreferences)
-//
-//                it.forecast?.let()
-//                { forecastData ->
-//                    val updatedForecast = it.protectionTime?.let { protectionData -> setUVForecastProtectionTimeBoundaries(forecastData.toMutableList(), protectionData) } ?: forecastData
-//                    DiskRepository.writeLatestForecastList(updatedForecast, dataSharedPreferences)
-//                    activityIntent.putParcelableArrayListExtra(UVForecastData.UV_FORECAST_LIST_KEY, ArrayList(updatedForecast))
-//                }
-//
-//                it.protectionTime?.let()
-//                { protectionTimeData ->
-//                    scheduleProtectionTimeNotification(protectionTimeData)
-//                }
-//
-//                widgetIntent.putExtra(UVData.UV_DATA_KEY, it.uvData)
-//                activityIntent.putExtra(UVData.UV_DATA_KEY, it.uvData)
-//
-//                applicationContext.sendBroadcast(widgetIntent)
-//                LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(activityIntent)
-//
-//                result.set(Result.success())
-//            }?.fail()
-//            {
-//                widgetIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
-//                activityIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
-//
-//                if (isFailureError(it))
-//                {
-//                    // Only if not going to retry later show the error message
-//                    applicationContext.sendBroadcast(widgetIntent)
-//                    LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(activityIntent)
-//                    result.set(Result.failure())
-//                }
-//                else
-//                {
-//                    result.set(Result.retry())
-//                }
-//            }
         }
     }
 
