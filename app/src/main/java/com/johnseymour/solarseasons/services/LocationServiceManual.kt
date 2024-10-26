@@ -16,7 +16,7 @@ class LocationServiceManual: LocationService()
 
         if ((latitude == null) || (longitude == null) || (altitude == null))
         {
-            uvDataDeferred?.reject(ErrorStatus.ManualLocationError)
+            locationDataDeferred?.reject(ErrorStatus.ManualLocationError)
             stopSelf()
             return START_STICKY
         }

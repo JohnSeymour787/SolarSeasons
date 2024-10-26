@@ -8,6 +8,7 @@ import com.johnseymour.solarseasons.api.UVForecastGsonAdapter
 import com.johnseymour.solarseasons.models.SunInfo
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.models.UVForecastData
+import com.johnseymour.solarseasons.models.UVLocationData
 import java.lang.Exception
 import java.time.LocalDate
 import java.time.LocalTime
@@ -67,6 +68,36 @@ object DiskRepository
     fun uvNotificationTimeType(preferences: SharedPreferences): NotificationTimeType
     {
         return NotificationTimeType.from(preferences.getString(Constants.SharedPreferences.UV_PROTECTION_NOTIFICATION_TIME_KEY, null) ?: "") ?: NotificationTimeType.DayStart
+    }
+
+    fun writeLastLocation(location: UVLocationData, preferences: SharedPreferences)
+    {
+        preferences.edit()
+            .putString(Constants.SharedPreferences.MANUAL_LOCATION_LATITUDE_KEY, location.latitude.toString())
+            .putString(Constants.SharedPreferences.MANUAL_LOCATION_LONGITUDE_KEY, location.longitude.toString())
+            .putString(Constants.SharedPreferences.MANUAL_LOCATION_ALTITUDE_KEY, location.altitude.toString())
+            .apply()
+    }
+
+    fun readLastLocation(preferences: SharedPreferences): UVLocationData?
+    {
+        val latitude = preferences.getString(Constants.SharedPreferences.MANUAL_LOCATION_LATITUDE_KEY, null)?.toDoubleOrNull() ?: return null
+        val longitude = preferences.getString(Constants.SharedPreferences.MANUAL_LOCATION_LONGITUDE_KEY, null)?.toDoubleOrNull() ?: return null
+        val altitude = preferences.getString(Constants.SharedPreferences.MANUAL_LOCATION_ALTITUDE_KEY, null)?.toDoubleOrNull() ?: return null
+
+        return UVLocationData(latitude, longitude, altitude)
+    }
+
+    fun writeLastCityName(cityName: String, preferences: SharedPreferences)
+    {
+        preferences.edit()
+            .putString(Constants.SharedPreferences.LATEST_CITY_NAME_KEY, cityName)
+            .apply()
+    }
+
+    fun readLastCityName(preferences: SharedPreferences): String?
+    {
+        return preferences.getString(Constants.SharedPreferences.LATEST_CITY_NAME_KEY, null)
     }
 
     enum class NotificationTimeType(val valueString: String)

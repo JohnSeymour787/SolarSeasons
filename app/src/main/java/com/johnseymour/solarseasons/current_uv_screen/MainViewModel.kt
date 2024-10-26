@@ -1,15 +1,25 @@
 package com.johnseymour.solarseasons.current_uv_screen
 
+import android.appwidget.AppWidgetManager
 import android.content.*
 import android.text.format.DateFormat
 import android.util.DisplayMetrics
 import androidx.lifecycle.ViewModel
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.PreferenceManager
 import com.johnseymour.solarseasons.DiskRepository
 import com.johnseymour.solarseasons.ErrorStatus
+import com.johnseymour.solarseasons.MainActivity
 import com.johnseymour.solarseasons.R
+import com.johnseymour.solarseasons.SmallUVDisplay
+import com.johnseymour.solarseasons.getWidgetIDs
 import com.johnseymour.solarseasons.isNotEqual
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.models.UVForecastData
+import com.johnseymour.solarseasons.models.UVLocationData
+import com.johnseymour.solarseasons.services.LocationService
+import com.johnseymour.solarseasons.services.UVDataUseCase
+import nl.komponents.kovenant.deferred
 import java.time.LocalDate
 
 class MainViewModel: ViewModel()
@@ -110,6 +120,70 @@ class MainViewModel: ViewModel()
         uvData?.let()
         {
             DiskRepository.writeLatestUV(it, context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))
+        }
+    }
+
+    fun updateCurrentUV(context: Context, forceLocationUpdate: Boolean = false)
+    {
+        val lastLocationData = DiskRepository.readLastLocation(PreferenceManager.getDefaultSharedPreferences(context))
+
+        if (lastLocationData == null || forceLocationUpdate)
+        {
+            // Need to initialise this here because the service is created asynchronously
+            LocationService.locationDataDeferred = deferred()
+
+            val locationServiceIntent = LocationService.createServiceIntent(context)
+            context.startForegroundService(locationServiceIntent)
+
+            LocationService.locationDataPromise?.success()
+            {
+                DiskRepository.writeLastLocation(it, PreferenceManager.getDefaultSharedPreferences(context))
+                // Always update city data for a new location
+                currentUVForLocationData(context, it, true)
+                LocationService.locationDataDeferred = null
+            }
+
+            return
+        }
+
+        currentUVForLocationData(context, lastLocationData, false)
+    }
+
+    private fun currentUVForLocationData(context: Context, locationData: UVLocationData, updateCityData: Boolean)
+    {
+        val widgetIds = context.getWidgetIDs()
+
+        val widgetIntent = Intent(context, SmallUVDisplay::class.java)
+            .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
+            .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
+            .putExtra(SmallUVDisplay.START_BACKGROUND_WORK_KEY, true)
+
+        val activityIntent = Intent(context, MainActivity::class.java)
+            .setAction(UVData.UV_DATA_UPDATED)
+
+        UVDataUseCase(context).getUVData(locationData, isForecastNotCurrent(), updateCityData).success()
+        {
+            val dataSharedPreferences = context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)
+            DiskRepository.writeLatestUV(it.uvData, dataSharedPreferences)
+
+            it.forecast?.let()
+            { forecastData ->
+                DiskRepository.writeLatestForecastList(forecastData, dataSharedPreferences)
+                activityIntent.putParcelableArrayListExtra(UVForecastData.UV_FORECAST_LIST_KEY, ArrayList(forecastData))
+            }
+
+            widgetIntent.putExtra(UVData.UV_DATA_KEY, it.uvData)
+            activityIntent.putExtra(UVData.UV_DATA_KEY, it.uvData)
+
+            context.sendBroadcast(widgetIntent)
+            LocalBroadcastManager.getInstance(context).sendBroadcast(activityIntent)
+        }.fail()
+        {
+            widgetIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
+            activityIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
+
+            context.sendBroadcast(widgetIntent)
+            LocalBroadcastManager.getInstance(context).sendBroadcast(activityIntent)
         }
     }
 }

@@ -9,17 +9,11 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import androidx.preference.PreferenceManager
 import com.johnseymour.solarseasons.*
-import com.johnseymour.solarseasons.api.NetworkRepository
-import com.johnseymour.solarseasons.models.UVCombinedForecastData
-import com.johnseymour.solarseasons.models.UVData
-import com.johnseymour.solarseasons.models.UVForecastData
-import com.johnseymour.solarseasons.models.UVProtectionTimeData
+import com.johnseymour.solarseasons.models.UVLocationData
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise
-import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Abstract class to implement custom location implementations using different location APIs.
@@ -37,11 +31,11 @@ abstract class LocationService: Service()
 
         const val FIRST_DAILY_REQUEST_KEY = "first_daily_request_key"
 
-        var uvDataDeferred: Deferred<UVCombinedForecastData, ErrorStatus>? = null
-        val uvDataPromise: Promise<UVCombinedForecastData, ErrorStatus>?
+        var locationDataDeferred: Deferred<UVLocationData, ErrorStatus>? = null
+        val locationDataPromise: Promise<UVLocationData, ErrorStatus>?
             get()
             {
-                return uvDataDeferred?.promise
+                return locationDataDeferred?.promise
             }
 
         /**
@@ -113,150 +107,21 @@ abstract class LocationService: Service()
 
     override fun onBind(intent: Intent): IBinder? = null
 
-    private var uvData: UVData? = null
-    private var cloudCover: Double? = null
-    private var cityName: String? = null
-    private var uvForecast: List<UVForecastData>? = null
-    private var uvProtection: UVProtectionTimeData? = null
-
-    private fun calculateNumberOfRequests(cloudCoverEnabled: Boolean): Int
-    {
-        var result = 2 // City name and UV data always fetched
-
-        if (cloudCoverEnabled) { result++ }
-        if (firstRequestOfDay) { result += 2 }
-
-        return result
-    }
-
-    private fun networkRequestsComplete()
-    {
-        uvData?.let()
-        {
-            it.cloudCover = cloudCover
-            it.cityName = cityName
-            uvDataDeferred?.resolve(UVCombinedForecastData(it, uvForecast, uvProtection))
-        }
-
-        stopSelf()
-    }
-
-    private var requestsMade = AtomicInteger(0)
-    private var canRetryRequest = true // Single retry of realtime UV data allowed
-
     fun locationSuccess(latitude: Double, longitude: Double, altitude: Double)
     {
-        val isCloudCoverEnabled = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-            .getBoolean(Constants.SharedPreferences.CLOUD_COVER_FACTOR_KEY, false)
-
-        val networkRequestsToMake = calculateNumberOfRequests(isCloudCoverEnabled)
-
-        if (isCloudCoverEnabled)
-        {
-            NetworkRepository.getCurrentCloudCover(latitude, longitude).success()
-            { lCloudCover ->
-                cloudCover = lCloudCover
-
-                if (requestsMade.incrementAndGet() == networkRequestsToMake)
-                {
-                    networkRequestsComplete()
-                }
-            }.fail() // Failure of cloud cover data is non-critical
-            {
-                if (requestsMade.incrementAndGet() == networkRequestsToMake)
-                {
-                    networkRequestsComplete()
-                }
-            }
-        }
-
-        if (firstRequestOfDay)
-        {
-            NetworkRepository.getUVForecast(latitude, longitude, altitude).success()
-            { lUVForecast ->
-
-                uvForecast = lUVForecast
-
-                if (requestsMade.incrementAndGet() == networkRequestsToMake)
-                {
-                    networkRequestsComplete()
-                }
-            }.fail() // Failure of forecast data is also non-critical
-            {
-                if (requestsMade.incrementAndGet() == networkRequestsToMake)
-                {
-                    networkRequestsComplete()
-                }
-            }
-
-            NetworkRepository.getUVProtectionTimes(latitude, longitude, altitude, Constants.UV_PROTECTION_TIME_DEFAULT_FROM_UV, Constants.UV_PROTECTION_TIME_DEFAULT_TO_UV).success()
-            { lUVProtection ->
-                uvProtection = lUVProtection
-                if (requestsMade.incrementAndGet() == networkRequestsToMake)
-                {
-                    networkRequestsComplete()
-                }
-            }.fail() // Failure of protection data is also non-critical
-            {
-                if (requestsMade.incrementAndGet() == networkRequestsToMake)
-                {
-                    networkRequestsComplete()
-                }
-            }
-        }
-
-        NetworkRepository.getGeoCodedCityName(latitude, longitude).success()
-        { lCityName ->
-            cityName = lCityName
-            if (requestsMade.incrementAndGet() == networkRequestsToMake)
-            {
-                networkRequestsComplete()
-            }
-        }.fail() // Failure of city name data is non-critical
-        {
-            if (requestsMade.incrementAndGet() == networkRequestsToMake)
-            {
-                networkRequestsComplete()
-            }
-        }
-
-        makeRealTimeUVRequest(latitude, longitude, altitude, networkRequestsToMake)
-    }
-
-    private fun makeRealTimeUVRequest(latitude: Double, longitude: Double, altitude: Double, networkRequestsToMake: Int)
-    {
-        NetworkRepository.getRealTimeUV(latitude, longitude, altitude).success()
-        { luvData ->
-            uvData = luvData
-
-            if (requestsMade.incrementAndGet() == networkRequestsToMake)
-            {
-                networkRequestsComplete()
-            }
-        }.fail()
-        { errorStatus ->
-            if ((canRetryRequest) && (errorStatus != ErrorStatus.NetworkError))
-            {
-                canRetryRequest = false
-                makeRealTimeUVRequest(latitude, longitude, altitude, networkRequestsToMake)
-            }
-            else
-            {
-                uvDataDeferred?.reject(errorStatus)
-                stopSelf()
-            }
-        }
+        locationDataDeferred?.resolve(UVLocationData(latitude, longitude, altitude))
+        stopSelf()
     }
 
     /**
      * Called when it is determined that the location cannot be determined anymore. Rejects the current
-     *  uvDataDeferred promise and stops this service.
+     *  locationDataDeferred promise and stops this service.
      *
-     *  @param errorStatus - ErrorStatus used to reject the uvDataDeferred promise with.
+     *  @param errorStatus - ErrorStatus used to reject the locationDataDeferred promise with.
      */
     fun finalLocationFailure(errorStatus: ErrorStatus)
     {
-        uvDataDeferred?.reject(errorStatus)
+        locationDataDeferred?.reject(errorStatus)
         stopSelf()
     }
 
@@ -264,9 +129,9 @@ abstract class LocationService: Service()
     {
         super.onDestroy()
 
-        if (uvDataDeferred?.promise?.isDone() == false)
+        if (locationDataDeferred?.promise?.isDone() == false)
         {
-            uvDataDeferred?.reject(ErrorStatus.LocationServiceTerminated)
+            locationDataDeferred?.reject(ErrorStatus.LocationServiceTerminated)
         }
     }
 }

@@ -259,8 +259,9 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
 
             if ((viewModel.uvData?.minutesSinceDataRetrieved ?: 0) > Constants.MINIMUM_APP_FOREGROUND_REFRESH_TIME)
             {
-                onRefresh() // Manually simulate swiping down to start a new request
+                // Manually simulate swiping down to start a new request
                 layout.isRefreshing = true
+                viewModel.updateCurrentUV(requireContext(), false)
             }
         }
 
@@ -296,7 +297,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             viewModel.readForecastFromDisk(dataSharedPreferences)
             viewModel.readUVFromDisk(dataSharedPreferences)
 
-        } catch (e: FileNotFoundException){ }
+        } catch (_: FileNotFoundException){ }
     }
 
     override fun onRefresh()
@@ -305,11 +306,13 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         {
             appStatusInformation.visibility = View.INVISIBLE
             launchAppDetailsButton.visibility = View.INVISIBLE
-            UVDataWorker.initiateOneTimeWorker(requireContext(), viewModel.isForecastNotCurrent())
+            viewModel.updateCurrentUV(requireContext(), true)
         }
-        else if (layout.isRefreshing)
+        else
         {
-            layout.isRefreshing = false
+            appStatusInformation.visibility = View.INVISIBLE
+            launchAppDetailsButton.visibility = View.INVISIBLE
+            viewModel.updateCurrentUV(requireContext(), false)
         }
     }
 
@@ -463,7 +466,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
                         lForecastList.add(0, currentData)
                     }
 
-                    forecastBestScrollPosition++
+                    forecastBestScrollPosition = 0
                 }
 
                 in 0 until it.size-1 -> // Replace the nearest time with the current lUVData.uv

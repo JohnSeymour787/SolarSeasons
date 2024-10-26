@@ -1,14 +1,11 @@
 package com.johnseymour.solarseasons
 
-import android.Manifest
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.*
-import android.content.pm.PackageManager
 import android.view.View
 import android.widget.RemoteViews
-import androidx.core.app.ActivityCompat
 import androidx.preference.PreferenceManager
 import com.johnseymour.solarseasons.api.OPENUV_API_KEY
 import com.johnseymour.solarseasons.models.UVData
@@ -54,11 +51,6 @@ class SmallUVDisplay : AppWidgetProvider()
 
         private fun prepareEarliestRequest(context: Context)
         {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_DENIED)
-            {
-                return
-            }
-
             UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = isFirstDailyRequest(context), false, Constants.SHORTEST_REFRESH_TIME)
         }
 
@@ -193,13 +185,7 @@ class SmallUVDisplay : AppWidgetProvider()
             uvData = luvData
             latestError = null
 
-            // Don't initiate a background request if that permission isn't given
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            {
-                return@let
-            }
-
-            if ((usePeriodicWork) && (!luvData.sunInSky()))
+            if ((usePeriodicWork) && (luvData.sunInSky().not()))
             {
                 // Delay the next automatic worker until the sunrise of the next day
                 UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = luvData.minutesUntilSunrise)

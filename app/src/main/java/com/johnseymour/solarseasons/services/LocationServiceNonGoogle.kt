@@ -37,11 +37,11 @@ class LocationServiceNonGoogle: LocationService(), Consumer<Location?>, Location
             // Due to battery saver being on
             if ((getSystemService(Context.POWER_SERVICE) as? PowerManager)?.locationPowerSaveMode != PowerManager.LOCATION_MODE_NO_CHANGE)
             {
-                uvDataDeferred?.reject(ErrorStatus.LocationBatterySaverError)
+                locationDataDeferred?.reject(ErrorStatus.LocationBatterySaverError)
             }
             else
             {
-                uvDataDeferred?.reject(ErrorStatus.LocationDisabledError)
+                locationDataDeferred?.reject(ErrorStatus.LocationDisabledError)
             }
             stopSelf()
 
@@ -63,7 +63,7 @@ class LocationServiceNonGoogle: LocationService(), Consumer<Location?>, Location
         }
         else
         {
-            uvDataDeferred?.reject(ErrorStatus.LocationAnyPermissionError)
+            locationDataDeferred?.reject(ErrorStatus.LocationAnyPermissionError)
             stopSelf()
         }
 
