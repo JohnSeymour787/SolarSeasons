@@ -1,26 +1,29 @@
 package com.johnseymour.solarseasons.settings_screen
 
+import android.Manifest
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.text.InputType
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import androidx.fragment.app.setFragmentResult
-import androidx.preference.PreferenceFragmentCompat
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.setFragmentResult
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
+import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.johnseymour.solarseasons.Constants
 import com.johnseymour.solarseasons.R
 import com.johnseymour.solarseasons.SmallUVDisplay
 import com.johnseymour.solarseasons.api.OPENUV_API_KEY
 import com.johnseymour.solarseasons.hasWidgets
-import java.lang.Exception
+import com.johnseymour.solarseasons.showNotificationsRationaleDialogue
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -183,6 +186,17 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
             Constants.SharedPreferences.UV_PROTECTION_NOTIFICATION_KEY ->
             {
                 setUVProtectionSettingsVisibility()
+
+                val notificationsOn = sharedPreferences.getBoolean(key, true)
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || notificationsOn.not())
+                {
+                    return
+                }
+
+                if (requireContext().checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
+                {
+                    context?.showNotificationsRationaleDialogue()
+                }
             }
 
             Constants.SharedPreferences.UV_PROTECTION_NOTIFICATION_TIME_KEY ->

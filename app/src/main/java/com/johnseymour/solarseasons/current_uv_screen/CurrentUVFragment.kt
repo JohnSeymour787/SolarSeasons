@@ -83,6 +83,8 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
     {
         super.onViewCreated(view, savedInstanceState)
 
+        val defaultPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+
         val requestPermissionsLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
         { permissions ->
             permissions[Manifest.permission.ACCESS_COARSE_LOCATION]?.let()
@@ -90,8 +92,40 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
                 if (!granted)
                 {
                     appStatusInformation.text = getString(R.string.location_permission_generic_rationale)
-                    return@registerForActivityResult
                 }
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            {
+                permissions[Manifest.permission.POST_NOTIFICATIONS]?.let()
+                { granted ->
+                    if (!granted)
+                    {
+                        defaultPreferences
+                            .edit()
+                            .putBoolean(Constants.SharedPreferences.UV_PROTECTION_NOTIFICATION_KEY, false)
+                            .apply()
+                    }
+                }
+            }
+        }
+
+        val notificationSettingsOn = defaultPreferences.getBoolean(Constants.SharedPreferences.UV_PROTECTION_NOTIFICATION_KEY, true)
+
+        val permissionsToRequest = mutableListOf<String>()
+
+        when
+        {
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || notificationSettingsOn.not() -> { }
+
+            shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) ->
+            {
+                context?.showNotificationsRationaleDialogue()
+            }
+
+            requireContext().checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED ->
+            {
+                permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
 
@@ -104,7 +138,8 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
 
             requireContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ->
             {
-                requestPermissionsLauncher.launch(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION))
+                permissionsToRequest.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+                permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
             }
 
             requireContext().checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED ->
@@ -126,6 +161,11 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
                     launchAppDetailsButton.visibility = View.VISIBLE
                 }
             }
+        }
+
+        if (permissionsToRequest.isNotEmpty())
+        {
+            requestPermissionsLauncher.launch(permissionsToRequest.toTypedArray())
         }
 
         initialiseMemoryPreferences()

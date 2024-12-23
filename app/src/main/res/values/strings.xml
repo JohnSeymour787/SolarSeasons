@@ -26,6 +26,7 @@
     <string name="exposure_time_hours">%dh</string>
     <string name="exposure_time_short_minutes">%dm</string>
     <string name="close_window">Close</string>
+    <string name="button_settings_title">Settings</string>
     <string name="uv_forecast_label">UV Forecast</string>
     <string name="uv_forecast_now_time_label">Now</string>
     <string name="sun_info_description_not_found">Description not found</string>
@@ -41,6 +42,8 @@
     <string name="location_permission_generic_rationale">Location permission is required in order to get the UV information at your position</string>
     <string name="location_permission_background_rationale">%1$s\n\nBackground location required for widget background updates. Go to location permissions in app settings and select the %2$s option</string>
     <string name="default_background_permission_option_label">relevant</string>
+    <string name="notification_permission_rationale_title">Notification permission</string>
+    <string name="notification_permission_rationale">Notification permission is required to send UV Protection notifications</string>
     <string name="activity_open_app_settings_text">Open App Settings</string>
     <string name="no_network_connection">Can\'t connect to the network</string>
     <string name="unknown_error">An unexpected error occurred, please try again</string>

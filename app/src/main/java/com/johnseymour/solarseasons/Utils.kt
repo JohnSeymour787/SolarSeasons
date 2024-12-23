@@ -1,11 +1,14 @@
 package com.johnseymour.solarseasons
 
+import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
+import android.provider.Settings
 import android.text.format.DateFormat
 import android.util.TypedValue
 import android.view.View
@@ -217,4 +220,34 @@ fun Context.getThemeForDeviceDefaultDialogAlert(): Int
     {
         android.R.style.Theme_DeviceDefault_Light_Dialog_Alert
     }
+}
+
+fun Context.showNotificationsRationaleDialogue()
+{
+    val builder = AlertDialog.Builder(this, this.getThemeForDeviceDefaultDialogAlert())
+    builder.setTitle(getString(R.string.notification_permission_rationale_title))
+    builder.setMessage(getString(R.string.notification_permission_rationale))
+    builder.setPositiveButton(R.string.close_window) { _, _ -> }
+    builder.setNegativeButton(R.string.button_settings_title)
+    { _, _ ->
+        val intent = Intent()
+        intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+        intent.putExtra(Settings.EXTRA_APP_PACKAGE, this.packageName)
+        startActivity(intent)
+    }
+
+    val alert = builder.create()
+    alert.setOnShowListener()
+    {
+        alert.getButton(AlertDialog.BUTTON_POSITIVE)?.apply()
+        {
+            setTextColor(theme.textColorPrimary())
+        }
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE)?.apply()
+        {
+            setTextColor(theme.textColorPrimary())
+        }
+    }
+
+    alert.show()
 }
