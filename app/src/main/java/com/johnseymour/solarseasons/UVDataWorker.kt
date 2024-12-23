@@ -30,7 +30,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         private const val WORK_NAME = "UV_DATA_WORK"
         private const val INITIATE_BACKGROUND_WORK = "restart_background_work"
         private val MIN_PERIODIC_INTERVAL_MINUTES = TimeUnit.MILLISECONDS.toMinutes(PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS)
-        private val MAX_BACKOFF_MINUTES = TimeUnit.MILLISECONDS.toMinutes(PeriodicWorkRequest.MAX_BACKOFF_MILLIS)
+        private val MAX_BACKOFF_MINUTES = TimeUnit.MILLISECONDS.toMinutes(WorkRequest.MAX_BACKOFF_MILLIS)
 
         private val workConstraints = Constraints.Builder().setRequiresBatteryNotLow(true).setRequiredNetworkType(NetworkType.CONNECTED).build()
         private var uvDataRequest: WorkRequest? = null

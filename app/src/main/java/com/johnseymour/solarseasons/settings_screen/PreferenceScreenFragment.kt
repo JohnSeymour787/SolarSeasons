@@ -83,7 +83,7 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
             findPreference<EditTextPreference>("stored_api_key")
                 ?.summaryProvider = Preference.SummaryProvider<EditTextPreference>()
                 {
-                    "*".repeat(it.text.length)
+                    "*".repeat(it.text?.length ?: 1)
                 }
         }
 
@@ -118,7 +118,7 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
     override fun onResume()
     {
         super.onResume()
-        preferenceManager.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
 
         initialiseWidgetPreferences()
     }
@@ -126,7 +126,7 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
     override fun onPause()
     {
         super.onPause()
-        preferenceManager.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?)
@@ -219,13 +219,15 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
 
     private fun setUVProtectionSettingsVisibility()
     {
-        val uvNotificationsEnabled = preferenceManager.sharedPreferences.getBoolean(Constants.SharedPreferences.UV_PROTECTION_NOTIFICATION_KEY, true)
+        val sharedPreferences = preferenceManager.sharedPreferences ?: return
+
+        val uvNotificationsEnabled = sharedPreferences.getBoolean(Constants.SharedPreferences.UV_PROTECTION_NOTIFICATION_KEY, true)
 
         if (uvNotificationsEnabled)
         {
             uvProtectionTimePreference.isVisible = true
             uvProtectionEndTimePreference.isVisible = true
-            customTimePreference.isVisible = isUVProtectionCustomTime(preferenceManager.sharedPreferences)
+            customTimePreference.isVisible = isUVProtectionCustomTime(sharedPreferences)
         }
         else
         {
