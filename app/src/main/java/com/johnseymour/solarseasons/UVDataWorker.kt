@@ -7,7 +7,6 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
@@ -298,7 +297,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         if (notificationManager.areNotificationsEnabled().not()) { return }
 
         val alarmManager = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && alarmManager.canScheduleExactAlarms().not()) { return }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && alarmManager.canScheduleExactAlarms().not()) { return }
 
         val timeNow = ZonedDateTime.now()
 

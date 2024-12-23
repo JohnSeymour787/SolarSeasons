@@ -9,12 +9,12 @@ def apiKeyProperties = new Properties()
 apiKeyProperties.load(new FileInputStream(apiKeyPropertiesFile))
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "com.johnseymour.solarseasons"
         minSdkVersion 29
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode 4
         versionName "4"
 

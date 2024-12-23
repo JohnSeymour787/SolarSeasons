@@ -229,7 +229,8 @@ class UVDataUseCase(val context: Context)
         if (notificationManager.areNotificationsEnabled().not()) { return }
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && alarmManager.canScheduleExactAlarms().not()) { return }
+        // TODO() Not currently using exact alarms, don't need to check for this permission
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && alarmManager.canScheduleExactAlarms().not()) { return }
 
         val timeNow = ZonedDateTime.now()
 
