@@ -16,15 +16,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import com.johnseymour.solarseasons.Constants
 import com.johnseymour.solarseasons.R
-import kotlinx.android.synthetic.main.fragment_api_key_entry.*
+import com.johnseymour.solarseasons.databinding.FragmentApiKeyEntryBinding
 
 class APIKeyEntryFragment : Fragment()
 {
     private lateinit var viewModel: APIKeyEntryViewModel
+    private var _binding: FragmentApiKeyEntryBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        return inflater.inflate(R.layout.fragment_api_key_entry, container, false)
+        _binding = FragmentApiKeyEntryBinding.inflate(inflater, container, false)
+        return _binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
@@ -32,7 +35,7 @@ class APIKeyEntryFragment : Fragment()
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(APIKeyEntryViewModel::class.java)
 
-        apiKeyEntry.setOnEditorActionListener()
+        binding.apiKeyEntry.setOnEditorActionListener()
         { _, actionID, _ ->
             if (actionID == EditorInfo.IME_ACTION_DONE)
             {
@@ -42,25 +45,25 @@ class APIKeyEntryFragment : Fragment()
             return@setOnEditorActionListener false
         }
 
-        apiKeyEntry.doOnTextChanged()
+        binding.apiKeyEntry.doOnTextChanged()
         { text, _, _, _ ->
             viewModel.apiKey = text?.toString() ?: ""
         }
 
-        doneButton.setOnClickListener()
+        binding.doneButton.setOnClickListener()
         {
             apiKeySubmitted()
         }
 
-        launchAppButton.setOnClickListener()
+        binding.launchAppButton.setOnClickListener()
         {
             setFragmentResult(LAUNCH_MAIN_APP_FRAGMENT_KEY, bundleOf())
         }
 
         if (viewModel.keySaved)
         {
-            launchAppButton.visibility = View.VISIBLE
-            apiKeySuccessMessage.visibility = View.VISIBLE
+            binding.launchAppButton.visibility = View.VISIBLE
+            binding.apiKeySuccessMessage.visibility = View.VISIBLE
         }
     }
 
@@ -78,18 +81,24 @@ class APIKeyEntryFragment : Fragment()
 
             // Hide keyboard
             (activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
-                ?.hideSoftInputFromWindow(apiKeyEntry.windowToken, 0)
+                ?.hideSoftInputFromWindow(binding.apiKeyEntry.windowToken, 0)
 
-            launchAppButton.visibility = View.VISIBLE
-            apiKeySuccessMessage.visibility = View.VISIBLE
+            binding.launchAppButton.visibility = View.VISIBLE
+            binding.apiKeySuccessMessage.visibility = View.VISIBLE
 
             viewModel.keySaved = true
         }
         else
         {
-            apiKeyEntry.error = resources.getText(errorMessageID)
+            binding.apiKeyEntry.error = resources.getText(errorMessageID)
             viewModel.keySaved = false
         }
+    }
+
+    override fun onDestroyView()
+    {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object

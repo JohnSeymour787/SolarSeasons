@@ -27,18 +27,22 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.johnseymour.solarseasons.*
 import com.johnseymour.solarseasons.current_uv_screen.uv_forecast.UVForecastAdapter
+import com.johnseymour.solarseasons.databinding.FragmentCurrentUvBinding
 import com.johnseymour.solarseasons.models.*
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
 import com.johnseymour.solarseasons.settings_screen.SettingsFragment
-import kotlinx.android.synthetic.main.fragment_current_uv.*
 import java.io.FileNotFoundException
 import java.time.ZonedDateTime
 
 class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
 {
+    private var _binding: FragmentCurrentUvBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        return inflater.inflate(R.layout.fragment_current_uv, container, false)
+        _binding = FragmentCurrentUvBinding.inflate(inflater, container, false)
+        return _binding?.root
     }
 
     private val viewModel by lazy()
@@ -54,9 +58,9 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         {
             if (intent.action == UVData.UV_DATA_UPDATED)
             {
-                if (layout.isRefreshing)
+                if (binding.layout.isRefreshing)
                 {
-                    layout.isRefreshing = false
+                    binding.layout.isRefreshing = false
                 }
 
                 intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
@@ -91,7 +95,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             { granted ->
                 if (!granted)
                 {
-                    appStatusInformation.text = getString(R.string.location_permission_generic_rationale)
+                    binding.appStatusInformation.text = getString(R.string.location_permission_generic_rationale)
                 }
             }
 
@@ -133,7 +137,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         {
             shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION) ->
             {
-                appStatusInformation.text = getString(R.string.location_permission_generic_rationale)
+                binding.appStatusInformation.text = getString(R.string.location_permission_generic_rationale)
             }
 
             requireContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ->
@@ -156,9 +160,9 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
                         getString(R.string.default_background_permission_option_label)
                     }
 
-                    appStatusInformation.text = getString(R.string.location_permission_background_rationale, getString(R.string.activity_status_information_swipe_hint), backgroundOptionLabel)
+                    binding.appStatusInformation.text = getString(R.string.location_permission_background_rationale, getString(R.string.activity_status_information_swipe_hint), backgroundOptionLabel)
 
-                    launchAppDetailsButton.visibility = View.VISIBLE
+                    binding.launchAppDetailsButton.visibility = View.VISIBLE
                 }
             }
         }
@@ -181,14 +185,16 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
 
         layout.setOnRefreshListener(this)
         layout.setProgressViewOffset(true, resources.getDimensionPixelOffset(R.dimen.activity_swipe_refresh_offset_start), resources.getDimensionPixelOffset(R.dimen.activity_swipe_refresh_offset_end))
+        binding.layout.setOnRefreshListener(this)
+        binding.layout.setProgressViewOffset(true, resources.getDimensionPixelOffset(R.dimen.activity_swipe_refresh_offset_start), resources.getDimensionPixelOffset(R.dimen.activity_swipe_refresh_offset_end))
 
-        sunInfoList.addItemDecoration(SunInfoHorizontalSpaceDecoration(resources.getDimensionPixelOffset(R.dimen.list_view_cell_spacing)))
+        binding.sunInfoList.addItemDecoration(SunInfoHorizontalSpaceDecoration(resources.getDimensionPixelOffset(R.dimen.list_view_cell_spacing)))
 
-        skinExposureList.addItemDecoration(SkinExposureVerticalSpaceDecoration(resources.getDimensionPixelOffset(R.dimen.list_view_cell_spacing)))
+        binding.skinExposureList.addItemDecoration(SkinExposureVerticalSpaceDecoration(resources.getDimensionPixelOffset(R.dimen.list_view_cell_spacing)))
 
-        launchAppDetailsButton.setOnClickListener { launchAppDetailsActivity() }
+        binding.launchAppDetailsButton.setOnClickListener { launchAppDetailsActivity() }
 
-        settingsButton.setOnClickListener()
+        binding.settingsButton.setOnClickListener()
         {
             parentFragmentManager.setFragmentResult(SettingsFragment.LAUNCH_SETTINGS_FRAGMENT_KEY, bundleOf())
         }
@@ -300,7 +306,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             if ((viewModel.uvData?.minutesSinceDataRetrieved ?: 0) > Constants.MINIMUM_APP_FOREGROUND_REFRESH_TIME)
             {
                 // Manually simulate swiping down to start a new request
-                layout.isRefreshing = true
+                binding.layout.isRefreshing = true
                 viewModel.updateCurrentUV(requireContext(), false)
             }
         }
@@ -344,115 +350,115 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
     {
         if (requireContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
-            appStatusInformation.visibility = View.INVISIBLE
-            launchAppDetailsButton.visibility = View.INVISIBLE
+            binding.appStatusInformation.visibility = View.INVISIBLE
+            binding.launchAppDetailsButton.visibility = View.INVISIBLE
             viewModel.updateCurrentUV(requireContext(), true)
         }
         else
         {
-            appStatusInformation.visibility = View.INVISIBLE
-            launchAppDetailsButton.visibility = View.INVISIBLE
+            binding.appStatusInformation.visibility = View.INVISIBLE
+            binding.launchAppDetailsButton.visibility = View.INVISIBLE
             viewModel.updateCurrentUV(requireContext(), false)
         }
     }
 
     private fun displayError(errorStatus: ErrorStatus)
     {
-        appStatusInformation.text = errorStatus.statusString(resources)
-        appStatusInformation.visibility = View.VISIBLE
+        binding.appStatusInformation.text = errorStatus.statusString(resources)
+        binding.appStatusInformation.visibility = View.VISIBLE
 
         if (PreferenceScreenFragment.useCustomTheme)
         {
-            layout.setBackgroundColor(resources.getColor(R.color.uv_low, requireContext().theme))
+            binding.layout.setBackgroundColor(resources.getColor(R.color.uv_low, requireContext().theme))
         }
 
-        uvValue.visibility = View.GONE
-        uvText.visibility = View.GONE
-        maxUV.visibility = View.GONE
-        maxUVTime.visibility = View.GONE
-        cloudFactoredUVText.visibility = View.GONE
-        cloudCoverLevelText.visibility = View.GONE
-        cityName.visibility = View.GONE
-        lastUpdated.visibility = View.GONE
-        sunProgressLabel.visibility = View.GONE
-        sunProgress.visibility = View.GONE
-        sunProgressLabelBackground.visibility = View.GONE
-        sunInfoListTitleLabel.visibility = View.GONE
-        sunInfoListSubLabel.visibility = View.GONE
-        sunInfoList.visibility = View.GONE
-        sunInfoListBackground.visibility = View.GONE
-        skinExposureLabel.visibility = View.GONE
-        skinExposureList.visibility = View.GONE
-        skinExposureBackground.visibility = View.GONE
-        uvForecastLabel.visibility = View.GONE
-        uvForecastList.visibility = View.GONE
-        uvForecastBackground.visibility = View.GONE
+        binding.uvValue.visibility = View.GONE
+        binding.uvText.visibility = View.GONE
+        binding.maxUV.visibility = View.GONE
+        binding.maxUVTime.visibility = View.GONE
+        binding.cloudFactoredUVText.visibility = View.GONE
+        binding.cloudCoverLevelText.visibility = View.GONE
+        binding.cityName.visibility = View.GONE
+        binding.lastUpdated.visibility = View.GONE
+        binding.sunProgressLabel.visibility = View.GONE
+        binding.sunProgress.visibility = View.GONE
+        binding.sunProgressLabelBackground.visibility = View.GONE
+        binding.sunInfoListTitleLabel.visibility = View.GONE
+        binding.sunInfoListSubLabel.visibility = View.GONE
+        binding.sunInfoList.visibility = View.GONE
+        binding.sunInfoListBackground.visibility = View.GONE
+        binding.skinExposureLabel.visibility = View.GONE
+        binding.skinExposureList.visibility = View.GONE
+        binding.skinExposureBackground.visibility = View.GONE
+        binding.uvForecastLabel.visibility = View.GONE
+        binding.uvForecastList.visibility = View.GONE
+        binding.uvForecastBackground.visibility = View.GONE
     }
 
     private fun displayNewUVData(lUVData: UVData)
     {
-        uvValue.visibility = View.VISIBLE
-        uvValue.text = resources.getString(R.string.uv_value, lUVData.uv)
+        binding.uvValue.visibility = View.VISIBLE
+        binding.uvValue.text = resources.getString(R.string.uv_value, lUVData.uv)
 
-        uvText.visibility = View.VISIBLE
-        uvText.text = resources.getText(lUVData.uvLevelTextInt)
+        binding.uvText.visibility = View.VISIBLE
+        binding.uvText.text = resources.getText(lUVData.uvLevelTextInt)
 
         lUVData.cloudFactoredUV?.let()
         {
-            cloudFactoredUVText.visibility = View.VISIBLE
-            cloudFactoredUVText.text = resources.getString(R.string.estimated_uv_value, it)
-        } ?: run { cloudFactoredUVText.visibility = View.GONE }
+            binding.cloudFactoredUVText.visibility = View.VISIBLE
+            binding.cloudFactoredUVText.text = resources.getString(R.string.estimated_uv_value, it)
+        } ?: run { binding.cloudFactoredUVText.visibility = View.GONE }
 
         lUVData.cloudCoverTextInt?.let()
         {
-            cloudCoverLevelText.visibility = View.VISIBLE
-            cloudCoverLevelText.text = resources.getString(it)
-        } ?: run { cloudCoverLevelText.visibility = View.GONE }
+            binding.cloudCoverLevelText.visibility = View.VISIBLE
+            binding.cloudCoverLevelText.text = resources.getString(it)
+        } ?: run { binding.cloudCoverLevelText.visibility = View.GONE }
 
         lUVData.cityName?.let()
         {
-            cityName.visibility = View.VISIBLE
-            cityName.text = lUVData.cityName
-        } ?: run { cityName.visibility = View.GONE }
+            binding.cityName.visibility = View.VISIBLE
+            binding.cityName.text = lUVData.cityName
+        } ?: run { binding.cityName.visibility = View.GONE }
 
-        maxUV.visibility = View.VISIBLE
-        maxUV.text = resources.getString(R.string.max_uv, lUVData.uvMax)
+        binding.maxUV.visibility = View.VISIBLE
+        binding.maxUV.text = resources.getString(R.string.max_uv, lUVData.uvMax)
 
-        maxUVTime.visibility = View.VISIBLE
-        maxUVTime.text = resources.getString(R.string.max_uv_time, preferredTimeString(requireContext(), lUVData.uvMaxTime))
+        binding.maxUVTime.visibility = View.VISIBLE
+        binding.maxUVTime.text = resources.getString(R.string.max_uv_time, preferredTimeString(requireContext(), lUVData.uvMaxTime))
 
-        lastUpdated.visibility = View.VISIBLE
-        lastUpdated.text = resources.getString(R.string.latest_update, preferredTimeString(requireContext(), lUVData.uvTime))
+        binding.lastUpdated.visibility = View.VISIBLE
+        binding.lastUpdated.text = resources.getString(R.string.latest_update, preferredTimeString(requireContext(), lUVData.uvTime))
 
-        sunProgressLabel.visibility = View.VISIBLE
-        sunProgressLabel.setText(R.string.sun_progress_label)
-        if (sunProgressLabel.lineCount > 1)
+        binding.sunProgressLabel.visibility = View.VISIBLE
+        binding.sunProgressLabel.setText(R.string.sun_progress_label)
+        if (binding.sunProgressLabel.lineCount > 1)
         {
-            sunProgressLabel.setText(R.string.sun_progress_label_shortened)
+            binding.sunProgressLabel.setText(R.string.sun_progress_label_shortened)
         }
 
-        sunProgress.progress = lUVData.sunProgressPercent
-        sunProgress.visibility = View.VISIBLE
-        sunProgressLabelBackground.visibility = View.VISIBLE
+        binding.sunProgress.progress = lUVData.sunProgressPercent
+        binding.sunProgress.visibility = View.VISIBLE
+        binding.sunProgressLabelBackground.visibility = View.VISIBLE
 
-        sunInfoListBackground.visibility = View.VISIBLE
+        binding.sunInfoListBackground.visibility = View.VISIBLE
 
-        sunInfoListTitleLabel.visibility = View.VISIBLE
+        binding.sunInfoListTitleLabel.visibility = View.VISIBLE
 
-        sunInfoListSubLabel.visibility = View.VISIBLE
+        binding.sunInfoListSubLabel.visibility = View.VISIBLE
 
         lUVData.safeExposure?.entries?.toList()?.let()
         {
-            skinExposureList.adapter = SkinExposureAdapter(it, lUVData.textColorInt)
-            skinExposureList.layoutManager = GridLayoutManager(requireContext(), 2)
-            skinExposureLabel.visibility = View.VISIBLE
-            skinExposureList.visibility = View.VISIBLE
-            skinExposureBackground.visibility = View.VISIBLE
+            binding.skinExposureList.adapter = SkinExposureAdapter(it, lUVData.textColorInt)
+            binding.skinExposureList.layoutManager = GridLayoutManager(requireContext(), 2)
+            binding.skinExposureLabel.visibility = View.VISIBLE
+            binding.skinExposureList.visibility = View.VISIBLE
+            binding.skinExposureBackground.visibility = View.VISIBLE
         } ?: run()
         {
-            skinExposureLabel.visibility = View.GONE
-            skinExposureList.visibility = View.GONE
-            skinExposureBackground.visibility = View.GONE
+            binding.skinExposureLabel.visibility = View.GONE
+            binding.skinExposureList.visibility = View.GONE
+            binding.skinExposureBackground.visibility = View.GONE
         }
 
         val sortedSolarTimes = lUVData.sunInfo.timesArray.sortedWith { a, b -> a.time.compareTo(b.time) }
@@ -464,19 +470,19 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             sunInfoBestScrollPosition++
         }
 
-        sunInfoList.visibility = View.VISIBLE
-        sunInfoList.adapter = SunInfoAdapter(sortedSolarTimes, lUVData.textColorInt, ::sunTimeOnClick, viewModel.calculateSunTimesCellWidth(requireContext()))
-        sunInfoList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        sunInfoList.scrollToPosition(sunInfoBestScrollPosition)
+        binding.sunInfoList.visibility = View.VISIBLE
+        binding.sunInfoList.adapter = SunInfoAdapter(sortedSolarTimes, lUVData.textColorInt, ::sunTimeOnClick, viewModel.calculateSunTimesCellWidth(requireContext()))
+        binding.sunInfoList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.sunInfoList.scrollToPosition(sunInfoBestScrollPosition)
 
         viewModel.uvForecastData?.let()
         {
             // New daily request can fail, don't want to use yesterday's forecast
             if ((it.isEmpty()) || (viewModel.isForecastNotCurrent()))
             {
-                uvForecastLabel.visibility = View.GONE
-                uvForecastList.visibility = View.GONE
-                uvForecastBackground.visibility = View.GONE
+                binding.uvForecastLabel.visibility = View.GONE
+                binding.uvForecastList.visibility = View.GONE
+                binding.uvForecastBackground.visibility = View.GONE
                 return@let
             }
 
@@ -537,22 +543,22 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
                 }
             }
 
-            uvForecastBackground.visibility = View.VISIBLE
-            uvForecastLabel.visibility = View.VISIBLE
-            uvForecastList.visibility = View.VISIBLE
+            binding.uvForecastBackground.visibility = View.VISIBLE
+            binding.uvForecastLabel.visibility = View.VISIBLE
+            binding.uvForecastList.visibility = View.VISIBLE
 
-            uvForecastList.adapter = UVForecastAdapter(lForecastList, lUVData.textColorInt, viewModel.calculateUVForecastCellWidth(requireContext()))
-            uvForecastList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            uvForecastList.scrollToPosition(forecastBestScrollPosition)
+            binding.uvForecastList.adapter = UVForecastAdapter(lForecastList, lUVData.textColorInt, viewModel.calculateUVForecastCellWidth(requireContext()))
+            binding.uvForecastList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            binding.uvForecastList.scrollToPosition(forecastBestScrollPosition)
         } ?: run()
         {
-            uvForecastLabel.visibility = View.GONE
-            uvForecastList.visibility = View.GONE
-            uvForecastBackground.visibility = View.GONE
+            binding.uvForecastLabel.visibility = View.GONE
+            binding.uvForecastList.visibility = View.GONE
+            binding.uvForecastBackground.visibility = View.GONE
         }
 
-        appStatusInformation.visibility = View.INVISIBLE
-        launchAppDetailsButton.visibility = View.INVISIBLE
+        binding.appStatusInformation.visibility = View.INVISIBLE
+        binding.launchAppDetailsButton.visibility = View.INVISIBLE
 
         if (PreferenceScreenFragment.useCustomTheme)
         {
@@ -561,8 +567,8 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         else
         {
             // If using the default app theme, only apply colours to the UV value and the progress bar
-            uvValue.setTextColor(resources.getColor(lUVData.backgroundColorInt, requireContext().theme))
-            sunProgress.progressDrawable.setTint(resources.getColor(lUVData.backgroundColorInt, requireContext().theme))
+            binding.uvValue.setTextColor(resources.getColor(lUVData.backgroundColorInt, requireContext().theme))
+            binding.sunProgress.progressDrawable.setTint(resources.getColor(lUVData.backgroundColorInt, requireContext().theme))
         }
     }
 
@@ -571,31 +577,31 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
      */
     private fun setStaticThemeColours()
     {
-        layout.setBackgroundColor(requireContext().resolveColourAttr(android.R.attr.windowBackground))
+        binding.layout.setBackgroundColor(requireContext().resolveColourAttr(android.R.attr.windowBackground))
 
         val primaryTextColourInt = requireContext().resolveColourAttr(android.R.attr.textColorPrimary)
-        settingsButton.imageTintList = ColorStateList.valueOf(primaryTextColourInt)
+        binding.settingsButton.imageTintList = ColorStateList.valueOf(primaryTextColourInt)
 
-        uvText.setTextColor(primaryTextColourInt)
-        cloudFactoredUVText.setTextColor(primaryTextColourInt)
-        cloudCoverLevelText.setTextColor(primaryTextColourInt)
-        cityName.setTextColor(primaryTextColourInt)
-        maxUV.setTextColor(primaryTextColourInt)
-        maxUVTime.setTextColor(primaryTextColourInt)
-        lastUpdated.setTextColor(primaryTextColourInt)
-        sunProgressLabel.setTextColor(primaryTextColourInt)
-        sunInfoListTitleLabel.setTextColor(primaryTextColourInt)
-        sunInfoListSubLabel.setTextColor(primaryTextColourInt)
-        skinExposureLabel.setTextColor(primaryTextColourInt)
-        uvForecastLabel.setTextColor(primaryTextColourInt)
-        appStatusInformation.setTextColor(primaryTextColourInt)
+        binding.uvText.setTextColor(primaryTextColourInt)
+        binding.cloudFactoredUVText.setTextColor(primaryTextColourInt)
+        binding.cloudCoverLevelText.setTextColor(primaryTextColourInt)
+        binding.cityName.setTextColor(primaryTextColourInt)
+        binding.maxUV.setTextColor(primaryTextColourInt)
+        binding.maxUVTime.setTextColor(primaryTextColourInt)
+        binding.lastUpdated.setTextColor(primaryTextColourInt)
+        binding.sunProgressLabel.setTextColor(primaryTextColourInt)
+        binding.sunInfoListTitleLabel.setTextColor(primaryTextColourInt)
+        binding.sunInfoListSubLabel.setTextColor(primaryTextColourInt)
+        binding.skinExposureLabel.setTextColor(primaryTextColourInt)
+        binding.uvForecastLabel.setTextColor(primaryTextColourInt)
+        binding.appStatusInformation.setTextColor(primaryTextColourInt)
 
         enableLightStatusBar(requireActivity().window.decorView, resources.configuration)
 
-        skinExposureBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
-        sunInfoListBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
-        sunProgressLabelBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
-        uvForecastBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
+        binding.skinExposureBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
+        binding.sunInfoListBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
+        binding.sunProgressLabelBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
+        binding.uvForecastBackground.background.setTint(resources.getColor(R.color.section_background_transparent_colour, requireContext().theme))
     }
 
     /**
@@ -603,37 +609,37 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
      */
     private fun setDynamicThemeColours()
     {
-        sunProgress.progressDrawable.setTint(resources.getColor(R.color.progress_bar_tint, requireContext().theme))
+        binding.sunProgress.progressDrawable.setTint(resources.getColor(R.color.progress_bar_tint, requireContext().theme))
 
-        skinExposureBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
-        sunInfoListBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
-        sunProgressLabelBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
-        uvForecastBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+        binding.skinExposureBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+        binding.sunInfoListBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+        binding.sunProgressLabelBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
+        binding.uvForecastBackground.background.setTint(resources.getColor(R.color.white, requireContext().theme))
 
-        appStatusInformation.setTextColor(resources.getColor(R.color.dark_text, requireContext().theme))
-        settingsButton.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.uv_low, requireContext().theme))
+        binding.appStatusInformation.setTextColor(resources.getColor(R.color.dark_text, requireContext().theme))
+        binding.settingsButton.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.uv_low, requireContext().theme))
     }
 
     private fun updateDynamicColours(lUVData: UVData)
     {
-        layout.setBackgroundColor(resources.getColor(lUVData.backgroundColorInt, requireContext().theme))
+        binding.layout.setBackgroundColor(resources.getColor(lUVData.backgroundColorInt, requireContext().theme))
 
-        settingsButton.imageTintList = ColorStateList.valueOf(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        binding.settingsButton.imageTintList = ColorStateList.valueOf(resources.getColor(lUVData.textColorInt, requireContext().theme))
 
-        uvValue.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        binding.uvValue.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
 
-        uvText.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
-        maxUV.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
-        cloudFactoredUVText.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
-        cloudCoverLevelText.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
-        cityName.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
-        maxUVTime.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
-        lastUpdated.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
-        sunProgressLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
-        sunInfoListTitleLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
-        sunInfoListSubLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
-        skinExposureLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
-        uvForecastLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        binding.uvText.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        binding.maxUV.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        binding.cloudFactoredUVText.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        binding.cloudCoverLevelText.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        binding.cityName.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        binding.maxUVTime.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        binding.lastUpdated.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        binding.sunProgressLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        binding.sunInfoListTitleLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        binding.sunInfoListSubLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        binding.skinExposureLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
+        binding.uvForecastLabel.setTextColor(resources.getColor(lUVData.textColorInt, requireContext().theme))
    }
 
     private fun sunTimeOnClick(sunTimeData: SunInfo.SunTimeData)
@@ -667,6 +673,12 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             data = Uri.fromParts("package", requireContext().packageName, null)
         }
         startActivity(intent)
+    }
+
+    override fun onDestroyView()
+    {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object

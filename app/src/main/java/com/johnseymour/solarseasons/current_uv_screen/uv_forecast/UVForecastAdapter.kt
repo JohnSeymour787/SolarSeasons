@@ -9,17 +9,18 @@ import com.johnseymour.solarseasons.models.UVForecastData
 import com.johnseymour.solarseasons.preferredTimeString
 import com.johnseymour.solarseasons.resolveColourAttr
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
-import kotlinx.android.synthetic.main.list_cell_uv_forecast.view.*
 
 class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private val textColorInt: Int, private val cellPixelWidth: Int): RecyclerView.Adapter<UVForecastAdapter.UVForecastViewHolder>()
 {
     inner class UVForecastViewHolder(view: UVForecastViewCell): RecyclerView.ViewHolder(view)
     {
+        private val viewBinding = view.binding
+
         internal fun bind(forecastData: UVForecastData, previousUV: Float, nextUV: Float)
         {
             itemView.apply()
             {
-                forecastDotView.let()
+                viewBinding.forecastDotView.let()
                 {
                     it.yValue = forecastData.uv
                     it.previousDotYValue = previousUV
@@ -54,11 +55,11 @@ class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private
 
                 if (forecastData.isTimeNow)
                 {
-                    forecastTime.setText(R.string.uv_forecast_now_time_label)
+                    viewBinding.forecastTime.setText(R.string.uv_forecast_now_time_label)
                 }
                 else
                 {
-                    forecastTime.text = preferredTimeString(context, forecastData.time)
+                    viewBinding.forecastTime.text = preferredTimeString(context, forecastData.time)
                 }
             }
         }
@@ -73,17 +74,17 @@ class UVForecastAdapter(private val forecastTimes: List<UVForecastData>, private
             if (PreferenceScreenFragment.useCustomTheme)
             {
                 val textColor = resources.getColor(textColorInt, context.theme)
-                forecastDotView.textColour = textColor
-                forecastDotView.dotColour = textColor
-                forecastDotView.lineColour = textColor
-                forecastTime.setTextColor(textColor)
+                binding.forecastDotView.textColour = textColor
+                binding.forecastDotView.dotColour = textColor
+                binding.forecastDotView.lineColour = textColor
+                binding.forecastTime.setTextColor(textColor)
             }
 
             val maxUV = forecastTimes.maxOfOrNull(UVForecastData::uv) ?: 0F
 
-            if (maxUV > forecastDotView.maxYValue)
+            if (maxUV > binding.forecastDotView.maxYValue)
             {
-                forecastDotView.maxYValue = maxUV
+                binding.forecastDotView.maxYValue = maxUV
             }
         }
 

@@ -6,19 +6,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.johnseymour.solarseasons.current_uv_screen.SkinExposureViewCell
 import com.johnseymour.solarseasons.exposureDurationString
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
-import kotlinx.android.synthetic.main.list_cell_skin_exposure.view.*
 
 class SkinExposureAdapter(private val exposureTimes: List<Map.Entry<String, Int>>, private val textColorInt: Int): RecyclerView.Adapter<SkinExposureAdapter.SkinExposureViewHolder>()
 {
     inner class SkinExposureViewHolder(view: SkinExposureViewCell): RecyclerView.ViewHolder(view)
     {
+        private val viewBinding = view.binding
+
         internal fun bind(exposureTimeEntry: Map.Entry<String, Int>)
         {
             itemView.apply()
             {
-                skinIcon.drawable.setTint(resources.getColor(UVData.skinTypeColorInt(exposureTimeEntry.key), context.theme))
-                skinType.text = resources.getString(UVData.skinTypeNameInt(exposureTimeEntry.key))
-                exposureTime.text = exposureDurationString(resources, exposureTimeEntry.value)
+                viewBinding.skinIcon.drawable.setTint(resources.getColor(UVData.skinTypeColorInt(exposureTimeEntry.key), context.theme))
+                viewBinding.skinType.text = resources.getString(UVData.skinTypeNameInt(exposureTimeEntry.key))
+                viewBinding.exposureTime.text = exposureDurationString(resources, exposureTimeEntry.value)
             }
         }
     }
@@ -31,8 +32,8 @@ class SkinExposureAdapter(private val exposureTimes: List<Map.Entry<String, Int>
 
             if (PreferenceScreenFragment.useCustomTheme)
             {
-                skinType.setTextColor(resources.getColor(textColorInt, context.theme))
-                exposureTime.setTextColor(resources.getColor(textColorInt, context.theme))
+                binding.skinType.setTextColor(resources.getColor(textColorInt, context.theme))
+                binding.exposureTime.setTextColor(resources.getColor(textColorInt, context.theme))
             }
         }
 

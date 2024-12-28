@@ -10,21 +10,25 @@ import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import android.widget.RelativeLayout
 import com.johnseymour.solarseasons.R
-import kotlinx.android.synthetic.main.fragment_api_tutorial_page.*
+import com.johnseymour.solarseasons.databinding.FragmentApiTutorialPageBinding
 
 class APITutorialPageFragment : Fragment()
 {
+    private var _binding: FragmentApiTutorialPageBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        return inflater.inflate(R.layout.fragment_api_tutorial_page, container, false)
+        _binding = FragmentApiTutorialPageBinding.inflate(inflater, container, false)
+        return _binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        (arguments?.getSerializable(TITLE_RESOURCE_KEY) as? Int)?.let { titleTextView.setText(it) }
-        (arguments?.getSerializable(EXPLANATION_RESOURCE_KEY) as? Int)?.let { explanationTextView.setText(it) }
+        (arguments?.getSerializable(TITLE_RESOURCE_KEY) as? Int)?.let { binding.titleTextView.setText(it) }
+        (arguments?.getSerializable(EXPLANATION_RESOURCE_KEY) as? Int)?.let { binding.explanationTextView.setText(it) }
         arguments?.getString(WEB_VIEW_URL_KEY)?.let()
         { urlString ->
 
@@ -36,10 +40,10 @@ class APITutorialPageFragment : Fragment()
                 marginEnd = resources.getDimensionPixelOffset(R.dimen.margin_small) / 2
                 topMargin = resources.getDimensionPixelOffset(R.dimen.margin_small)
             }
-            explanationTextView.layoutParams = newExplainTextParams
+            binding.explanationTextView.layoutParams = newExplainTextParams
 
-            val originalWebViewClient = webView.webViewClient
-            webView.webViewClient = object : WebViewClient()
+            val originalWebViewClient = binding.webView.webViewClient
+            binding.webView.webViewClient = object : WebViewClient()
             {
                 override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean
                 {
@@ -50,22 +54,22 @@ class APITutorialPageFragment : Fragment()
                 {
                     super.onPageFinished(view, url)
 
-                    if (webView != null) // Can be null if configuration change occurs
+                    if (_binding?.webView != null) // Can be null if configuration change occurs
                     {
-                        webView.webViewClient = originalWebViewClient // Will open the browser app when a button on the web page is clicked
+                        _binding?.webView?.webViewClient = originalWebViewClient // Will open the browser app when a button on the web page is clicked
                     }
                 }
             }
 
-            webView.loadUrl(urlString)
+            binding.webView.loadUrl(urlString)
 
-            webView.visibility = View.VISIBLE
+            binding.webView.visibility = View.VISIBLE
 
             if (arguments?.getBoolean(SHOULD_SHOW_REDIRECT_BUTTON, false) == true)
             {
-                apiKeyRedirectButton.visibility = View.VISIBLE
+                binding.apiKeyRedirectButton.visibility = View.VISIBLE
 
-                apiKeyRedirectButton.setOnClickListener()
+                binding.apiKeyRedirectButton.setOnClickListener()
                 {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlString)) // Opens the browser app
                     startActivity(intent)
@@ -74,9 +78,15 @@ class APITutorialPageFragment : Fragment()
 
             if (arguments?.getBoolean(SHOULD_SCROLL_WEB_VIEW_KEY, false) == true)
             {
-                webView.scrollY = resources.getDimensionPixelOffset(R.dimen.api_fragment_web_view_default_scroll_position)
+                binding.webView.scrollY = resources.getDimensionPixelOffset(R.dimen.api_fragment_web_view_default_scroll_position)
             }
         }
+    }
+
+    override fun onDestroyView()
+    {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object
