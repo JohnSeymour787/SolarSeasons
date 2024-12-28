@@ -5,13 +5,17 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Toast
 import com.johnseymour.solarseasons.*
-import kotlinx.android.synthetic.main.fragment_settings.*
+import com.johnseymour.solarseasons.databinding.FragmentSettingsBinding
 
 class SettingsFragment : Fragment()
 {
+    private var _binding: FragmentSettingsBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        return inflater.inflate(R.layout.fragment_settings, container, false)
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        return _binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
@@ -28,7 +32,7 @@ class SettingsFragment : Fragment()
             parentFragmentManager.setFragmentResult(PreferenceScreenFragment.APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundle)
         }
 
-        stopBackgroundWorkButton.setOnClickListener()
+        binding.stopBackgroundWorkButton.setOnClickListener()
         {
             val lApplicationContext = requireContext().applicationContext
             UVDataWorker.cancelWorker(lApplicationContext)
@@ -49,15 +53,15 @@ class SettingsFragment : Fragment()
 
         if (requireContext().hasWidgets())
         {
-            backgroundIssuesTextBackground.visibility = View.VISIBLE
-            backgroundIssuesText.visibility = View.VISIBLE
-            stopBackgroundWorkButton.visibility = View.VISIBLE
+            binding.backgroundIssuesTextBackground.visibility = View.VISIBLE
+            binding.backgroundIssuesText.visibility = View.VISIBLE
+            binding.stopBackgroundWorkButton.visibility = View.VISIBLE
         }
         else
         {
-            backgroundIssuesTextBackground.visibility = View.GONE
-            backgroundIssuesText.visibility = View.GONE
-            stopBackgroundWorkButton.visibility = View.GONE
+            binding.backgroundIssuesTextBackground.visibility = View.GONE
+            binding.backgroundIssuesText.visibility = View.GONE
+            binding.stopBackgroundWorkButton.visibility = View.GONE
         }
     }
 
@@ -70,6 +74,12 @@ class SettingsFragment : Fragment()
             // Disable the light-mode status bar when leaving this screen
             disableLightStatusBar(requireActivity().window.decorView)
         }
+    }
+
+    override fun onDestroyView()
+    {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object

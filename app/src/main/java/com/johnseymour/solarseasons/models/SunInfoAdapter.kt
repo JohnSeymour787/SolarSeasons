@@ -7,19 +7,20 @@ import com.johnseymour.solarseasons.R
 import com.johnseymour.solarseasons.current_uv_screen.SunInfoViewCell
 import com.johnseymour.solarseasons.preferredTimeString
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
-import kotlinx.android.synthetic.main.list_cell_sun_info.view.*
 
 class SunInfoAdapter(private val sunTimes: List<SunInfo.SunTimeData>, private val textColorInt: Int, private val onClick: (SunInfo.SunTimeData) -> Unit, private val cellPixelWidth: Int): RecyclerView.Adapter<SunInfoAdapter.SunInfoViewHolder>()
 {
     inner class SunInfoViewHolder(view: SunInfoViewCell): RecyclerView.ViewHolder(view)
     {
+        private val viewBinding = view.binding
+
         internal fun bind(sunTime: SunInfo.SunTimeData)
         {
             itemView.apply()
             {
-                infoTitle.text = resources.getString(sunTime.nameResourceInt)
-                infoTime.text = preferredTimeString(context, sunTime.time)
-                infoImage.setImageResource(sunTime.imageResourceInt)
+                viewBinding.infoTitle.text = resources.getString(sunTime.nameResourceInt)
+                viewBinding.infoTime.text = preferredTimeString(context, sunTime.time)
+                viewBinding.infoImage.setImageResource(sunTime.imageResourceInt)
 
                 setOnClickListener { onClick(sunTime) }
             }
@@ -34,8 +35,8 @@ class SunInfoAdapter(private val sunTimes: List<SunInfo.SunTimeData>, private va
 
             if (PreferenceScreenFragment.useCustomTheme)
             {
-                infoTitle.setTextColor(resources.getColor(textColorInt, context.theme))
-                infoTime.setTextColor(resources.getColor(textColorInt, context.theme))
+                binding.infoTitle.setTextColor(resources.getColor(textColorInt, context.theme))
+                binding.infoTime.setTextColor(resources.getColor(textColorInt, context.theme))
             }
         }
 

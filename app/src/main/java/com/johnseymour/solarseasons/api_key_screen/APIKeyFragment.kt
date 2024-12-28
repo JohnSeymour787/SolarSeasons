@@ -7,23 +7,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.johnseymour.solarseasons.R
-import kotlinx.android.synthetic.main.api_key_fragment.*
+import com.johnseymour.solarseasons.databinding.ApiKeyFragmentBinding
 
 class APIKeyFragment : Fragment()
 {
+    private var _binding: ApiKeyFragmentBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        return inflater.inflate(R.layout.api_key_fragment, container, false)
+        _binding = ApiKeyFragmentBinding.inflate(inflater, container, false)
+        return _binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        viewPager.adapter = APIKeyTutorialPagerAdapter(this)
+        binding.viewPager.adapter = APIKeyTutorialPagerAdapter(this)
 
-        viewPager.reduceDragSensitivity()
+        binding.viewPager.reduceDragSensitivity()
 
         childFragmentManager.setFragmentResultListener(APIKeyEntryFragment.LAUNCH_MAIN_APP_FRAGMENT_KEY, this)
         { requestKey, bundle ->
@@ -47,6 +50,12 @@ class APIKeyFragment : Fragment()
         touchSlopField.isAccessible = true
         val touchSlop = touchSlopField.get(recyclerView) as Int
         touchSlopField.set(recyclerView, touchSlop*2)
+    }
+
+    override fun onDestroyView()
+    {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object

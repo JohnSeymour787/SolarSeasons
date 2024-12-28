@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
+    id 'kotlin-parcelize'
 }
 
 def apiKeyPropertiesFile = rootProject.file("apiKeys.properties")
@@ -76,6 +76,10 @@ android {
         jvmTarget = '1.8'
     }
     namespace 'com.johnseymour.solarseasons'
+
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
