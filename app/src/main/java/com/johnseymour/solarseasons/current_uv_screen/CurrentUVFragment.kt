@@ -183,8 +183,6 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
             newUVDataReceived(it)
         } ?: updateUVDataFromDisk()
 
-        layout.setOnRefreshListener(this)
-        layout.setProgressViewOffset(true, resources.getDimensionPixelOffset(R.dimen.activity_swipe_refresh_offset_start), resources.getDimensionPixelOffset(R.dimen.activity_swipe_refresh_offset_end))
         binding.layout.setOnRefreshListener(this)
         binding.layout.setProgressViewOffset(true, resources.getDimensionPixelOffset(R.dimen.activity_swipe_refresh_offset_start), resources.getDimensionPixelOffset(R.dimen.activity_swipe_refresh_offset_end))
 
