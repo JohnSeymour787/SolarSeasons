@@ -64,7 +64,7 @@ object UVDataGsonAdapter: JsonDeserializer<UVData>, JsonSerializer<UVData>
             }
         }
 
-        return if (result.isNotEmpty()) { result } else { null }
+        return result.ifEmpty { null }
     }
 
     /**

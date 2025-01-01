@@ -3,7 +3,6 @@ package com.johnseymour.solarseasons.services
 import android.app.AlarmManager
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
 import androidx.preference.PreferenceManager
 import com.johnseymour.solarseasons.Constants
 import com.johnseymour.solarseasons.DiskRepository

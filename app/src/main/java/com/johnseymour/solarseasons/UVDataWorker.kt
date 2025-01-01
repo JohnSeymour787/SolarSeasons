@@ -99,7 +99,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
             uvDataRequest = createPeriodicRequest(timeInterval, delay)
 
             // Start a unique work, but if one is already going, then replace that one (shouldn't need to occur because removed the work before)
-            (uvDataRequest as? PeriodicWorkRequest)?.let { workManager.enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.REPLACE, it) }
+            (uvDataRequest as? PeriodicWorkRequest)?.let { workManager.enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.UPDATE, it) }
         }
 
         fun initiateOneTimeWorker(context: Context, firstDailyRequest: Boolean, delayedStart: Boolean = false, delayTime: Long = Constants.DEFAULT_REFRESH_TIME)
