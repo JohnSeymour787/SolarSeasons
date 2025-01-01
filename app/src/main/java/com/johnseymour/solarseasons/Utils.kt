@@ -8,6 +8,9 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
+import android.os.Build.VERSION.SDK_INT
+import android.os.Bundle
+import android.os.Parcelable
 import android.provider.Settings
 import android.text.format.DateFormat
 import android.util.TypedValue
@@ -21,6 +24,7 @@ import java.time.*
 import java.time.chrono.ChronoLocalDate
 import java.time.format.DateTimeParseException
 import kotlin.math.withSign
+import java.io.Serializable
 
 /**
  * If this JsonElement is a String representing a date, this method will convert it to a ZonedDateTime.
@@ -250,4 +254,34 @@ fun Context.showNotificationsRationaleDialogue()
     }
 
     alert.show()
+}
+
+inline fun <reified T : Parcelable> Intent.parcelableCompat(key: String): T? = when {
+    SDK_INT > Build.VERSION_CODES.TIRAMISU -> getParcelableExtra(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+}
+
+inline fun <reified T : Parcelable> Bundle.parcelableCompat(key: String): T? = when {
+    SDK_INT > Build.VERSION_CODES.TIRAMISU -> getParcelable(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelable(key) as? T
+}
+
+inline fun <reified T : Parcelable> Bundle.parcelableArrayListCompat(key: String): ArrayList<T>? = when {
+    SDK_INT > Build.VERSION_CODES.TIRAMISU -> getParcelableArrayList(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelableArrayList(key)
+}
+
+inline fun <reified T : Parcelable> Intent.parcelableArrayListCompat(key: String): ArrayList<T>? = when {
+    SDK_INT > Build.VERSION_CODES.TIRAMISU -> getParcelableArrayListExtra(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
+}
+
+inline fun <reified T : Serializable> Bundle.serializableCompat(key: String): T? = when {
+    SDK_INT > Build.VERSION_CODES.TIRAMISU -> getSerializable(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getSerializable(key) as? T
+}
+
+inline fun <reified T : Serializable> Intent.serializableCompat(key: String): T? = when {
+    SDK_INT > Build.VERSION_CODES.TIRAMISU -> getSerializableExtra(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getSerializableExtra(key) as? T
 }

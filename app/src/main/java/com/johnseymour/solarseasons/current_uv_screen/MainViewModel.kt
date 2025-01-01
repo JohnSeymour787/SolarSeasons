@@ -17,6 +17,9 @@ import com.johnseymour.solarseasons.isNotEqual
 import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.models.UVForecastData
 import com.johnseymour.solarseasons.models.UVLocationData
+import com.johnseymour.solarseasons.parcelableArrayListCompat
+import com.johnseymour.solarseasons.parcelableCompat
+import com.johnseymour.solarseasons.serializableCompat
 import com.johnseymour.solarseasons.services.LocationService
 import com.johnseymour.solarseasons.services.UVDataUseCase
 import nl.komponents.kovenant.deferred
@@ -34,12 +37,12 @@ class MainViewModel: ViewModel()
         {
             if (intent.action == UVData.UV_DATA_UPDATED)
             {
-                (intent.getSerializableExtra(ErrorStatus.ERROR_STATUS_KEY) as? ErrorStatus)?.let()
+                intent.serializableCompat<ErrorStatus>(ErrorStatus.ERROR_STATUS_KEY)?.let()
                 {
                     latestError = it
-                } ?: intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
+                } ?: intent.parcelableCompat<UVData>(UVData.UV_DATA_KEY)?.let()
                 {
-                    intent.getParcelableArrayListExtra<UVForecastData>(UVForecastData.UV_FORECAST_LIST_KEY)?.toList()?.let()
+                    intent.parcelableArrayListCompat<UVForecastData>(UVForecastData.UV_FORECAST_LIST_KEY)?.toList()?.let()
                     { forecastData ->
                         uvForecastData = forecastData
                     }

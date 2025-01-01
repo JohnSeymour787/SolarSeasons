@@ -146,7 +146,7 @@ class SmallUVDisplay : AppWidgetProvider()
             return
         }
 
-        (intent?.getSerializableExtra(SET_RECEIVING_SCREEN_UNLOCK_KEY) as? Boolean)?.let()
+        intent?.serializableCompat<Boolean>(SET_RECEIVING_SCREEN_UNLOCK_KEY)?.let()
         { receiveScreenUnlockSetting ->
             if (receiveScreenUnlockSetting != previousReceivingScreenOnBroadcastSetting)
             {
@@ -162,7 +162,7 @@ class SmallUVDisplay : AppWidgetProvider()
             }
         }
 
-        (intent?.getSerializableExtra(SET_USE_PERIODIC_WORK_KEY) as? Boolean)?.let()
+        intent?.serializableCompat<Boolean>(SET_USE_PERIODIC_WORK_KEY)?.let()
         {
             if (it != usePeriodicWork)
             {
@@ -171,7 +171,7 @@ class SmallUVDisplay : AppWidgetProvider()
             }
         }
 
-        (intent?.getSerializableExtra(SET_BACKGROUND_REFRESH_RATE_KEY) as? Long)?.let()
+        intent?.serializableCompat<Long>(SET_BACKGROUND_REFRESH_RATE_KEY)?.let()
         {
             if (it != backgroundRefreshRate)
             {
@@ -180,7 +180,7 @@ class SmallUVDisplay : AppWidgetProvider()
             }
         }
 
-        intent?.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
+        intent?.parcelableCompat<UVData>(UVData.UV_DATA_KEY)?.let()
         { luvData ->
             uvData = luvData
             latestError = null
@@ -206,7 +206,7 @@ class SmallUVDisplay : AppWidgetProvider()
             }
         }
 
-        (intent?.getSerializableExtra(ErrorStatus.ERROR_STATUS_KEY) as? ErrorStatus)?.let()
+        intent?.serializableCompat<ErrorStatus>(ErrorStatus.ERROR_STATUS_KEY)?.let()
         {
             latestError = it
         }
