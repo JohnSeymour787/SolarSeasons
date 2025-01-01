@@ -47,7 +47,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
 
     private val viewModel by lazy()
     {
-        ViewModelProvider(this).get(MainViewModel::class.java)
+        ViewModelProvider(this)[MainViewModel::class.java]
     }
 
     private val localBroadcastManager by lazy { LocalBroadcastManager.getInstance(requireContext()) }

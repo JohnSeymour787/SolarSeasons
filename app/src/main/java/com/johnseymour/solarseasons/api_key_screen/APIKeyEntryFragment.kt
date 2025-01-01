@@ -33,7 +33,7 @@ class APIKeyEntryFragment : Fragment()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this).get(APIKeyEntryViewModel::class.java)
+        viewModel = ViewModelProvider(this)[APIKeyEntryViewModel::class.java]
 
         binding.apiKeyEntry.setOnEditorActionListener()
         { _, actionID, _ ->
