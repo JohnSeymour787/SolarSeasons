@@ -3,7 +3,7 @@ package com.johnseymour.solarseasons.models
 import android.os.Parcelable
 import com.johnseymour.solarseasons.R
 import com.johnseymour.solarseasons.settings_screen.PreferenceScreenFragment
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit

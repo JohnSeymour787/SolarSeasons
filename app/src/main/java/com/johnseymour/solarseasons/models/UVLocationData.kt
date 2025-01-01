@@ -1,7 +1,7 @@
 package com.johnseymour.solarseasons.models
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class UVLocationData(val latitude: Double, val longitude: Double, val altitude: Double): Parcelable
