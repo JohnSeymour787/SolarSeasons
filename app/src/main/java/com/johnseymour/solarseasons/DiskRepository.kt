@@ -111,7 +111,7 @@ object DiskRepository
 
         companion object
         {
-            private val map = NotificationTimeType.values().associateBy { it.valueString }
+            private val map = entries.associateBy { it.valueString }
             infix fun from(value: String) = map[value]
         }
     }

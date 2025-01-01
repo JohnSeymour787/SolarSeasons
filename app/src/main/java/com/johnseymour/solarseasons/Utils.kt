@@ -98,7 +98,7 @@ fun exposureDurationString(resources: Resources, minutes: Int): String
 fun enableLightStatusBar(decorView: View, configuration: Configuration)
 {
     // If not in dark mode, enable the light-mode status bar for this screen only
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+    if (SDK_INT >= Build.VERSION_CODES.R)
     {
         if (!configuration.isNightModeActive)
         {
@@ -122,7 +122,7 @@ fun enableLightStatusBar(decorView: View, configuration: Configuration)
  */
 fun disableLightStatusBar(decorView: View)
 {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+    if (SDK_INT >= Build.VERSION_CODES.R)
     {
         decorView.windowInsetsController?.setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
     }
@@ -201,7 +201,7 @@ fun Resources.Theme.textColorPrimary(): Int
 
 fun Configuration.isDarkMode(): Boolean
 {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+    return if (SDK_INT >= Build.VERSION_CODES.R)
     {
         this.isNightModeActive
     }
