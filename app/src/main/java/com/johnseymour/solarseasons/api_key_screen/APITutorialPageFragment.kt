@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import android.widget.RelativeLayout
 import com.johnseymour.solarseasons.R
 import com.johnseymour.solarseasons.databinding.FragmentApiTutorialPageBinding
+import com.johnseymour.solarseasons.serializableCompat
 
 class APITutorialPageFragment : Fragment()
 {
@@ -27,8 +28,8 @@ class APITutorialPageFragment : Fragment()
     {
         super.onViewCreated(view, savedInstanceState)
 
-        (arguments?.getSerializable(TITLE_RESOURCE_KEY) as? Int)?.let { binding.titleTextView.setText(it) }
-        (arguments?.getSerializable(EXPLANATION_RESOURCE_KEY) as? Int)?.let { binding.explanationTextView.setText(it) }
+        arguments?.serializableCompat<Int>(TITLE_RESOURCE_KEY)?.let { binding.titleTextView.setText(it) }
+        arguments?.serializableCompat<Int>(EXPLANATION_RESOURCE_KEY)?.let { binding.explanationTextView.setText(it) }
         arguments?.getString(WEB_VIEW_URL_KEY)?.let()
         { urlString ->
 

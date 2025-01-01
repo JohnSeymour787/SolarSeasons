@@ -38,7 +38,7 @@ class ProtectionTimeAlarmReceiver : BroadcastReceiver()
         val notificationId = intent.getIntExtra(UVProtectionTimeData.PROTECTION_NOTIFICATION_ID_KEY, 0)
         val title = intent.getStringExtra(UVProtectionTimeData.PROTECTION_NOTIFICATION_TITLE_KEY)
         val body = intent.getStringExtra(UVProtectionTimeData.PROTECTION_NOTIFICATION_BODY_KEY)
-        val persistSameNotificationIntent = intent.getParcelableExtra<Intent>(UVProtectionTimeData.PROTECTION_NOTIFICATION_PERSIST_NOTIFICATION_KEY)
+        val persistSameNotificationIntent = intent.parcelableCompat<Intent>(UVProtectionTimeData.PROTECTION_NOTIFICATION_PERSIST_NOTIFICATION_KEY)
 
         val builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.app_notification_uv_protection)
@@ -59,7 +59,7 @@ class ProtectionTimeAlarmReceiver : BroadcastReceiver()
         {
             builder.priority = NotificationCompat.PRIORITY_MIN
 
-            (intent.getSerializableExtra(UVProtectionTimeData.PROTECTION_NOTIFICATION_PERSIST_NOTIFICATION_TIMEOUT_KEY) as? ZonedDateTime)?.let()
+            intent.serializableCompat<ZonedDateTime>(UVProtectionTimeData.PROTECTION_NOTIFICATION_PERSIST_NOTIFICATION_TIMEOUT_KEY)?.let()
             { timeOutTime ->
                 val timeOutAfter = ZonedDateTime.now().until(timeOutTime, ChronoUnit.MILLIS)
 

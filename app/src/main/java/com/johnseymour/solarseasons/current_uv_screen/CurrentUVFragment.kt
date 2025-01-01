@@ -63,9 +63,9 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
                     binding.layout.isRefreshing = false
                 }
 
-                intent.getParcelableExtra<UVData>(UVData.UV_DATA_KEY)?.let()
+                intent.parcelableCompat<UVData>(UVData.UV_DATA_KEY)?.let()
                 {
-                    intent.getParcelableArrayListExtra<UVForecastData>(UVForecastData.UV_FORECAST_LIST_KEY)?.toList()?.let()
+                    intent.parcelableArrayListCompat<UVForecastData>(UVForecastData.UV_FORECAST_LIST_KEY)?.toList()?.let()
                     { forecastData ->
                         viewModel.uvForecastData = forecastData
                     }
@@ -73,7 +73,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
                     newUVDataReceived(it)
                 }
 
-                (intent.getSerializableExtra(ErrorStatus.ERROR_STATUS_KEY) as? ErrorStatus)?.let()
+                intent.serializableCompat<ErrorStatus>(ErrorStatus.ERROR_STATUS_KEY)?.let()
                 { errorStatus ->
                     viewModel.latestError = errorStatus
 
@@ -174,10 +174,10 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
 
         initialiseMemoryPreferences()
 
-        (arguments?.getSerializable(ErrorStatus.ERROR_STATUS_KEY) as? ErrorStatus)?.let()
+        arguments?.serializableCompat<ErrorStatus>(ErrorStatus.ERROR_STATUS_KEY)?.let()
         {
             displayError(it)
-        } ?: arguments?.getParcelable<UVData>(UVData.UV_DATA_KEY)?.let()
+        } ?: arguments?.parcelableCompat<UVData>(UVData.UV_DATA_KEY)?.let()
         {
             viewModel.readForecastFromDisk(requireContext().getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, AppCompatActivity.MODE_PRIVATE))
             newUVDataReceived(it)
@@ -200,7 +200,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         parentFragmentManager.setFragmentResultListener(PreferenceScreenFragment.APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, this)
         { _, bundle ->
 
-            if (bundle[Constants.SharedPreferences.APP_THEME_KEY] != null) // Indicates that the theme was changed
+            if (bundle.containsKey(Constants.SharedPreferences.APP_THEME_KEY)) // Indicates that the theme was changed
             {
                 if (PreferenceScreenFragment.useCustomTheme)
                 {
@@ -217,12 +217,12 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
                 broadcastBundleToWidgets(bundleOf())
             }
 
-            (bundle[Constants.SharedPreferences.APP_LAUNCH_AUTO_REQUEST_KEY] as? Boolean)?.let()
+            bundle.serializableCompat<Boolean>(Constants.SharedPreferences.APP_LAUNCH_AUTO_REQUEST_KEY)?.let()
             { autoRequestValue ->
                 viewModel.shouldRequestUVUpdateOnLaunch = autoRequestValue
             }
 
-            (bundle[Constants.SharedPreferences.CLOUD_COVER_FACTOR_KEY] as? Boolean)?.let()
+            bundle.serializableCompat<Boolean>(Constants.SharedPreferences.CLOUD_COVER_FACTOR_KEY)?.let()
             { cloudCoverEnabled ->
                 if (!cloudCoverEnabled) // Remove the cloudCover data and refresh the UI
                 {
