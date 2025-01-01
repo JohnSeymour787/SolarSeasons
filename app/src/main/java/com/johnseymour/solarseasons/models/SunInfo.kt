@@ -2,7 +2,7 @@ package com.johnseymour.solarseasons.models
 
 import android.os.Parcelable
 import com.johnseymour.solarseasons.R
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import java.time.ZonedDateTime
 
 @Parcelize
