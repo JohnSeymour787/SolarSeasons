@@ -30,7 +30,6 @@ class SmallUVDisplay : AppWidgetProvider()
         const val SET_BACKGROUND_REFRESH_RATE_KEY = "set_background_refresh_rate_key"
         const val START_BACKGROUND_WORK_KEY = "start_background_work_key"
 
-        private val userPresentFilter = IntentFilter(Intent.ACTION_USER_PRESENT)
         private val userPresentReceiver = object: BroadcastReceiver()
         {
             override fun onReceive(context: Context?, intent: Intent?)
@@ -117,7 +116,7 @@ class SmallUVDisplay : AppWidgetProvider()
 
             if (previousReceivingScreenOnBroadcastSetting)
             {
-                context.applicationContext.registerReceiver(userPresentReceiver, userPresentFilter)
+                context.applicationContext.registerReceiver(userPresentReceiver, IntentFilter(Intent.ACTION_USER_PRESENT))
             }
 
             usePeriodicWork = getString(Constants.SharedPreferences.WORK_TYPE_KEY, Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE) == Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE
@@ -152,7 +151,7 @@ class SmallUVDisplay : AppWidgetProvider()
             {
                 if (receiveScreenUnlockSetting)
                 {
-                    context.applicationContext.registerReceiver(userPresentReceiver, userPresentFilter)
+                    context.applicationContext.registerReceiver(userPresentReceiver, IntentFilter(Intent.ACTION_USER_PRESENT))
                 }
                 else
                 {
