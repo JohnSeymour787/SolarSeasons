@@ -41,7 +41,7 @@
             android:name=".services.LocationServiceTestNoAPI"
             android:foregroundServiceType="location" />
 
-        <receiver android:name=".SmallUVDisplay" android:exported="false">
+        <receiver android:name=".SmallUVDisplay" android:exported="true" android:enabled="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
