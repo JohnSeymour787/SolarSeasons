@@ -13,6 +13,7 @@ import com.johnseymour.solarseasons.models.UVData
 import com.johnseymour.solarseasons.models.UVForecastData
 import com.johnseymour.solarseasons.models.UVLocationData
 import com.johnseymour.solarseasons.models.UVProtectionTimeData
+import com.johnseymour.solarseasons.setExactIfPossible
 import com.johnseymour.solarseasons.toEpochMilli
 import nl.komponents.kovenant.Deferred
 import nl.komponents.kovenant.Promise
@@ -277,7 +278,7 @@ class UVDataUseCase(val context: Context)
             }
         }
 
-        alarmManager.set(AlarmManager.RTC, protectionStartScheduleTime.toEpochMilli(), protectionTimeData.protectionStartPendingIntent(context, protectionTimeAlreadyStarted))
+        alarmManager.setExactIfPossible(AlarmManager.RTC, protectionStartScheduleTime.toEpochMilli(), protectionTimeData.protectionStartPendingIntent(context, protectionTimeAlreadyStarted))
 
         val uvEndNotificationsEnabled = defaultPreferences.getBoolean(Constants.SharedPreferences.UV_PROTECTION_END_NOTIFICATION_KEY, true)
         if (uvEndNotificationsEnabled)

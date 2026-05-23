@@ -1,6 +1,8 @@
 package com.johnseymour.solarseasons
 
+import android.app.AlarmManager
 import android.app.AlertDialog
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
@@ -228,6 +230,10 @@ fun Context.getThemeForDeviceDefaultDialogAlert(): Int
 
 fun Context.showNotificationsRationaleDialogue()
 {
+    if (SDK_INT < Build.VERSION_CODES.S) {
+        return
+    }
+
     val builder = AlertDialog.Builder(this, this.getThemeForDeviceDefaultDialogAlert())
     builder.setTitle(getString(R.string.notification_permission_rationale_title))
     builder.setMessage(getString(R.string.notification_permission_rationale))
@@ -235,7 +241,7 @@ fun Context.showNotificationsRationaleDialogue()
     builder.setNegativeButton(R.string.button_settings_title)
     { _, _ ->
         val intent = Intent()
-        intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+        intent.setAction(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
         intent.putExtra(Settings.EXTRA_APP_PACKAGE, this.packageName)
         startActivity(intent)
     }
@@ -254,6 +260,18 @@ fun Context.showNotificationsRationaleDialogue()
     }
 
     alert.show()
+}
+
+fun AlarmManager.setExactIfPossible(type: Int, triggerAtMillis: Long, operation: PendingIntent)
+{
+    if (SDK_INT < Build.VERSION_CODES.S || canScheduleExactAlarms())
+    {
+        setExact(type, triggerAtMillis, operation)
+    }
+    else
+    {
+        set(type, triggerAtMillis, operation)
+    }
 }
 
 inline fun <reified T : Parcelable> Intent.parcelableCompat(key: String): T? = when {
