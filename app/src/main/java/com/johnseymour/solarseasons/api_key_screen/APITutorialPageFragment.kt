@@ -62,6 +62,7 @@ class APITutorialPageFragment : Fragment()
                 }
             }
 
+            binding.webView.settings.javaScriptEnabled = true
             binding.webView.loadUrl(urlString)
 
             binding.webView.visibility = View.VISIBLE
