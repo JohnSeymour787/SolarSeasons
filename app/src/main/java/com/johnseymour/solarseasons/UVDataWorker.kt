@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.concurrent.futures.CallbackToFutureAdapter
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import androidx.work.*
 import com.google.common.util.concurrent.ListenableFuture
@@ -79,8 +78,8 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
             .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
             .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
 
-        val activityIntent = Intent(applicationContext, MainActivity::class.java)
-            .setAction(UVData.UV_DATA_UPDATED)
+        val activityIntent = Intent(UVData.UV_DATA_UPDATED)
+            .setPackage(applicationContext.packageName)
 
         return CallbackToFutureAdapter.getFuture()
         { result ->
@@ -97,8 +96,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                         activityIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, ErrorStatus.FineLocationPermissionError)
 
                         applicationContext.sendBroadcast(widgetIntent)
-                        LocalBroadcastManager.getInstance(applicationContext)
-                            .sendBroadcast(activityIntent)
+                        applicationContext.sendBroadcast(activityIntent)
                         result.set(Result.failure())
                     }
                     else
@@ -158,7 +156,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
             LoggingUtils.writeLog(applicationContext, "UVDataWorker currentUVForLocationData getUVData succeeded, sending broadcasts")
 
             applicationContext.sendBroadcast(widgetIntent)
-            LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(activityIntent)
+            applicationContext.sendBroadcast(activityIntent)
 
             workResult.set(Result.success())
         }.fail()
@@ -172,7 +170,7 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
             {
                 // Only if not going to retry later show the error message
                 applicationContext.sendBroadcast(widgetIntent)
-                LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(activityIntent)
+                applicationContext.sendBroadcast(activityIntent)
                 workResult.set(Result.failure())
             }
             else

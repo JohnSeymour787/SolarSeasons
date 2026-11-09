@@ -18,9 +18,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,7 +50,17 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         ViewModelProvider(this)[MainViewModel::class.java]
     }
 
-    private val localBroadcastManager by lazy { LocalBroadcastManager.getInstance(requireContext()) }
+    private fun unregisterReceiverSafely(receiver: BroadcastReceiver)
+    {
+        try
+        {
+            requireContext().unregisterReceiver(receiver)
+        }
+        catch (_: IllegalArgumentException)
+        {
+            // Receiver was not registered
+        }
+    }
 
     private val uvDataForegroundBroadcastReceiver = object : BroadcastReceiver()
     {
@@ -290,7 +300,7 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
     {
         super.onResume()
 
-        localBroadcastManager.unregisterReceiver(viewModel.uvDataBackgroundBroadcastReceiver)
+        unregisterReceiverSafely(viewModel.uvDataBackgroundBroadcastReceiver)
 
         viewModel.latestError?.let()
         {
@@ -310,16 +320,16 @@ class CurrentUVFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener
         }
 
         // Actively update UI when background requests come in when activity is in foreground
-        localBroadcastManager.registerReceiver(uvDataForegroundBroadcastReceiver, viewModel.uvDataChangedIntentFilter)
+        ContextCompat.registerReceiver(requireContext(), uvDataForegroundBroadcastReceiver, viewModel.uvDataChangedIntentFilter, ContextCompat.RECEIVER_NOT_EXPORTED)
     }
 
     override fun onPause()
     {
         super.onPause()
 
-        localBroadcastManager.unregisterReceiver(uvDataForegroundBroadcastReceiver)
+        unregisterReceiverSafely(uvDataForegroundBroadcastReceiver)
 
-        localBroadcastManager.registerReceiver(viewModel.uvDataBackgroundBroadcastReceiver, viewModel.uvDataChangedIntentFilter)
+        ContextCompat.registerReceiver(requireContext(), viewModel.uvDataBackgroundBroadcastReceiver, viewModel.uvDataChangedIntentFilter, ContextCompat.RECEIVER_NOT_EXPORTED)
     }
 
     private fun newUVDataReceived(uvData: UVData)
