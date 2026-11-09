@@ -159,7 +159,6 @@ class MainViewModel: ViewModel()
         val widgetIntent = Intent(context, SmallUVDisplay::class.java)
             .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
             .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
-            .putExtra(SmallUVDisplay.START_BACKGROUND_WORK_KEY, true)
 
         val activityIntent = Intent(context, MainActivity::class.java)
             .setAction(UVData.UV_DATA_UPDATED)

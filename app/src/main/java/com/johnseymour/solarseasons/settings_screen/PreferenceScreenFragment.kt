@@ -161,12 +161,6 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
                 setFragmentResult(WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(SmallUVDisplay.SET_RECEIVING_SCREEN_UNLOCK_KEY to updatedScreenUnlockSetting))
             }
 
-            Constants.SharedPreferences.WORK_TYPE_KEY ->
-            {
-                val updatedWorkTypeValue = sharedPreferences.getString(key, null) ?: return
-                setFragmentResult(WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(SmallUVDisplay.SET_USE_PERIODIC_WORK_KEY to (updatedWorkTypeValue == Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE)))
-            }
-
             Constants.SharedPreferences.BACKGROUND_REFRESH_RATE_KEY ->
             {
                 val updatedRefreshRateValue = sharedPreferences.getString(key, null)?.toLongOrNull() ?: return
@@ -191,6 +185,11 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || notificationsOn.not())
                 {
                     return
+                }
+
+                if (requireContext().checkSelfPermission(Manifest.permission.SCHEDULE_EXACT_ALARM) != PackageManager.PERMISSION_GRANTED)
+                {
+                    context?.showNotificationsRationaleDialogue()
                 }
 
                 if (requireContext().checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
