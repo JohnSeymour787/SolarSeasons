@@ -5,11 +5,9 @@ import android.content.*
 import android.text.format.DateFormat
 import android.util.DisplayMetrics
 import androidx.lifecycle.ViewModel
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import com.johnseymour.solarseasons.DiskRepository
 import com.johnseymour.solarseasons.ErrorStatus
-import com.johnseymour.solarseasons.MainActivity
 import com.johnseymour.solarseasons.R
 import com.johnseymour.solarseasons.SmallUVDisplay
 import com.johnseymour.solarseasons.getWidgetIDs
@@ -160,8 +158,8 @@ class MainViewModel: ViewModel()
             .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
             .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
 
-        val activityIntent = Intent(context, MainActivity::class.java)
-            .setAction(UVData.UV_DATA_UPDATED)
+        val activityIntent = Intent(UVData.UV_DATA_UPDATED)
+            .setPackage(context.packageName)
 
         UVDataUseCase(context).getUVData(locationData, isForecastNotCurrent(), updateCityData).success()
         {
@@ -178,14 +176,14 @@ class MainViewModel: ViewModel()
             activityIntent.putExtra(UVData.UV_DATA_KEY, it.uvData)
 
             context.sendBroadcast(widgetIntent)
-            LocalBroadcastManager.getInstance(context).sendBroadcast(activityIntent)
+            context.sendBroadcast(activityIntent)
         }.fail()
         {
             widgetIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
             activityIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
 
             context.sendBroadcast(widgetIntent)
-            LocalBroadcastManager.getInstance(context).sendBroadcast(activityIntent)
+            context.sendBroadcast(activityIntent)
         }
     }
 }

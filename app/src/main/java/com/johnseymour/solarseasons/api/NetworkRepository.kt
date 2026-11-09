@@ -52,7 +52,7 @@ object NetworkRepository
                 val request = it.request().newBuilder().apply()
                 {
                     header("x-access-token", OPENUV_API_KEY)
-                    method(it.request().method(), it.request().body())
+                    method(it.request().method, it.request().body)
                 }.build()
                 it.proceed(request)
             }.build()
@@ -81,7 +81,7 @@ object NetworkRepository
         {
             addInterceptor()
             {
-                val newUrl = it.request().url().newBuilder()
+                val newUrl = it.request().url.newBuilder()
                     .addQueryParameter("key", WEATHER_API_KEY)
                     .build()
 
