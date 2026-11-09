@@ -1,7 +1,8 @@
 package com.johnseymour.solarseasons
 
 import android.app.Application
-import androidx.preference.PreferenceManager
+import com.johnseymour.solarseasons.data.AppSettingsRepository
+import com.johnseymour.solarseasons.widget.WidgetBackgroundManager
 
 class SolarSeasonsApplication: Application()
 {
@@ -9,13 +10,12 @@ class SolarSeasonsApplication: Application()
     {
         super.onCreate()
 
+        AppSettingsRepository.initialise(this)
+        WidgetBackgroundManager.configure(this)
+
         // Background updates are only needed while a widget is present
         if (!hasWidgets()) { return }
 
-        val backgroundRefreshRate = PreferenceManager.getDefaultSharedPreferences(this)
-            .getString(Constants.SharedPreferences.BACKGROUND_REFRESH_RATE_KEY, null)
-            ?.toLongOrNull() ?: Constants.DEFAULT_REFRESH_TIME
-
-        UVDataWorker.initiatePeriodicWorker(this, backgroundRefreshRate)
+        WidgetBackgroundManager.scheduleWorker(this)
     }
 }

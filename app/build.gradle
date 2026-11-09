@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id 'com.android.application'
     id 'kotlin-parcelize'
+    id 'org.jetbrains.kotlin.plugin.compose'
 }
 
 def apiKeyPropertiesFile = rootProject.file("apiKeys.properties")
@@ -76,7 +77,7 @@ android {
     namespace = 'com.johnseymour.solarseasons'
 
     buildFeatures {
-        viewBinding = true
+        compose = true
         buildConfig = true
     }
 }
@@ -94,9 +95,23 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.8.0'
     implementation 'androidx.fragment:fragment-ktx:1.9.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.2.0'
+
+    def composeBom = platform('androidx.compose:compose-bom:2026.09.00')
+    implementation composeBom
+    androidTestImplementation composeBom
+
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation 'androidx.compose.foundation:foundation'
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.activity:activity-compose:1.13.0'
+    implementation 'androidx.navigation:navigation-compose:2.10.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.11.0'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    implementation 'androidx.glance:glance-appwidget:1.2.0'
+
     implementation 'com.google.android.material:material:1.14.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.2'
     implementation 'com.squareup.retrofit2:retrofit:3.0.0'
     implementation 'com.google.code.gson:gson:2.15.0'
     implementation 'com.squareup.retrofit2:converter-gson:3.0.0'

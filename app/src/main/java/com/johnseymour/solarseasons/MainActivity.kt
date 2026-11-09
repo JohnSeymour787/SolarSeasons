@@ -1,64 +1,63 @@
 package com.johnseymour.solarseasons
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.remember
+import androidx.core.view.WindowCompat
 import androidx.preference.PreferenceManager
 import com.johnseymour.solarseasons.api.OPENUV_API_KEY
-import com.johnseymour.solarseasons.api_key_screen.APIKeyEntryFragment
-import com.johnseymour.solarseasons.api_key_screen.APIKeyFragment
-import com.johnseymour.solarseasons.current_uv_screen.CurrentUVFragment
-import com.johnseymour.solarseasons.settings_screen.SettingsFragment
+import com.johnseymour.solarseasons.data.AppSettingsRepository
+import com.johnseymour.solarseasons.ui.navigation.AppNavHost
+import com.johnseymour.solarseasons.ui.navigation.Routes
+import com.johnseymour.solarseasons.ui.theme.SolarSeasonsTheme
+import com.johnseymour.solarseasons.widget.WidgetBackgroundManager
 
 class MainActivity : AppCompatActivity()
 {
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        supportFragmentManager.setFragmentResultListener(SettingsFragment.LAUNCH_SETTINGS_FRAGMENT_KEY, this)
-        { _, _ ->
-            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer) ?: return@setFragmentResultListener
+        AppSettingsRepository.initialise(this)
+        WidgetBackgroundManager.configure(this)
 
-            if (currentFragment::class.java != SettingsFragment::class.java)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        setContent()
+        {
+            val startDestination = remember { initialDestination() }
+            val launchedFromWidget = remember()
             {
-                supportFragmentManager.beginTransaction()
-                    .add(R.id.fragmentContainer, SettingsFragment.newInstance())
-                    .addToBackStack(null)
-                    .commit()
+                intent?.getBooleanExtra(com.johnseymour.solarseasons.widget.LaunchFromWidgetKey.name, false) == true ||
+                        intent?.action == com.johnseymour.solarseasons.models.UVData.UV_DATA_UPDATED
+            }
+
+            SolarSeasonsTheme()
+            {
+                AppNavHost(
+                    startDestination = startDestination,
+                    showPersistedError = launchedFromWidget,
+                )
             }
         }
+    }
 
-        if (savedInstanceState == null)
-        {
-            // In case coming from a clicked widget
-            val uvFragment = CurrentUVFragment.newInstance(intent.extras)
-
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, uvFragment)
-                .commit()
-        }
-
+    private fun initialDestination(): String
+    {
         if (Constants.ENABLE_API_KEY_ENTRY_FEATURE)
         {
-            supportFragmentManager.setFragmentResultListener(APIKeyEntryFragment.LAUNCH_MAIN_APP_FRAGMENT_KEY, this)
-            { _, _ ->
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, CurrentUVFragment.newInstance(intent.extras))
-                    .commit()
-            }
+            val apiKey = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(Constants.SharedPreferences.API_KEY, null)
 
-            val apiKey = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.SharedPreferences.API_KEY, null)
             if (apiKey == null)
             {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, APIKeyFragment.newInstance())
-                    .commit()
+                return Routes.API_KEY_ONBOARDING
             }
-            else
-            {
-                OPENUV_API_KEY = apiKey
-            }
+
+            OPENUV_API_KEY = apiKey
         }
+
+        return Routes.CURRENT_UV
     }
 }

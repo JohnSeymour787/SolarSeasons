@@ -9,9 +9,7 @@ import android.text.InputType
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.setFragmentResult
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
@@ -20,10 +18,11 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.johnseymour.solarseasons.Constants
 import com.johnseymour.solarseasons.R
-import com.johnseymour.solarseasons.SmallUVDisplay
 import com.johnseymour.solarseasons.api.OPENUV_API_KEY
 import com.johnseymour.solarseasons.hasWidgets
 import com.johnseymour.solarseasons.showNotificationsRationaleDialogue
+import com.johnseymour.solarseasons.widget.WidgetBackgroundManager
+import com.johnseymour.solarseasons.widget.WidgetUpdater
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -136,35 +135,18 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
 
         when (key)
         {
-            Constants.SharedPreferences.APP_THEME_KEY ->
-            {
-                val updatedAppThemeValue = sharedPreferences.getString(key, null) ?: return
-                useCustomTheme = updatedAppThemeValue == Constants.SharedPreferences.CUSTOM_APP_THEME_VALUE
-                setFragmentResult(APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(key to updatedAppThemeValue))
-            }
-
-            Constants.SharedPreferences.APP_LAUNCH_AUTO_REQUEST_KEY ->
-            {
-                val updatedAutoRequestValue = sharedPreferences.getBoolean(key, true)
-                setFragmentResult(APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(key to updatedAutoRequestValue))
-            }
-
-            Constants.SharedPreferences.CLOUD_COVER_FACTOR_KEY ->
-            {
-                val updatedAutoRequestValue = sharedPreferences.getBoolean(key, true)
-                setFragmentResult(APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(key to updatedAutoRequestValue))
-            }
-
             Constants.SharedPreferences.SUBSCRIBE_SCREEN_UNLOCK_KEY ->
             {
                 val updatedScreenUnlockSetting = sharedPreferences.getBoolean(key, false)
-                setFragmentResult(WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(SmallUVDisplay.SET_RECEIVING_SCREEN_UNLOCK_KEY to updatedScreenUnlockSetting))
+                WidgetBackgroundManager.setReceiveScreenUnlock(requireContext(), updatedScreenUnlockSetting)
+                WidgetUpdater.requestUpdate(requireContext())
             }
 
             Constants.SharedPreferences.BACKGROUND_REFRESH_RATE_KEY ->
             {
                 val updatedRefreshRateValue = sharedPreferences.getString(key, null)?.toLongOrNull() ?: return
-                setFragmentResult(WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY, bundleOf(SmallUVDisplay.SET_BACKGROUND_REFRESH_RATE_KEY to updatedRefreshRateValue))
+                WidgetBackgroundManager.setBackgroundRefreshRate(requireContext(), updatedRefreshRateValue)
+                WidgetUpdater.requestUpdate(requireContext())
             }
 
             Constants.SharedPreferences.MANUAL_LOCATION_ENABLED_KEY ->
@@ -292,8 +274,6 @@ class PreferenceScreenFragment : PreferenceFragmentCompat(), SharedPreferences.O
 
     companion object
     {
-        const val WIDGET_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY = "widget_settings_updated_result_key"
-        const val APP_PREFERENCES_UPDATED_FRAGMENT_RESULT_KEY = "app_settings_updated_result_key"
         var useCustomTheme = false
         var useManualLocation = false
     }

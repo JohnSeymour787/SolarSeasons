@@ -3,7 +3,6 @@ package com.johnseymour.solarseasons
 import android.Manifest
 import android.app.AlarmManager
 import android.app.NotificationManager
-import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,6 +16,7 @@ import com.johnseymour.solarseasons.models.UVLocationData
 import com.johnseymour.solarseasons.models.UVProtectionTimeData
 import com.johnseymour.solarseasons.services.LocationService
 import com.johnseymour.solarseasons.services.UVDataUseCase
+import com.johnseymour.solarseasons.widget.WidgetUpdater
 import nl.komponents.kovenant.deferred
 import java.io.FileNotFoundException
 import java.time.LocalDate
@@ -72,12 +72,6 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
 
         LoggingUtils.writeLog(applicationContext, "UVDataWorker Starting work, first daily request: $firstDailyRequest")
 
-        val widgetIds = applicationContext.getWidgetIDs()
-
-        val widgetIntent = Intent(applicationContext, SmallUVDisplay::class.java)
-            .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
-            .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
-
         val activityIntent = Intent(UVData.UV_DATA_UPDATED)
             .setPackage(applicationContext.packageName)
 
@@ -92,10 +86,14 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 {
                     if (applicationContext.checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED)
                     {
-                        widgetIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, ErrorStatus.FineLocationPermissionError)
+                        DiskRepository.writeLatestError(
+                            ErrorStatus.FineLocationPermissionError,
+                            applicationContext.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)
+                        )
+
                         activityIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, ErrorStatus.FineLocationPermissionError)
 
-                        applicationContext.sendBroadcast(widgetIntent)
+                        WidgetUpdater.requestUpdate(applicationContext)
                         applicationContext.sendBroadcast(activityIntent)
                         result.set(Result.failure())
                     }
@@ -112,14 +110,14 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                         LocationService.locationDataPromise?.success()
                         {
                             DiskRepository.writeLastLocation(it, PreferenceManager.getDefaultSharedPreferences(applicationContext))
-                            currentUVForLocationData(it, updateCityData = true, result, widgetIntent, activityIntent)
+                            currentUVForLocationData(it, updateCityData = true, result, activityIntent)
                             LocationService.locationDataDeferred = null
                         }
                     }
                 }
                 else
                 {
-                    currentUVForLocationData(lastLocationData, updateCityData = false, result, widgetIntent, activityIntent)
+                    currentUVForLocationData(lastLocationData, updateCityData = false, result, activityIntent)
                 }
             }
             catch (exception: Exception)
@@ -130,13 +128,14 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
         }
     }
 
-    private fun currentUVForLocationData(locationData: UVLocationData, updateCityData: Boolean, workResult: CallbackToFutureAdapter.Completer<Result>, widgetIntent: Intent, activityIntent: Intent)
+    private fun currentUVForLocationData(locationData: UVLocationData, updateCityData: Boolean, workResult: CallbackToFutureAdapter.Completer<Result>, activityIntent: Intent)
     {
         LoggingUtils.writeLog(applicationContext, "UVDataWorker currentUVForLocationData, got background location: $updateCityData")
         UVDataUseCase(applicationContext).getUVData(locationData, firstDailyRequest, updateCityData).success()
         {
             val dataSharedPreferences = applicationContext.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)
             DiskRepository.writeLatestUV(it.uvData, dataSharedPreferences)
+            DiskRepository.writeLatestError(null, dataSharedPreferences)
 
             it.forecast?.let()
             { forecastData ->
@@ -150,18 +149,16 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
                 scheduleProtectionTimeNotification(protectionTimeData)
             }
 
-            widgetIntent.putExtra(UVData.UV_DATA_KEY, it.uvData)
             activityIntent.putExtra(UVData.UV_DATA_KEY, it.uvData)
 
             LoggingUtils.writeLog(applicationContext, "UVDataWorker currentUVForLocationData getUVData succeeded, sending broadcasts")
 
-            applicationContext.sendBroadcast(widgetIntent)
+            WidgetUpdater.requestUpdate(applicationContext)
             applicationContext.sendBroadcast(activityIntent)
 
             workResult.set(Result.success())
         }.fail()
         {
-            widgetIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
             activityIntent.putExtra(ErrorStatus.ERROR_STATUS_KEY, it)
 
             LoggingUtils.writeLog(applicationContext, "UVDataWorker currentUVForLocationData getUVData failed, error: $it")
@@ -169,7 +166,12 @@ class UVDataWorker(applicationContext: Context, workerParameters: WorkerParamete
             if (isFailureError(it))
             {
                 // Only if not going to retry later show the error message
-                applicationContext.sendBroadcast(widgetIntent)
+                DiskRepository.writeLatestError(
+                    it,
+                    applicationContext.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)
+                )
+
+                WidgetUpdater.requestUpdate(applicationContext)
                 applicationContext.sendBroadcast(activityIntent)
                 workResult.set(Result.failure())
             }
