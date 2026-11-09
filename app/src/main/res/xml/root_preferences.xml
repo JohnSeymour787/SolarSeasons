@@ -121,15 +121,6 @@
             app:defaultValue="false" />
 
         <ListPreference
-            app:key="work_type"
-            app:title="@string/preference_work_type_title"
-            app:entries="@array/preferences_work_type_entries"
-            app:entryValues="@array/preferences_work_type_values"
-            app:defaultValue="one_time_work"
-            app:iconSpaceReserved="false"
-            app:useSimpleSummaryProvider="true" />
-
-        <ListPreference
             app:key="background_refresh_rate"
             app:title="@string/preference_background_refresh_rate_title"
             app:entries="@array/preferences_background_refresh_rate_entries"

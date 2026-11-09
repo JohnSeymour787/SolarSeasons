@@ -7,10 +7,10 @@ import android.content.*
 import android.view.View
 import android.widget.RemoteViews
 import androidx.preference.PreferenceManager
+import androidx.work.ExistingPeriodicWorkPolicy
 import com.johnseymour.solarseasons.api.OPENUV_API_KEY
 import com.johnseymour.solarseasons.models.UVData
 import java.io.FileNotFoundException
-import java.time.LocalDate
 
 /**
  * Implementation of App Widget functionality.
@@ -24,11 +24,8 @@ class SmallUVDisplay : AppWidgetProvider()
         private var previousReceivingScreenOnBroadcastSetting = false
         private var backgroundRefreshRate = Constants.DEFAULT_REFRESH_TIME
         private var companionFieldsInitialised = false
-        var usePeriodicWork = false
         const val SET_RECEIVING_SCREEN_UNLOCK_KEY = "set_receiving_screen_unlock_key"
-        const val SET_USE_PERIODIC_WORK_KEY = "set_use_periodic_work_key"
         const val SET_BACKGROUND_REFRESH_RATE_KEY = "set_background_refresh_rate_key"
-        const val START_BACKGROUND_WORK_KEY = "start_background_work_key"
 
         private val userPresentReceiver = object: BroadcastReceiver()
         {
@@ -48,21 +45,12 @@ class SmallUVDisplay : AppWidgetProvider()
             }
         }
 
-        private fun prepareEarliestRequest(context: Context)
+        private fun prepareEarliestRequest(context: Context, existingWorkPolicy: ExistingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.KEEP)
         {
-            UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = isFirstDailyRequest(context), false, Constants.SHORTEST_REFRESH_TIME)
-        }
+            // Background updates are only needed while a widget is present
+            if (!context.hasWidgets()) { return }
 
-        private fun isFirstDailyRequest(context: Context): Boolean
-        {
-            try
-            {
-                val forecast = DiskRepository.readLatestForecast(context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE))?.firstOrNull() ?: return true
-
-                return forecast.time.toLocalDate().isNotEqual(LocalDate.now())
-            }
-            catch (_: FileNotFoundException) {}
-            return true
+            UVDataWorker.initiatePeriodicWorker(context, backgroundRefreshRate, existingWorkPolicy)
         }
     }
 
@@ -92,6 +80,8 @@ class SmallUVDisplay : AppWidgetProvider()
         {
             configureWidgetCompanion(context)
         }
+
+        prepareEarliestRequest(context)
     }
 
     override fun onDisabled(context: Context)
@@ -119,7 +109,6 @@ class SmallUVDisplay : AppWidgetProvider()
                 context.applicationContext.registerReceiver(userPresentReceiver, IntentFilter(Intent.ACTION_USER_PRESENT))
             }
 
-            usePeriodicWork = getString(Constants.SharedPreferences.WORK_TYPE_KEY, Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE) == Constants.SharedPreferences.DEFAULT_WORK_TYPE_VALUE
             backgroundRefreshRate = getString(Constants.SharedPreferences.BACKGROUND_REFRESH_RATE_KEY, null)?.toLongOrNull() ?: backgroundRefreshRate
         }
 
@@ -132,6 +121,8 @@ class SmallUVDisplay : AppWidgetProvider()
     override fun onReceive(context: Context?, intent: Intent?)
     {
         context ?: return
+
+        LoggingUtils.writeLog(context, "SmallUVDisplay onReceive called")
 
         if (!companionFieldsInitialised)
         {
@@ -161,21 +152,12 @@ class SmallUVDisplay : AppWidgetProvider()
             }
         }
 
-        intent?.serializableCompat<Boolean>(SET_USE_PERIODIC_WORK_KEY)?.let()
-        {
-            if (it != usePeriodicWork)
-            {
-                usePeriodicWork = it
-                prepareEarliestRequest(context)
-            }
-        }
-
         intent?.serializableCompat<Long>(SET_BACKGROUND_REFRESH_RATE_KEY)?.let()
         {
             if (it != backgroundRefreshRate)
             {
                 backgroundRefreshRate = it
-                prepareEarliestRequest(context)
+                prepareEarliestRequest(context, ExistingPeriodicWorkPolicy.UPDATE)
             }
         }
 
@@ -183,26 +165,6 @@ class SmallUVDisplay : AppWidgetProvider()
         { luvData ->
             uvData = luvData
             latestError = null
-
-            if ((usePeriodicWork) && (luvData.sunInSky().not()))
-            {
-                // Delay the next automatic worker until the sunrise of the next day
-                UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate, startDelay = luvData.minutesUntilSunrise)
-                return@let
-            }
-
-            if (intent.getBooleanExtra(START_BACKGROUND_WORK_KEY, false))
-            {
-                when
-                {
-                    usePeriodicWork -> UVDataWorker.initiatePeriodicWorker(context, timeInterval = backgroundRefreshRate)
-
-                    luvData.sunInSky() -> UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = isFirstDailyRequest(context),true, backgroundRefreshRate)
-
-                    // Delay the next automatic worker until the sunrise of the next day
-                    else -> UVDataWorker.initiateOneTimeWorker(context, firstDailyRequest = true,true, luvData.minutesUntilSunrise)
-                }
-            }
         }
 
         intent?.serializableCompat<ErrorStatus>(ErrorStatus.ERROR_STATUS_KEY)?.let()

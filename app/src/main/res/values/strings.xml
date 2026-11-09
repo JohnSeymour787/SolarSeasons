@@ -99,7 +99,6 @@
     <string name="skin_type_6">Skin Type 6</string>
 
     <string name="preference_app_theme_title">UV Display Theme</string>
-    <string name="preference_work_type_title">Background Work Type Used</string>
     <string name="preference_cloud_cover_title">Calculate Cloud Effect on UV</string>
     <string name="preference_cloud_cover_summary">The app gets local weather data and uses cloud cover information to calculate an estimated actual UV level</string>
     <string name="preference_background_category_title">Widget Settings</string>

@@ -6,16 +6,6 @@
         <item>@dimen/widget_text_very_large</item>
     </array>
 
-    <string-array name="preferences_work_type_entries">
-        <item>Periodic Work</item>
-        <item>Repeated One-Time Work</item>
-    </string-array>
-
-    <string-array name="preferences_work_type_values">
-        <item>periodic_work</item>
-        <item>one_time_work</item>
-    </string-array>
-
     <string-array name="preferences_background_refresh_rate_entries">
         <item>15 minutes</item>
         <item>30 minutes</item>

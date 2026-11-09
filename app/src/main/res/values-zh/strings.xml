@@ -99,7 +99,6 @@
     <string name="skin_type_6">皮肤类型6</string>
 
     <string name="preference_app_theme_title">紫外线显示主题</string>
-    <string name="preference_work_type_title">使用的后台工作类型</string>
     <string name="preference_cloud_cover_title">计算云层对紫外线的影响</string>
     <string name="preference_cloud_cover_summary">应用获取当地天气数据并使用云量信息来计算预估的实际紫外线水平</string>
     <string name="preference_background_category_title">小部件设置</string>
