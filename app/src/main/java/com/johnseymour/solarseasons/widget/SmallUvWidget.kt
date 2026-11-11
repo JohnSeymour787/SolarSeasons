@@ -1,8 +1,12 @@
 package com.johnseymour.solarseasons.widget
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -38,6 +42,10 @@ import com.johnseymour.solarseasons.ErrorStatus
 import com.johnseymour.solarseasons.MainActivity
 import com.johnseymour.solarseasons.R
 import com.johnseymour.solarseasons.preferredTimeString
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.map
 
 internal val LaunchFromWidgetKey = ActionParameters.Key<Boolean>("launch_from_widget")
 
@@ -46,9 +54,36 @@ class SmallUvWidget : GlanceAppWidget()
 {
     override suspend fun provideGlance(context: Context, id: GlanceId)
     {
-        val state = readWidgetState(context)
-        provideContent { SmallUvWidgetContent(state) }
+        val appContext = context.applicationContext
+        val initialState = readWidgetState(appContext)
+
+        provideContent {
+            val state by remember { widgetStateFlow(appContext) }.collectAsState(initialState)
+            SmallUvWidgetContent(state)
+        }
     }
+
+    /**
+     * Glance only calls [provideGlance] once per session, so [updateAll] updates re-render the
+     * composition with whatever data was captured at session start. Observing the persisted data
+     * inside the composition keeps the widget in sync as soon as the app writes new data.
+     */
+    private fun widgetStateFlow(context: Context): Flow<SmallUvWidgetState> = callbackFlow {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> trySend(Unit) }
+
+        val dataPreferences = context.getSharedPreferences(DiskRepository.DATA_PREFERENCES_NAME, Context.MODE_PRIVATE)
+        val defaultPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+        dataPreferences.registerOnSharedPreferenceChangeListener(listener)
+        defaultPreferences.registerOnSharedPreferenceChangeListener(listener)
+
+        trySend(Unit)
+
+        awaitClose {
+            dataPreferences.unregisterOnSharedPreferenceChangeListener(listener)
+            defaultPreferences.unregisterOnSharedPreferenceChangeListener(listener)
+        }
+    }.map { readWidgetState(context) }
 
     private fun readWidgetState(context: Context): SmallUvWidgetState
     {
