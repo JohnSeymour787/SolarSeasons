@@ -105,9 +105,23 @@ object WidgetBackgroundManager
     fun scheduleWorker(context: Context, existingWorkPolicy: ExistingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.KEEP)
     {
         val appContext = context.applicationContext
-        if (!appContext.hasWidgets()) { return }
+        if (appContext.hasWidgets().not()) { return }
 
         UVDataWorker.initiatePeriodicWorker(appContext, backgroundRefreshRate, existingWorkPolicy)
+    }
+
+    /** Cancels the current periodic work and reschedules it to start again in [minutesUntilSunrise] minutes. */
+    fun scheduleWorkerForSunrise(context: Context, minutesUntilSunrise: Long)
+    {
+        val appContext = context.applicationContext
+        if (appContext.hasWidgets().not()) { return }
+
+        UVDataWorker.initiatePeriodicWorker(
+            appContext,
+            backgroundRefreshRate,
+            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+            initialDelayMinutes = minutesUntilSunrise
+        )
     }
 
     fun stopBackgroundWork(context: Context)
