@@ -48,6 +48,7 @@ import com.johnseymour.solarseasons.preferredTimeString
 import com.johnseymour.solarseasons.ui.theme.LocalSolarColors
 import com.johnseymour.solarseasons.ui.theme.Quicksand
 import kotlin.math.ceil
+import kotlin.math.min
 
 @Composable
 fun SectionContainer(
@@ -135,25 +136,41 @@ fun ScaledVerticalAxisDotGraph(
         val dotHeight = (gradient * yValue) + contentHeight
         val contentCenter = contentWidth / 2F
 
+        // Draws a line between two dot centres, stopping at the edge of each dot so that the line
+        // is never painted over a dot
+        fun drawConnectedDotLine(from: Offset, to: Offset)
+        {
+            val delta = to - from
+            val distance = delta.getDistance()
+
+            if (distance == 0F) { return }
+
+            val trim = min(dotRadius, distance / 2F)
+            val direction = delta / distance
+
+            drawLine(
+                color = lineColor,
+                start = from + (direction * trim),
+                end = to - (direction * trim),
+                strokeWidth = lineThickness,
+            )
+        }
+
         previousDotYValue?.let()
         {
             val previousHeight = (gradient * it) + contentHeight
-            drawLine(
-                color = lineColor,
-                start = Offset(contentCenter, dotHeight),
-                end = Offset(-contentCenter, previousHeight),
-                strokeWidth = lineThickness,
+            drawConnectedDotLine(
+                from = Offset(contentCenter, dotHeight),
+                to = Offset(-contentCenter, previousHeight),
             )
         }
 
         nextDotYValue?.let()
         {
             val nextHeight = (gradient * it) + contentHeight
-            drawLine(
-                color = lineColor,
-                start = Offset(contentCenter, dotHeight),
-                end = Offset(size.width + contentCenter, nextHeight),
-                strokeWidth = lineThickness,
+            drawConnectedDotLine(
+                from = Offset(contentCenter, dotHeight),
+                to = Offset(size.width + contentCenter, nextHeight),
             )
         }
 
