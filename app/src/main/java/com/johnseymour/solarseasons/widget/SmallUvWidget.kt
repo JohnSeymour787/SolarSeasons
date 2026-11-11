@@ -3,6 +3,9 @@ package com.johnseymour.solarseasons.widget
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
+import android.graphics.Paint
+import android.graphics.Typeface
+import android.util.TypedValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -14,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.LocalContext
 import androidx.glance.LocalSize
 import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionParametersOf
@@ -208,11 +212,39 @@ private data class SmallUvWidgetState(
 private fun SmallUvWidgetContent(state: SmallUvWidgetState)
 {
     val size: DpSize = LocalSize.current
-    val uvTextSize = when
+    val context = LocalContext.current
+    val horizontalPadding = 0.dp
+    val baseUvTextSize = when
     {
         size.height < 100.dp -> 26.sp
         size.height < 170.dp -> 48.sp
         else -> 72.sp
+    }
+
+    // Glance can't auto-size text, so scale the font down until the UV text fits on a single line.
+    val uvTextSize = remember(state.uvText, baseUvTextSize, size.width)
+    {
+        val metrics = context.resources.displayMetrics
+        val availableWidthPx =
+            (size.width - horizontalPadding * 2).coerceAtLeast(1.dp).value * metrics.density
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            typeface = Typeface.DEFAULT_BOLD
+            textSize = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP,
+                baseUvTextSize.value - 6.sp.value, // Magic value to ensure 3 digit values will still have max font size
+                metrics,
+            )
+        }
+        val textWidthPx = paint.measureText(state.uvText)
+
+        if (textWidthPx <= availableWidthPx)
+        {
+            baseUvTextSize
+        }
+        else
+        {
+            (baseUvTextSize.value * availableWidthPx / textWidthPx).coerceAtLeast(8F).sp
+        }
     }
 
     Box(
@@ -231,7 +263,7 @@ private fun SmallUvWidgetContent(state: SmallUvWidgetState)
         Column(
             modifier = GlanceModifier
                 .fillMaxSize()
-                .padding(horizontal = 10.dp, vertical = 4.dp),
+                .padding(horizontal = 0.dp, vertical = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalAlignment = Alignment.CenterVertically,
         )
@@ -258,13 +290,14 @@ private fun SmallUvWidgetContent(state: SmallUvWidgetState)
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                 ),
+                maxLines = 1,
             )
 
             if (state.showProgress)
             {
                 LinearProgressIndicator(
                     progress = state.progress / 100F,
-                    modifier = GlanceModifier.fillMaxWidth().padding(top = 6.dp),
+                    modifier = GlanceModifier.fillMaxWidth().padding(top = 6.dp, start = 10.dp, end = 10.dp),
                     color = ColorProvider(state.progressColor),
                 )
             }
