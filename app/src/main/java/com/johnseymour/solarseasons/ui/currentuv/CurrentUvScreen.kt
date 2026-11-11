@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -319,7 +320,8 @@ private fun ErrorContent(
 {
     val resources = LocalResources.current
 
-    Column(
+    // Scrollable so that a pull-down gesture reaches the parent PullToRefreshBox.
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 12.dp),
@@ -327,16 +329,20 @@ private fun ErrorContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     )
     {
-        Text(
-            text = error.statusString(resources),
-            color = colors.primaryText,
-            fontSize = 18.sp,
-            textAlign = TextAlign.Center,
-        )
+        item {
+            Text(
+                text = error.statusString(resources),
+                color = colors.primaryText,
+                fontSize = 18.sp,
+                textAlign = TextAlign.Center,
+            )
+        }
 
         if (showAppDetailsButton)
         {
-            AppDetailsButton(onClick = onOpenAppDetails, modifier = Modifier.padding(top = 8.dp))
+            item {
+                AppDetailsButton(onClick = onOpenAppDetails, modifier = Modifier.padding(top = 8.dp))
+            }
         }
     }
 }
@@ -349,7 +355,8 @@ private fun StatusContent(
     onOpenAppDetails: () -> Unit,
 )
 {
-    Column(
+    // Scrollable so that a pull-down gesture reaches the parent PullToRefreshBox.
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 12.dp),
@@ -357,16 +364,20 @@ private fun StatusContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     )
     {
-        Text(
-            text = message,
-            color = colors.primaryText,
-            fontSize = 18.sp,
-            textAlign = TextAlign.Center,
-        )
+        item {
+            Text(
+                text = message,
+                color = colors.primaryText,
+                fontSize = 18.sp,
+                textAlign = TextAlign.Center,
+            )
+        }
 
         if (showAppDetailsButton)
         {
-            AppDetailsButton(onClick = onOpenAppDetails, modifier = Modifier.padding(top = 8.dp))
+            item {
+                AppDetailsButton(onClick = onOpenAppDetails, modifier = Modifier.padding(top = 8.dp))
+            }
         }
     }
 }
