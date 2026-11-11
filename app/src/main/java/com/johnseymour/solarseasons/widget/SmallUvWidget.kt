@@ -264,7 +264,7 @@ private fun SmallUvWidgetContent(state: SmallUvWidgetState)
             {
                 LinearProgressIndicator(
                     progress = state.progress / 100F,
-                    modifier = GlanceModifier.fillMaxWidth(),
+                    modifier = GlanceModifier.fillMaxWidth().padding(top = 6.dp),
                     color = ColorProvider(state.progressColor),
                 )
             }
