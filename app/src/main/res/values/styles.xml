@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="SolarProgressBar" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
         <item name="android:progressTint">@color/progress_bar_tint</item>
         <item name="android:min">0</item>
         <item name="android:max">100</item>
         <item name="android:progress">0</item>
+    </style>
+
+    <!-- Overrides Glance's linear progress indicator to halve its thickness (4dp -> 2dp). -->
+    <style name="Glance.AppWidget.LinearProgressIndicator" parent="@android:style/Widget.Material.ProgressBar.Horizontal" tools:ignore="PrivateResource">
+        <item name="android:progressDrawable" tools:ignore="PrivateResource">@drawable/glance_progress_horizontal</item>
+        <item name="android:minHeight">4dp</item>
+        <item name="android:maxHeight">4dp</item>
     </style>
 </resources>
