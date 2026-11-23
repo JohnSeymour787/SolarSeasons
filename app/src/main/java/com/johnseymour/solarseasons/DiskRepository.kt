@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter
 object DiskRepository
 {
     const val DATA_PREFERENCES_NAME = "uv_data_preferences.json"
+    private const val LATEST_ERROR_KEY = "latest_error_key"
 
     private val gson by lazy()
     {
@@ -51,6 +52,31 @@ object DiskRepository
     fun readLatestForecast(preferences: SharedPreferences): List<UVForecastData>?
     {
         return gson.fromJson(preferences.getString(UVForecastData.UV_FORECAST_LIST_KEY, ""), Array<UVForecastData>::class.java)?.toList()
+    }
+
+    /**
+     * Persists the latest error so the Glance widget can render it even after the app process dies.
+     * Passing null clears the stored error.
+     */
+    fun writeLatestError(error: ErrorStatus?, preferences: SharedPreferences)
+    {
+        preferences.edit().apply()
+        {
+            if (error == null) remove(LATEST_ERROR_KEY) else putString(LATEST_ERROR_KEY, error.name)
+        }.apply()
+    }
+
+    fun readLatestError(preferences: SharedPreferences): ErrorStatus?
+    {
+        val name = preferences.getString(LATEST_ERROR_KEY, null) ?: return null
+        return try
+        {
+            ErrorStatus.valueOf(name)
+        }
+        catch (_: IllegalArgumentException)
+        {
+            null
+        }
     }
 
     fun uvNotificationCustomTime(preferences: SharedPreferences): ZonedDateTime?

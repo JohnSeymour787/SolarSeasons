@@ -1,3 +1,6 @@
+# Data models are deserialised with Gson, which relies on field names.
+-keep class com.johnseymour.solarseasons.models.** { *; }
+
 # Add project specific ProGuard rules here.
 # You can control the set of applied configuration files using the
 # proguardFiles setting in build.gradle.

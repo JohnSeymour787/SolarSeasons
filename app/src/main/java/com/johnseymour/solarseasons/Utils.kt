@@ -164,7 +164,7 @@ fun Context.resolveThemeAttr(@AttrRes attrRes: Int): TypedValue
  *
  * @return IntArray containing the integer IDs of all app widgets. Empty array if no widgets found
  */
-fun Context.getWidgetIDs(): IntArray = AppWidgetManager.getInstance(this).getAppWidgetIds(ComponentName(this, SmallUVDisplay::class.java))
+fun Context.getWidgetIDs(): IntArray = AppWidgetManager.getInstance(this).getAppWidgetIds(ComponentName(this, com.johnseymour.solarseasons.widget.SmallUvWidgetReceiver::class.java))
 
 /**
  * Checks if there are any application widgets on the user's home screen
